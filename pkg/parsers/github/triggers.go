@@ -5,102 +5,171 @@ import (
 
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
+	"github.com/mitchellh/mapstructure"
 )
 
 const (
-	pushEvent             = "push"
-	forkEvent             = "fork"
-	workflowDispatchEvent = "workflow_dispatch"
-	pullRequestEvent      = "pull_request"
+	pushEvent              = "push"
+	forkEvent              = "fork"
+	workflowDispatchEvent  = "workflow_dispatch"
+	pullRequestEvent       = "pull_request"
+	pullRequestTargetEvent = "pull_request_target"
 )
 
-// type Trigger struct {
-// 	Branches    *Filter
-// 	Paths       *Filter
-// 	PullRequest *bool
-// 	Manual      *bool
-// 	Disabled    *bool
-// 	Push        *bool
-// 	Fork        *bool
-// 	Scheduled   *string
-// 	Events      *[]string
-//     }
+var (
+	githubEventToModelEvent = map[string]models.EventType{
+		pushEvent:             models.PushEvent,
+		forkEvent:             models.ForkEvent,
+		workflowDispatchEvent: models.ManualEvent,
+		pullRequestEvent:      models.PullRequestEvent,
+	}
+)
 
 type gitevent struct {
-	Paths       []string `yaml:"paths"`
-	PathsIgnore []string `yaml:"paths-ignore"`
-	branchFilters
-}
-
-type branchFilters struct {
-	Branches       []string `yaml:"branches"`
-	BranchesIgnore []string `yaml:"branches-ignore"`
+	Paths          []string `mapstructure:"paths"`
+	PathsIgnore    []string `mapstructure:"paths-ignore"`
+	Branches       []string `mapstructure:"branches"`
+	BranchesIgnore []string `mapstructure:"branches-ignore"`
 }
 
 type inputs struct {
-	Description string      `yaml:"description"`
-	Default     interface{} `yaml:"default"`
-	Required    bool        `yaml:"required"`
-	Type        string      `yaml:"type"`
-	Options     []string    `yaml:"options,omitempty"`
+	Description string      `mapstructure:"description"`
+	Default     interface{} `mapstructure:"default"`
+	Required    bool        `mapstructure:"required"`
+	Type        string      `mapstructure:"type"`
+	Options     []string    `mapstructure:"options,omitempty"`
+}
+
+type workflowdispatch struct {
+	Inputs map[string]inputs `mapstructure:"inputs"`
 }
 
 type On struct {
-	Push              *gitevent `yaml:"push"`
-	PullRequest       *gitevent `yaml:"pull_request"`
-	PullRequestTarget *gitevent `yaml:"pull_request_target"`
+	Push              *gitevent `mapstructure:"push"`
+	PullRequest       *gitevent `mapstructure:"pull_request"`
+	PullRequestTarget *gitevent `mapstructure:"pull_request_target"`
 	WorkflowCall      *struct {
-		Inputs  *inputs `yaml:"inputs"`
+		Inputs  *inputs `mapstructure:"inputs"`
 		Outputs map[string]*struct {
-			Description string `yaml:"description"`
-			Value       string `yaml:"value"`
+			Description string `mapstructure:"description"`
+			Value       string `mapstructure:"value"`
 		}
 		Secrets map[string]*struct {
-			Description string `yaml:"description"`
-			Required    bool   `yaml:"required"`
+			Description string `mapstructure:"description"`
+			Required    bool   `mapstructure:"required"`
 		}
-	} `yaml:"workflow_call"`
-	Schedule    map[string]string `yaml:"schedule"`
+	} `mapstructure:"workflow_call"`
+	Schedule    map[string]string `mapstructure:"schedule"`
 	WorkflowRun *struct {
-		Types     []string `yaml:"types"`
-		Workflows []string `yaml:"workflows"`
-		branchFilters
-	} `yaml:"workflow_run"`
-	WorkflowDispatch *struct {
-		Inputs *inputs `yaml:"inputs"`
-	} `yaml:"workflow_dispatch"`
+		Types          []string `mapstructure:"types"`
+		Workflows      []string `mapstructure:"workflows"`
+		Branches       []string `mapstructure:"branches"`
+		BranchesIgnore []string `mapstructure:"branches-ignore"`
+	} `mapstructure:"workflow_run"`
+	WorkflowDispatch *workflowdispatch `mapstructure:"workflow_dispatch"`
 	Events
 }
 
 type Events map[string]*struct {
-	Types []string `yaml:"types"`
+	Types []string `mapstructure:"types"`
 }
 
-func parseWorkflowTriggers(workflow *Workflow) (*models.Trigger, error) {
-	trigger := &models.Trigger{}
+func parseWorkflowTriggers(workflow *Workflow) ([]models.Trigger, error) {
+	triggers := []models.Trigger{}
 	if workflow.On == nil {
 		return nil, nil
 	}
 
+	var on On
 	if events, ok := utils.ToSlice[string](workflow.On); ok {
-		trigger.Events = &events
-		for _, event := range events {
-			switch event {
-			case pushEvent:
-				trigger.Push = utils.GetPtr(true)
-			case forkEvent:
-				trigger.Fork = utils.GetPtr(true)
-			case workflowDispatchEvent:
-				trigger.Manual = utils.GetPtr(true)
-			case pullRequestEvent:
-				trigger.PullRequest = utils.GetPtr(true)
-			}
+		triggers = generateTriggersFromEvents(events)
+	} else if err := mapstructure.Decode(workflow.On, &on); err == nil {
+		events := utils.Filter(utils.GetMapKeys(on.Events), func(event string) bool {
+			_, ok := githubEventToModelEvent[event]
+			return !ok
+		})
+		triggers = append(triggers, generateTriggersFromEvents(events)...)
+		if on.Push != nil {
+			triggers = append(triggers, parseGitEvent(on.Push, models.PushEvent))
 		}
-	} else if on, ok := workflow.On.(On); ok {
-		events := utils.GetMapKeys(on.Events)
-		trigger.Events = &events
+
+		if on.PullRequest != nil {
+			triggers = append(triggers, parseGitEvent(on.PullRequest, models.PullRequestEvent))
+		}
+
+		if on.PullRequestTarget != nil {
+			triggers = append(triggers, parseGitEvent(on.PullRequestTarget, models.EventType(pullRequestTargetEvent)))
+		}
+
+		if on.WorkflowDispatch != nil {
+			triggers = append(triggers, parseWorkflowDispatch(on.WorkflowDispatch))
+		}
 	} else {
 		return nil, errors.New("failed to parse workflow triggers")
 	}
-	return trigger, nil
+	return triggers, nil
+}
+
+func parseWorkflowDispatch(workflowDispatch *workflowdispatch) models.Trigger {
+	if workflowDispatch == nil {
+		return models.Trigger{}
+	}
+	trigger := models.Trigger{
+		Event: models.ManualEvent,
+	}
+
+	if workflowDispatch.Inputs != nil {
+		for k, v := range workflowDispatch.Inputs {
+			trigger.Paramters = append(trigger.Paramters, models.Parameter{
+				Name:        &k,
+				Description: &v.Description,
+				Default:     v.Default,
+			})
+		}
+	}
+	return trigger
+}
+
+func parseGitEvent(gitevent *gitevent, event models.EventType) models.Trigger {
+	if gitevent == nil {
+		return models.Trigger{}
+	}
+	trigger := models.Trigger{
+		Event: event,
+		Paths: &models.Filter{
+			AllowList: []string{},
+			DenyList:  []string{},
+		},
+		Branches: &models.Filter{
+			AllowList: []string{},
+			DenyList:  []string{},
+		},
+	}
+
+	for _, path := range gitevent.Paths {
+		trigger.Paths.AllowList = append(trigger.Paths.AllowList, path)
+	}
+	for _, path := range gitevent.PathsIgnore {
+		trigger.Paths.DenyList = append(trigger.Paths.DenyList, path)
+	}
+	for _, branch := range gitevent.Branches {
+		trigger.Branches.AllowList = append(trigger.Branches.AllowList, branch)
+	}
+	for _, branch := range gitevent.BranchesIgnore {
+		trigger.Branches.DenyList = append(trigger.Branches.DenyList, branch)
+	}
+
+	return trigger
+}
+
+func generateTriggersFromEvents(events []string) []models.Trigger {
+	return utils.Map(events, func(event string) models.Trigger {
+		modelEvent, ok := githubEventToModelEvent[event]
+		if !ok {
+			modelEvent = models.EventType(event)
+		}
+		return models.Trigger{
+			Event: modelEvent,
+		}
+	})
 }

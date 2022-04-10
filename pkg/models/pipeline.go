@@ -17,21 +17,9 @@ type Pipeline struct {
 	}
 }
 
-type Trigger struct {
-	Branches    *Filter
-	Paths       *Filter
-	PullRequest *bool
-	Manual      *bool
-	Disabled    *bool
-	Push        *bool
-	Fork        *bool
-	Scheduled   *string
-	Events      *[]string
-}
-
 type Filter struct {
-	AllowList *[]string
-	DenyList  *[]string
+	AllowList []string
+	DenyList  []string
 }
 
 type EnvironmentVariables map[string]string
@@ -49,6 +37,7 @@ type Parameter struct {
 	Name        *string
 	Value       *string
 	Description *string
+	Default     any
 }
 
 type Job struct {
