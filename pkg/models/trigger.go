@@ -1,10 +1,11 @@
 package models
 
 const (
-	PushEvent        EventType = "push"
-	PullRequestEvent EventType = "pull_request"
-	ForkEvent        EventType = "fork"
-	ManualEvent      EventType = "manual"
+	PushEvent            EventType = "push"
+	PullRequestEvent     EventType = "pull_request"
+	ForkEvent            EventType = "fork"
+	ManualEvent          EventType = "manual"
+	PipelineTriggerEvent EventType = "pipeline_trigger"
 )
 
 type EventType string
