@@ -27,20 +27,25 @@ var (
 )
 
 func parseWorkflowTriggers(workflow *githubModels.Workflow) ([]models.Trigger, error) {
-	triggers := []models.Trigger{}
 	if workflow.On == nil {
 		return nil, nil
 	}
 
+	// Handle workflow.on if it is a list of event names
+	if events, isEventListFormat := utils.ToSlice[string](workflow.On); isEventListFormat {
+		return generateTriggersFromEvents(events), nil
+	}
+
+	// Handle workflow.on if each event has a specific configuration
 	var on githubModels.On
-	if events, ok := utils.ToSlice[string](workflow.On); ok {
-		triggers = generateTriggersFromEvents(events)
-	} else if err := mapstructure.Decode(workflow.On, &on); err == nil {
+	if err := mapstructure.Decode(workflow.On, &on); err == nil {
+		triggers := []models.Trigger{}
 		events := utils.Filter(utils.GetMapKeys(on.Events), func(event string) bool {
 			_, ok := githubEventToModelEvent[event]
 			return !ok
 		})
 		triggers = append(triggers, generateTriggersFromEvents(events)...)
+
 		if on.Push != nil {
 			triggers = append(triggers, parseGitEvent(on.Push, models.PushEvent))
 		}
@@ -60,10 +65,28 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) ([]models.Trigger, e
 		if on.WorkflowCall != nil {
 			triggers = append(triggers, parseWorkflowCall(on.WorkflowCall))
 		}
-	} else {
-		return nil, errors.New("failed to parse workflow triggers")
+
+		if on.WorkflowRun != nil {
+			triggers = append(triggers, parseWorkflowRun(on.WorkflowRun))
+		}
+		return triggers, nil
 	}
-	return triggers, nil
+
+	return nil, errors.New("workflow.on is of an unknown format")
+}
+
+func parseWorkflowRun(workflowRun *githubModels.WorkflowRun) models.Trigger {
+	return models.Trigger{
+		Event:     models.PipelineRunEvent,
+		Pipelines: workflowRun.Workflows,
+		Filters: map[string]any{
+			"types": workflowRun.Types,
+		},
+		Branches: &models.Filter{
+			AllowList: workflowRun.Branches,
+			DenyList:  workflowRun.BranchesIgnore,
+		},
+	}
 }
 
 func parseWorkflowCall(workflowCall *githubModels.WorkflowCall) models.Trigger {
@@ -124,13 +147,15 @@ func parseGitEvent(gitevent *githubModels.Gitevent, event models.EventType) mode
 }
 
 func generateTriggersFromEvents(events []string) []models.Trigger {
-	return utils.Map(events, func(event string) models.Trigger {
-		modelEvent, ok := githubEventToModelEvent[event]
-		if !ok {
-			modelEvent = models.EventType(event)
-		}
-		return models.Trigger{
-			Event: modelEvent,
-		}
-	})
+	return utils.Map(events, generateTriggerFromEvent)
+}
+
+func generateTriggerFromEvent(event string) models.Trigger {
+	modelEvent, ok := githubEventToModelEvent[event]
+	if !ok {
+		modelEvent = models.EventType(event)
+	}
+	return models.Trigger{
+		Event: modelEvent,
+	}
 }
