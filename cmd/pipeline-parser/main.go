@@ -30,7 +30,6 @@ func GetCommand() *cobra.Command {
 					if err != nil {
 						return err
 					}
-
 					fmt.Println(root)
 				}
 			}

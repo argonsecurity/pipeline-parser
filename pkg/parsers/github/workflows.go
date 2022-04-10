@@ -180,8 +180,8 @@ type ReusableWorkflowCallJob struct {
 	With interface{} `json:"with,omitempty"`
 }
 
-// Root
-type Root struct {
+// Workflow
+type Workflow struct {
 
 	// Concurrency ensures that only a single job or workflow using the same concurrency group will run at a time. A concurrency group can be any string or expression. The expression can use any context except for the secrets context.
 	// You can also specify concurrency at the workflow level.
@@ -1241,7 +1241,7 @@ func (strct *ReusableWorkflowCallJob) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (strct *Root) MarshalJSON() ([]byte, error) {
+func (strct *Workflow) MarshalJSON() ([]byte, error) {
 	buf := bytes.NewBuffer(make([]byte, 0))
 	buf.WriteString("{")
 	comma := false
@@ -1334,7 +1334,7 @@ func (strct *Root) MarshalJSON() ([]byte, error) {
 	return rv, nil
 }
 
-func (strct *Root) UnmarshalJSON(b []byte) error {
+func (strct *Workflow) UnmarshalJSON(b []byte) error {
 	jobsReceived := false
 	onReceived := false
 	var jsonMap map[string]json.RawMessage

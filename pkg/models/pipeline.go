@@ -24,6 +24,7 @@ type Trigger struct {
 	Manual      *bool
 	Disabled    *bool
 	Push        *bool
+	Fork        *bool
 	Scheduled   *string
 	Events      *[]string
 }

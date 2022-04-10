@@ -1,11 +1,20 @@
 package github
 
-import "gopkg.in/yaml.v3"
+import (
+	"gopkg.in/yaml.v3"
+)
 
-func Parse(data []byte) (*Root, error) {
-	root := &Root{}
-	if err := yaml.Unmarshal(data, root); err != nil {
+func Parse(data []byte) (*Workflow, error) {
+	workflow := &Workflow{}
+	if err := yaml.Unmarshal(data, workflow); err != nil {
 		return nil, err
 	}
-	return root, nil
+
+	trigger, err := parseWorkflowTriggers(workflow)
+	if err != nil {
+		return nil, err
+	}
+
+	println(trigger)
+	return workflow, nil
 }
