@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	githubModels "github.com/argonsecurity/pipeline-parser/pkg/parsers/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/mitchellh/mapstructure"
 )
@@ -25,66 +26,13 @@ var (
 	}
 )
 
-type gitevent struct {
-	Paths          []string `mapstructure:"paths"`
-	PathsIgnore    []string `mapstructure:"paths-ignore"`
-	Branches       []string `mapstructure:"branches"`
-	BranchesIgnore []string `mapstructure:"branches-ignore"`
-}
-
-type inputs map[string]struct {
-	Description string      `mapstructure:"description"`
-	Default     interface{} `mapstructure:"default"`
-	Required    bool        `mapstructure:"required"`
-	Type        string      `mapstructure:"type"`
-	Options     []string    `mapstructure:"options,omitempty"`
-}
-
-type outputs map[string]*struct {
-	Description string `mapstructure:"description"`
-	Value       string `mapstructure:"value"`
-}
-
-type workflowdispatch struct {
-	Inputs inputs `mapstructure:"inputs"`
-}
-
-type workflowcall struct {
-	Inputs  inputs  `mapstructure:"inputs"`
-	Outputs outputs `mapstructure:"outputs"`
-	Secrets map[string]*struct {
-		Description string `mapstructure:"description"`
-		Required    bool   `mapstructure:"required"`
-	}
-}
-
-type On struct {
-	Push              *gitevent         `mapstructure:"push"`
-	PullRequest       *gitevent         `mapstructure:"pull_request"`
-	PullRequestTarget *gitevent         `mapstructure:"pull_request_target"`
-	WorkflowCall      *workflowcall     `mapstructure:"workflow_call"`
-	Schedule          map[string]string `mapstructure:"schedule"`
-	WorkflowRun       *struct {
-		Types          []string `mapstructure:"types"`
-		Workflows      []string `mapstructure:"workflows"`
-		Branches       []string `mapstructure:"branches"`
-		BranchesIgnore []string `mapstructure:"branches-ignore"`
-	} `mapstructure:"workflow_run"`
-	WorkflowDispatch *workflowdispatch `mapstructure:"workflow_dispatch"`
-	Events
-}
-
-type Events map[string]*struct {
-	Types []string `mapstructure:"types"`
-}
-
-func parseWorkflowTriggers(workflow *Workflow) ([]models.Trigger, error) {
+func parseWorkflowTriggers(workflow *githubModels.Workflow) ([]models.Trigger, error) {
 	triggers := []models.Trigger{}
 	if workflow.On == nil {
 		return nil, nil
 	}
 
-	var on On
+	var on githubModels.On
 	if events, ok := utils.ToSlice[string](workflow.On); ok {
 		triggers = generateTriggersFromEvents(events)
 	} else if err := mapstructure.Decode(workflow.On, &on); err == nil {
@@ -118,14 +66,14 @@ func parseWorkflowTriggers(workflow *Workflow) ([]models.Trigger, error) {
 	return triggers, nil
 }
 
-func parseWorkflowCall(workflowCall *workflowcall) models.Trigger {
+func parseWorkflowCall(workflowCall *githubModels.WorkflowCall) models.Trigger {
 	return models.Trigger{
 		Event:     models.PipelineTriggerEvent,
 		Paramters: parseInputs(workflowCall.Inputs),
 	}
 }
 
-func parseInputs(inputs inputs) []models.Parameter {
+func parseInputs(inputs githubModels.Inputs) []models.Parameter {
 	parameters := []models.Parameter{}
 	if inputs != nil {
 		for k, v := range inputs {
@@ -139,14 +87,14 @@ func parseInputs(inputs inputs) []models.Parameter {
 	return parameters
 }
 
-func parseWorkflowDispatch(workflowDispatch *workflowdispatch) models.Trigger {
+func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) models.Trigger {
 	return models.Trigger{
 		Event:     models.ManualEvent,
 		Paramters: parseInputs(workflowDispatch.Inputs),
 	}
 }
 
-func parseGitEvent(gitevent *gitevent, event models.EventType) models.Trigger {
+func parseGitEvent(gitevent *githubModels.Gitevent, event models.EventType) models.Trigger {
 	trigger := models.Trigger{
 		Event: event,
 		Paths: &models.Filter{
