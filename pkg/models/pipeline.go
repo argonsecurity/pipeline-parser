@@ -22,7 +22,7 @@ type Filter struct {
 	DenyList  []string
 }
 
-type EnvironmentVariables map[string]string
+type EnvironmentVariables map[string]any
 type Variable struct {
 	Context   *string
 	Name      *string
@@ -52,7 +52,7 @@ type Job struct {
 	Conditions           *[]Condition
 	ConcurrencyGroup     *string
 	Inputs               *[]Parameter
-	Timeout              *int
+	TimeoutMS            *int
 	Tags                 *[]string
 }
 

@@ -13,11 +13,13 @@ func Parse(data []byte) (*models.Pipeline, error) {
 	}
 
 	pipeline := &models.Pipeline{}
-
 	triggers, err := parseWorkflowTriggers(workflow)
 	if err != nil {
 		return nil, err
 	}
+
+	jobs := parseWorkflowJobs(workflow)
+	pipeline.Jobs = &jobs
 
 	pipeline.Triggers = &triggers
 	return pipeline, nil

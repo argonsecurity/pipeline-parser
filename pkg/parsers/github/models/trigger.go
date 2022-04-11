@@ -1,12 +1,5 @@
 package models
 
-type Gitevent struct {
-	Paths          []string `mapstructure:"paths"`
-	PathsIgnore    []string `mapstructure:"paths-ignore"`
-	Branches       []string `mapstructure:"branches"`
-	BranchesIgnore []string `mapstructure:"branches-ignore"`
-}
-
 type Inputs map[string]struct {
 	Description string      `mapstructure:"description"`
 	Default     interface{} `mapstructure:"default"`
@@ -34,10 +27,9 @@ type WorkflowCall struct {
 }
 
 type WorkflowRun struct {
-	Types          []string `mapstructure:"types"`
-	Workflows      []string `mapstructure:"workflows"`
-	Branches       []string `mapstructure:"branches"`
-	BranchesIgnore []string `mapstructure:"branches-ignore"`
+	Types     []string `mapstructure:"types"`
+	Workflows []string `mapstructure:"workflows"`
+	Ref       `mapstructure:"ref,squash"`
 }
 
 type Events map[string]*struct {
@@ -45,9 +37,9 @@ type Events map[string]*struct {
 }
 
 type On struct {
-	Push              *Gitevent         `mapstructure:"push"`
-	PullRequest       *Gitevent         `mapstructure:"pull_request"`
-	PullRequestTarget *Gitevent         `mapstructure:"pull_request_target"`
+	Push              *Ref              `mapstructure:"push"`
+	PullRequest       *Ref              `mapstructure:"pull_request"`
+	PullRequestTarget *Ref              `mapstructure:"pull_request_target"`
 	WorkflowCall      *WorkflowCall     `mapstructure:"workflow_call"`
 	Schedule          map[string]string `mapstructure:"schedule"`
 	WorkflowRun       *WorkflowRun      `mapstructure:"workflow_run"`

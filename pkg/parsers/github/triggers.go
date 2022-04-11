@@ -47,15 +47,15 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) ([]models.Trigger, e
 		triggers = append(triggers, generateTriggersFromEvents(events)...)
 
 		if on.Push != nil {
-			triggers = append(triggers, parseGitEvent(on.Push, models.PushEvent))
+			triggers = append(triggers, parseRef(on.Push, models.PushEvent))
 		}
 
 		if on.PullRequest != nil {
-			triggers = append(triggers, parseGitEvent(on.PullRequest, models.PullRequestEvent))
+			triggers = append(triggers, parseRef(on.PullRequest, models.PullRequestEvent))
 		}
 
 		if on.PullRequestTarget != nil {
-			triggers = append(triggers, parseGitEvent(on.PullRequestTarget, models.EventType(pullRequestTargetEvent)))
+			triggers = append(triggers, parseRef(on.PullRequestTarget, models.EventType(pullRequestTargetEvent)))
 		}
 
 		if on.WorkflowDispatch != nil {
@@ -117,7 +117,7 @@ func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) mode
 	}
 }
 
-func parseGitEvent(gitevent *githubModels.Gitevent, event models.EventType) models.Trigger {
+func parseRef(ref *githubModels.Ref, event models.EventType) models.Trigger {
 	trigger := models.Trigger{
 		Event: event,
 		Paths: &models.Filter{
@@ -130,16 +130,16 @@ func parseGitEvent(gitevent *githubModels.Gitevent, event models.EventType) mode
 		},
 	}
 
-	for _, path := range gitevent.Paths {
+	for _, path := range ref.Paths {
 		trigger.Paths.AllowList = append(trigger.Paths.AllowList, path)
 	}
-	for _, path := range gitevent.PathsIgnore {
+	for _, path := range ref.PathsIgnore {
 		trigger.Paths.DenyList = append(trigger.Paths.DenyList, path)
 	}
-	for _, branch := range gitevent.Branches {
+	for _, branch := range ref.Branches {
 		trigger.Branches.AllowList = append(trigger.Branches.AllowList, branch)
 	}
-	for _, branch := range gitevent.BranchesIgnore {
+	for _, branch := range ref.BranchesIgnore {
 		trigger.Branches.DenyList = append(trigger.Branches.DenyList, branch)
 	}
 

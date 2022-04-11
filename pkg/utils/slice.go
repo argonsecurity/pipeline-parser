@@ -24,6 +24,16 @@ func Map[T any, U any](s []T, cb func(v T) U) []U {
 	return result
 }
 
+func MapToSlice[T any, U any, K comparable](s map[K]T, cb func(k K, v T) U) []U {
+	result := make([]U, len(s))
+	var i int
+	for k, v := range s {
+		result[i] = cb(k, v)
+		i++
+	}
+	return result
+}
+
 func Filter[T any](s []T, cb func(v T) bool) []T {
 	result := make([]T, 0)
 	for _, item := range s {
