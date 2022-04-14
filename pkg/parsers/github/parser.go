@@ -7,20 +7,18 @@ import (
 )
 
 func Parse(data []byte) (*models.Pipeline, error) {
+	var err error
 	workflow := &githubModels.Workflow{}
 	if err := yaml.Unmarshal(data, workflow); err != nil {
 		return nil, err
 	}
 
 	pipeline := &models.Pipeline{}
-	triggers, err := parseWorkflowTriggers(workflow)
+	pipeline.Jobs = parseWorkflowJobs(workflow)
+	pipeline.Triggers, err = parseWorkflowTriggers(workflow)
 	if err != nil {
 		return nil, err
 	}
-	pipeline.Triggers = &triggers
-
-	jobs := parseWorkflowJobs(workflow)
-	pipeline.Jobs = &jobs
 
 	return pipeline, nil
 }

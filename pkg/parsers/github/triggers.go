@@ -26,14 +26,14 @@ var (
 	}
 )
 
-func parseWorkflowTriggers(workflow *githubModels.Workflow) ([]models.Trigger, error) {
+func parseWorkflowTriggers(workflow *githubModels.Workflow) (*[]models.Trigger, error) {
 	if workflow.On == nil {
 		return nil, nil
 	}
 
 	// Handle workflow.on if it is a list of event names
 	if events, isEventListFormat := utils.ToSlice[string](workflow.On); isEventListFormat {
-		return generateTriggersFromEvents(events), nil
+		return utils.GetPtr(generateTriggersFromEvents(events)), nil
 	}
 
 	// Handle workflow.on if each event has a specific configuration
@@ -69,7 +69,7 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) ([]models.Trigger, e
 		if on.WorkflowRun != nil {
 			triggers = append(triggers, parseWorkflowRun(on.WorkflowRun))
 		}
-		return triggers, nil
+		return &triggers, nil
 	}
 
 	return nil, errors.New("workflow.on is of an unknown format")

@@ -23,13 +23,13 @@ var (
 	}
 )
 
-func parseJobSteps(steps *[]githubModels.Step) []models.Step {
+func parseJobSteps(steps *[]githubModels.Step) *[]models.Step {
 	if steps == nil {
 		return nil
 	}
 
 	parsedSteps := utils.Map(*steps, parseJobStep)
-	return parsedSteps
+	return utils.GetPtr(parsedSteps)
 }
 
 func parseJobStep(step githubModels.Step) models.Step {

@@ -10,16 +10,9 @@ const (
 	defaultTimeoutMS int = 360 * 60 * 1000
 )
 
-func parseWorkflowJobs(workflow *githubModels.Workflow) []models.Job {
-	return utils.MapToSlice(workflow.Jobs.NormalJobs, parseNormalJob)
+func parseWorkflowJobs(workflow *githubModels.Workflow) *[]models.Job {
+	return utils.GetPtr(utils.MapToSlice(workflow.Jobs.NormalJobs, parseNormalJob))
 }
-
-// type Job struct {
-// 	Steps                *[]Step
-// 	Runner               *Runner
-// 	Inputs               *[]Parameter
-// 	Tags                 *[]string
-// }
 
 func parseNormalJob(jobName string, normalJob *githubModels.NormalJob) models.Job {
 	job := models.Job{
@@ -29,7 +22,7 @@ func parseNormalJob(jobName string, normalJob *githubModels.NormalJob) models.Jo
 		EnvironmentVariables: parseEnvironmentVariables(normalJob.Env),
 	}
 
-	if normalJob.TimeoutMinutes != nil {
+	if normalJob.TimeoutMinutes != nil && *normalJob.TimeoutMinutes == 0 {
 		timeout := int(*normalJob.TimeoutMinutes) * 60 * 1000
 		job.TimeoutMS = &timeout
 	} else {
@@ -46,8 +39,7 @@ func parseNormalJob(jobName string, normalJob *githubModels.NormalJob) models.Jo
 	}
 
 	if normalJob.Steps != nil {
-		steps := parseJobSteps(normalJob.Steps)
-		job.Steps = &steps
+		job.Steps = parseJobSteps(normalJob.Steps)
 	}
 
 	return job
