@@ -17,10 +17,10 @@ func Parse(data []byte) (*models.Pipeline, error) {
 	if err != nil {
 		return nil, err
 	}
+	pipeline.Triggers = &triggers
 
 	jobs := parseWorkflowJobs(workflow)
 	pipeline.Jobs = &jobs
 
-	pipeline.Triggers = &triggers
 	return pipeline, nil
 }

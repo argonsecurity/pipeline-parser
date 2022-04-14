@@ -45,6 +45,11 @@ func parseNormalJob(jobName string, normalJob *githubModels.NormalJob) models.Jo
 		job.ConcurrencyGroup = normalJob.Concurrency.Group
 	}
 
+	if normalJob.Steps != nil {
+		steps := parseJobSteps(normalJob.Steps)
+		job.Steps = &steps
+	}
+
 	return job
 }
 

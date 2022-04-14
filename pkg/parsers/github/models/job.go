@@ -63,7 +63,7 @@ type NormalJob struct {
 
 	// A job contains a sequence of tasks called steps. Steps can run commands, run setup tasks, or run an action in your repository, a public repository, or an action published in a Docker registry. Not all steps run actions, but all actions run as a step. Each step runs in its own process in the virtual environment and has access to the workspace and filesystem. Because steps run in their own process, changes to environment variables are not preserved between steps. GitHub provides built-in steps to set up and complete a job.
 	//
-	Steps []*Step `mapstructure:"steps,omitempty" yaml:"steps,omitempty" json:"steps,omitempty"`
+	Steps *[]Step `mapstructure:"steps,omitempty" yaml:"steps,omitempty" json:"steps,omitempty"`
 
 	// A strategy creates a build matrix for your jobs. You can define different variations of an environment to run each job in.
 	Strategy *Strategy `mapstructure:"strategy,omitempty" yaml:"strategy,omitempty" json:"strategy,omitempty"`

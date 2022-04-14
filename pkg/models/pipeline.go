@@ -56,18 +56,6 @@ type Job struct {
 	Tags                 *[]string
 }
 
-type Step struct {
-	ID                   *string
-	Name                 *string
-	Type                 *string
-	FailsPipeline        *bool
-	Disabled             *bool
-	EnvironmentVariables *EnvironmentVariables
-	WorkingDirectory     *string
-	Timeout              *int
-	Conditions           *[]Condition
-}
-
 type Repository struct {
 	Entity
 	URL          *string
