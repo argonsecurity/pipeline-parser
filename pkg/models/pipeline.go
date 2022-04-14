@@ -17,29 +17,6 @@ type Pipeline struct {
 	}
 }
 
-type Filter struct {
-	AllowList []string
-	DenyList  []string
-}
-
-type EnvironmentVariables map[string]any
-type Variable struct {
-	Context   *string
-	Name      *string
-	Value     *string
-	Parent    *Entity
-	Masked    *bool
-	Protected *bool
-}
-
-type Condition string
-type Parameter struct {
-	Name        *string
-	Value       *string
-	Description *string
-	Default     any
-}
-
 type Job struct {
 	ID                   *string
 	Name                 *string
@@ -62,21 +39,9 @@ type Repository struct {
 	Organization *Entity
 }
 
-type Entity struct {
-	ID   *string
-	Name *string
-}
-
 type DockerMetadata struct {
 	Image                 *string
 	Label                 *string
 	RegistryURL           *string
 	RegistryCredentialsID *string
-}
-type Runner struct {
-	Type           *string
-	Labels         *[]string
-	OS             *string
-	Arch           *string
-	DockerMetadata *DockerMetadata
 }
