@@ -95,6 +95,7 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 		dc := &mapstructure.DecoderConfig{
 			DecodeHook: mapstructure.ComposeDecodeHookFunc(
 				mapstructure.TextUnmarshallerHookFunc(),
+				DecodeRunsOnHookFunc(),
 			),
 			Result: &normalJob,
 		}

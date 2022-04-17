@@ -42,6 +42,10 @@ func parseNormalJob(jobName string, normalJob *githubModels.NormalJob) models.Jo
 		job.Steps = parseJobSteps(normalJob.Steps)
 	}
 
+	if normalJob.RunsOn != nil {
+		job.Runner = parseRunsOnToRunner(normalJob.RunsOn)
+	}
+
 	return job
 }
 

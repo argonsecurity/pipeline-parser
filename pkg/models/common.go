@@ -28,11 +28,3 @@ type Entity struct {
 	ID   *string
 	Name *string
 }
-
-type Runner struct {
-	Type           *string
-	Labels         *[]string
-	OS             *string
-	Arch           *string
-	DockerMetadata *DockerMetadata
-}
