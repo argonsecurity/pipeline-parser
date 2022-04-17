@@ -14,4 +14,5 @@ type Job struct {
 	Inputs               *[]Parameter
 	TimeoutMS            *int
 	Tags                 *[]string
+	TokenPermissions     *map[string]Permission
 }

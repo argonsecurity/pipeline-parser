@@ -43,3 +43,12 @@ func Filter[T any](s []T, cb func(v T) bool) []T {
 	}
 	return result
 }
+
+func SliceContains[T comparable](s []T, v T) bool {
+	for _, item := range s {
+		if item == v {
+			return true
+		}
+	}
+	return false
+}

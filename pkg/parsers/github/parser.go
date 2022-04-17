@@ -14,10 +14,14 @@ func Parse(data []byte) (*models.Pipeline, error) {
 	}
 
 	pipeline := &models.Pipeline{}
-	pipeline.Jobs = parseWorkflowJobs(workflow)
 	pipeline.Triggers, err = parseWorkflowTriggers(workflow)
 	if err != nil {
 		return nil, err
+	}
+	pipeline.Jobs = parseWorkflowJobs(workflow)
+	pipeline.Defaults = &models.Defaults{
+		TokenPermissions:     parseTokenPermissions(workflow.Permissions),
+		EnvironmentVariables: parseEnvironmentVariables(workflow.Env),
 	}
 
 	return pipeline, nil

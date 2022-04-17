@@ -7,12 +7,17 @@ const (
 	Latest        VersionType = "latest"
 	None          VersionType = "none"
 
-	ShellType StepType = "shell"
-	TaskType  StepType = "task"
+	ShellStepType StepType = "shell"
+	TaskStepType  StepType = "task"
 )
 
 type VersionType string
 type StepType string
+
+type Shell struct {
+	Type   *string
+	Script *string
+}
 
 type Step struct {
 	ID                   *string
@@ -24,7 +29,7 @@ type Step struct {
 	WorkingDirectory     *string
 	Timeout              *int
 	Conditions           *[]Condition
-	Shell                *string
+	Shell                *Shell
 	Task                 *Task
 }
 

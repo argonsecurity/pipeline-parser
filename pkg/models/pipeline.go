@@ -9,12 +9,15 @@ type Pipeline struct {
 	Parameters   *[]Parameter
 	Repository   *Repository
 	Organization *Entity
-	Defaults     *struct {
-		EnvironmentVariables *EnvironmentVariables
-		Runner               *Runner
-		Conditions           *[]Condition
-		TokenPermissions     *map[string]string
-	}
+	Defaults     *Defaults
+}
+
+type Defaults struct {
+	EnvironmentVariables *EnvironmentVariables
+	Runner               *Runner
+	Conditions           *[]Condition
+	TokenPermissions     *map[string]Permission
+	Settings             *map[string]any
 }
 
 type Repository struct {

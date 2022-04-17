@@ -49,8 +49,14 @@ func parseJobStep(step githubModels.Step) models.Step {
 	}
 
 	if step.Run != "" {
-		parsedStep.Shell = &step.Run
-		parsedStep.Type = models.ShellType
+		parsedStep.Shell = &models.Shell{
+			Script: &step.Run,
+		}
+
+		if step.Shell != "" {
+			parsedStep.Shell.Type = &step.Shell
+		}
+		parsedStep.Type = models.ShellStepType
 	} else if step.Uses != "" {
 		actionName, version, versionType := parseActionHeader(step.Uses)
 		parsedStep.Task = &models.Task{
@@ -60,7 +66,7 @@ func parseJobStep(step githubModels.Step) models.Step {
 			VersionType: versionType,
 			Inputs:      parseActionInput(step.With),
 		}
-		parsedStep.Type = models.TaskType
+		parsedStep.Type = models.TaskStepType
 	}
 
 	return parsedStep
