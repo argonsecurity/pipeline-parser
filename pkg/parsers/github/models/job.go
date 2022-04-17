@@ -3,7 +3,7 @@ package models
 import "github.com/argonsecurity/pipeline-parser/pkg/utils"
 
 type Jobs struct {
-	NormalJobs               map[string]*NormalJob
+	NormalJobs               map[string]*Job
 	ReusableWorkflowCallJobs map[string]*ReusableWorkflowCallJob
 }
 
@@ -17,7 +17,7 @@ func (c *Concurrency) UnmarshalText(text []byte) error {
 	return nil
 }
 
-type NormalJob struct {
+type Job struct {
 	Concurrency     *Concurrency          `mapstructure:"concurrency,omitempty" yaml:"concurrency,omitempty"`
 	Container       interface{}           `mapstructure:"container,omitempty" yaml:"container,omitempty"`
 	ContinueOnError bool                  `mapstructure:"continue-on-error,omitempty" yaml:"continue-on-error,omitempty"`

@@ -14,7 +14,7 @@ func parseWorkflowJobs(workflow *githubModels.Workflow) *[]models.Job {
 	return utils.GetPtr(utils.MapToSlice(workflow.Jobs.NormalJobs, parseNormalJob))
 }
 
-func parseNormalJob(jobName string, normalJob *githubModels.NormalJob) models.Job {
+func parseNormalJob(jobName string, normalJob *githubModels.Job) models.Job {
 	job := models.Job{
 		ID:                   &jobName,
 		Name:                 &jobName,

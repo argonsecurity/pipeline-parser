@@ -48,7 +48,6 @@ type PermissionsEvent struct {
 	Statuses           string `mapstructure:"statuses,omitempty" yaml:"statuses,omitempty"`
 }
 
-// Ref
 type Ref struct {
 	Branches       []string `mapstructure:"branches,omitempty" yaml:"branches,omitempty"`
 	BranchesIgnore []string `mapstructure:"branches-ignore,omitempty" yaml:"branches-ignore,omitempty"`
@@ -58,7 +57,6 @@ type Ref struct {
 	TagsIgnore     []string `mapstructure:"tags-ignore,omitempty" yaml:"tags-ignore,omitempty"`
 }
 
-// Workflow
 type Workflow struct {
 	Concurrency *Concurrency      `mapstructure:"concurrency,omitempty" yaml:"concurrency,omitempty"`
 	Defaults    *Defaults         `mapstructure:"defaults,omitempty" yaml:"defaults,omitempty"`
@@ -86,25 +84,25 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 		return err
 	}
 
-	normalJobs := make(map[string]*NormalJob, 0)
+	normalJobs := make(map[string]*Job, 0)
 	reusableWorkflowCallJobs := make(map[string]*ReusableWorkflowCallJob, 0)
 
 	for k, v := range v {
-		var normalJob *NormalJob
+		var job *Job
 		var reusableWorkflowCallJob *ReusableWorkflowCallJob
 		dc := &mapstructure.DecoderConfig{
 			DecodeHook: mapstructure.ComposeDecodeHookFunc(
 				mapstructure.TextUnmarshallerHookFunc(),
 				DecodeRunsOnHookFunc(),
 			),
-			Result: &normalJob,
+			Result: &job,
 		}
 		decoder, err := mapstructure.NewDecoder(dc)
 		if err != nil {
 			return err
 		}
 		if err := decoder.Decode(v); err == nil {
-			normalJobs[k] = normalJob
+			normalJobs[k] = job
 			continue
 		} else if err := mapstructure.Decode(v, &reusableWorkflowCallJob); err == nil {
 			reusableWorkflowCallJobs[k] = reusableWorkflowCallJob
@@ -214,7 +212,7 @@ func (strct *Environment) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (strct *NormalJob) UnmarshalYAML(node *yaml.Node) error {
+func (strct *Job) UnmarshalYAML(node *yaml.Node) error {
 	var jsonMap map[string]json.RawMessage
 	if err := node.Decode(&jsonMap); err != nil {
 		return err
@@ -222,7 +220,7 @@ func (strct *NormalJob) UnmarshalYAML(node *yaml.Node) error {
 	return strct.unmarshal(jsonMap)
 }
 
-func (strct *NormalJob) UnmarshalJSON(b []byte) error {
+func (strct *Job) UnmarshalJSON(b []byte) error {
 	var jsonMap map[string]json.RawMessage
 	if err := json.Unmarshal(b, &jsonMap); err != nil {
 		return err
@@ -231,7 +229,7 @@ func (strct *NormalJob) UnmarshalJSON(b []byte) error {
 	return strct.unmarshal(jsonMap)
 }
 
-func (strct *NormalJob) unmarshal(jsonMap map[string]json.RawMessage) error {
+func (strct *Job) unmarshal(jsonMap map[string]json.RawMessage) error {
 	var runsOnReceived bool
 	for k, v := range jsonMap {
 		switch k {
