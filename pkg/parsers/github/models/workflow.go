@@ -32,22 +32,6 @@ type Environment struct {
 	Url  string `mapstructure:"url,omitempty" yaml:"url,omitempty"`
 }
 
-type PermissionsEvent struct {
-	Actions            string `mapstructure:"actions,omitempty" yaml:"actions,omitempty"`
-	Checks             string `mapstructure:"checks,omitempty" yaml:"checks,omitempty"`
-	Contents           string `mapstructure:"contents,omitempty" yaml:"contents,omitempty"`
-	Deployments        string `mapstructure:"deployments,omitempty" yaml:"deployments,omitempty"`
-	Discussions        string `mapstructure:"discussions,omitempty" yaml:"discussions,omitempty"`
-	IdToken            string `mapstructure:"id-token,omitempty" yaml:"id-token,omitempty"`
-	Issues             string `mapstructure:"issues,omitempty" yaml:"issues,omitempty"`
-	Packages           string `mapstructure:"packages,omitempty" yaml:"packages,omitempty"`
-	Pages              string `mapstructure:"pages,omitempty" yaml:"pages,omitempty"`
-	PullRequests       string `mapstructure:"pull-requests,omitempty" yaml:"pull-requests,omitempty"`
-	RepositoryProjects string `mapstructure:"repository-projects,omitempty" yaml:"repository-projects,omitempty"`
-	SecurityEvents     string `mapstructure:"security-events,omitempty" yaml:"security-events,omitempty"`
-	Statuses           string `mapstructure:"statuses,omitempty" yaml:"statuses,omitempty"`
-}
-
 type Ref struct {
 	Branches       []string `mapstructure:"branches,omitempty" yaml:"branches,omitempty"`
 	BranchesIgnore []string `mapstructure:"branches-ignore,omitempty" yaml:"branches-ignore,omitempty"`
@@ -220,15 +204,6 @@ func (strct *Job) UnmarshalYAML(node *yaml.Node) error {
 	return strct.unmarshal(jsonMap)
 }
 
-func (strct *Job) UnmarshalJSON(b []byte) error {
-	var jsonMap map[string]json.RawMessage
-	if err := json.Unmarshal(b, &jsonMap); err != nil {
-		return err
-	}
-
-	return strct.unmarshal(jsonMap)
-}
-
 func (strct *Job) unmarshal(jsonMap map[string]json.RawMessage) error {
 	var runsOnReceived bool
 	for k, v := range jsonMap {
@@ -305,73 +280,6 @@ func (strct *Job) unmarshal(jsonMap map[string]json.RawMessage) error {
 	// check if runs-on (a required property) was received
 	if !runsOnReceived {
 		return errors.New("\"runs-on\" is required but was not present")
-	}
-	return nil
-}
-
-func (strct *PermissionsEvent) UnmarshalJSON(b []byte) error {
-	var jsonMap map[string]json.RawMessage
-	if err := json.Unmarshal(b, &jsonMap); err != nil {
-		return err
-	}
-	// parse all the defined properties
-	for k, v := range jsonMap {
-		switch k {
-		case "actions":
-			if err := json.Unmarshal([]byte(v), &strct.Actions); err != nil {
-				return err
-			}
-		case "checks":
-			if err := json.Unmarshal([]byte(v), &strct.Checks); err != nil {
-				return err
-			}
-		case "contents":
-			if err := json.Unmarshal([]byte(v), &strct.Contents); err != nil {
-				return err
-			}
-		case "deployments":
-			if err := json.Unmarshal([]byte(v), &strct.Deployments); err != nil {
-				return err
-			}
-		case "discussions":
-			if err := json.Unmarshal([]byte(v), &strct.Discussions); err != nil {
-				return err
-			}
-		case "id-token":
-			if err := json.Unmarshal([]byte(v), &strct.IdToken); err != nil {
-				return err
-			}
-		case "issues":
-			if err := json.Unmarshal([]byte(v), &strct.Issues); err != nil {
-				return err
-			}
-		case "packages":
-			if err := json.Unmarshal([]byte(v), &strct.Packages); err != nil {
-				return err
-			}
-		case "pages":
-			if err := json.Unmarshal([]byte(v), &strct.Pages); err != nil {
-				return err
-			}
-		case "pull-requests":
-			if err := json.Unmarshal([]byte(v), &strct.PullRequests); err != nil {
-				return err
-			}
-		case "repository-projects":
-			if err := json.Unmarshal([]byte(v), &strct.RepositoryProjects); err != nil {
-				return err
-			}
-		case "security-events":
-			if err := json.Unmarshal([]byte(v), &strct.SecurityEvents); err != nil {
-				return err
-			}
-		case "statuses":
-			if err := json.Unmarshal([]byte(v), &strct.Statuses); err != nil {
-				return err
-			}
-		default:
-			return fmt.Errorf("additional property not allowed: \"" + k + "\"")
-		}
 	}
 	return nil
 }

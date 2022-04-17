@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	readPermissions  = "read-all"
-	writePermissions = "write-all"
+	readPermission  = "read"
+	writePermission = "write"
 )
 
 var (
@@ -26,7 +26,7 @@ func parseTokenPermissions(permissions *githubModels.PermissionsEvent) *map[stri
 	var permissionsMap map[string]string
 	mapstructure.Decode(permissions, &permissionsMap)
 	for permissionName, value := range permissionsMap {
-		if customPermissionsMap[permissionName] == "" {
+		if customPermissionsMap[permissionName] != "" {
 			permissionName = customPermissionsMap[permissionName]
 		}
 		tokenPermissions[permissionName] = parsePermissionValue(value)
@@ -35,12 +35,12 @@ func parseTokenPermissions(permissions *githubModels.PermissionsEvent) *map[stri
 }
 
 func parsePermissionValue(permission string) models.Permission {
-	if permission == readPermissions {
+	if permission == readPermission {
 		return models.Permission{
 			Read: true,
 		}
 	}
-	if permission == writePermissions {
+	if permission == writePermission {
 		return models.Permission{
 			Write: true,
 		}
