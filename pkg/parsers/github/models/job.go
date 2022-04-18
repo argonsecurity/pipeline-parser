@@ -98,6 +98,10 @@ func (c *Concurrency) UnmarshalText(text []byte) error {
 }
 
 func DecodeNeeds(f, t reflect.Type, data any) (any, error) {
+	if (f.Kind() != reflect.Slice && f.Kind() != reflect.String) || t != reflect.TypeOf(Needs{}) {
+		return data, nil
+	}
+
 	var needs []string
 	if err := mapstructure.Decode(data, &needs); err == nil {
 		return needs, nil

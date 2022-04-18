@@ -7,17 +7,17 @@ import (
 )
 
 func Parse(data []byte) (*models.Pipeline, error) {
-	var err error
 	workflow := &githubModels.Workflow{}
 	if err := yaml.Unmarshal(data, workflow); err != nil {
 		return nil, err
 	}
 
 	pipeline := &models.Pipeline{}
-	pipeline.Triggers, err = parseWorkflowTriggers(workflow)
+	triggers, err := parseWorkflowTriggers(workflow)
 	if err != nil {
 		return nil, err
 	}
+	pipeline.Triggers = triggers
 	pipeline.Jobs = parseWorkflowJobs(workflow)
 	pipeline.Defaults = &models.Defaults{
 		TokenPermissions:     parseTokenPermissions(workflow.Permissions),
