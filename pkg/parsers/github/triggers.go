@@ -69,6 +69,10 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) (*[]models.Trigger, 
 		if on.WorkflowRun != nil {
 			triggers = append(triggers, parseWorkflowRun(on.WorkflowRun))
 		}
+
+		if on.Schedule != nil {
+			triggers = append(triggers, parseSchedule(on.Schedule)...)
+		}
 		return &triggers, nil
 	}
 
@@ -144,6 +148,16 @@ func parseRef(ref *githubModels.Ref, event models.EventType) models.Trigger {
 	}
 
 	return trigger
+}
+
+func parseSchedule(schedule *[]githubModels.Cron) []models.Trigger {
+	return utils.Map(*schedule, func(cron githubModels.Cron) models.Trigger {
+		return models.Trigger{
+			Event:     models.ScheduledEvent,
+			Scheduled: utils.GetPtr(cron.Cron),
+		}
+	})
+
 }
 
 func generateTriggersFromEvents(events []string) []models.Trigger {

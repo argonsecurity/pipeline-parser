@@ -12,17 +12,27 @@ func Parse(data []byte) (*models.Pipeline, error) {
 		return nil, err
 	}
 
-	pipeline := &models.Pipeline{}
+	pipeline := &models.Pipeline{
+		Name: &workflow.Name,
+	}
 	triggers, err := parseWorkflowTriggers(workflow)
 	if err != nil {
 		return nil, err
 	}
 	pipeline.Triggers = triggers
 	pipeline.Jobs = parseWorkflowJobs(workflow)
-	pipeline.Defaults = &models.Defaults{
+	pipeline.Defaults = parseWorkflowDefaults(workflow)
+
+	return pipeline, nil
+}
+
+func parseWorkflowDefaults(workflow *githubModels.Workflow) *models.Defaults {
+	if workflow.Permissions == nil && workflow.Env == nil {
+		return nil
+	}
+
+	return &models.Defaults{
 		TokenPermissions:     parseTokenPermissions(workflow.Permissions),
 		EnvironmentVariables: parseEnvironmentVariables(workflow.Env),
 	}
-
-	return pipeline, nil
 }

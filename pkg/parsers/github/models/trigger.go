@@ -41,8 +41,12 @@ type On struct {
 	PullRequest       *Ref              `mapstructure:"pull_request"`
 	PullRequestTarget *Ref              `mapstructure:"pull_request_target"`
 	WorkflowCall      *WorkflowCall     `mapstructure:"workflow_call"`
-	Schedule          map[string]string `mapstructure:"schedule"`
+	Schedule          *[]Cron           `mapstructure:"schedule"`
 	WorkflowRun       *WorkflowRun      `mapstructure:"workflow_run"`
 	WorkflowDispatch  *WorkflowDispatch `mapstructure:"workflow_dispatch"`
 	Events
+}
+
+type Cron struct {
+	Cron string `mapstructure:"cron" yarn:"cron"`
 }

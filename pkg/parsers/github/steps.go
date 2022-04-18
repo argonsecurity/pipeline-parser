@@ -33,19 +33,29 @@ func parseJobSteps(steps *[]githubModels.Step) *[]models.Step {
 }
 
 func parseJobStep(step githubModels.Step) models.Step {
-	var failsPipeline *bool
-	if step.ContinueOnError != nil {
-		failsPipeline = utils.GetPtr(!*step.ContinueOnError)
-	}
-
 	parsedStep := models.Step{
 		Name:                 &step.Name,
-		ID:                   &step.Id,
-		FailsPipeline:        failsPipeline,
 		EnvironmentVariables: parseEnvironmentVariables(step.Env),
-		WorkingDirectory:     &step.WorkingDirectory,
-		Conditions:           &[]models.Condition{models.Condition(step.If)},
-		Timeout:              utils.GetPtr(step.TimeoutMinutes * 60 * 1000),
+	}
+
+	if step.ContinueOnError != nil {
+		parsedStep.FailsPipeline = utils.GetPtr(!*step.ContinueOnError)
+	}
+
+	if step.If != "" {
+		parsedStep.Conditions = &[]models.Condition{models.Condition(step.If)}
+	}
+
+	if step.TimeoutMinutes != 0 {
+		parsedStep.Timeout = utils.GetPtr(step.TimeoutMinutes * 60 * 1000)
+	}
+
+	if step.WorkingDirectory != "" {
+		parsedStep.WorkingDirectory = &step.WorkingDirectory
+	}
+
+	if step.Id != "" {
+		parsedStep.ID = &step.Id
 	}
 
 	if step.Run != "" {
@@ -61,7 +71,6 @@ func parseJobStep(step githubModels.Step) models.Step {
 		actionName, version, versionType := parseActionHeader(step.Uses)
 		parsedStep.Task = &models.Task{
 			Name:        &actionName,
-			ID:          &step.Id,
 			Version:     &version,
 			VersionType: versionType,
 			Inputs:      parseActionInput(step.With),

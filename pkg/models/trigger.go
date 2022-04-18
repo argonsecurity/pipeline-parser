@@ -7,6 +7,7 @@ const (
 	ManualEvent          EventType = "manual"
 	PipelineTriggerEvent EventType = "pipeline_trigger"
 	PipelineRunEvent     EventType = "pipeline_run"
+	ScheduledEvent       EventType = "scheduled"
 )
 
 type EventType string
