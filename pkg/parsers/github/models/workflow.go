@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
 )
 
@@ -60,47 +59,6 @@ type Strategy struct {
 	FailFast    bool        `mapstructure:"fail-fast,omitempty" yaml:"fail-fast,omitempty"`
 	Matrix      interface{} `mapstructure:"matrix" yaml:"matrix"`
 	MaxParallel float64     `mapstructure:"max-parallel,omitempty" yaml:"max-parallel,omitempty"`
-}
-
-func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
-	var v map[string]any
-	if err := node.Decode(&v); err != nil {
-		return err
-	}
-
-	normalJobs := make(map[string]*Job, 0)
-	reusableWorkflowCallJobs := make(map[string]*ReusableWorkflowCallJob, 0)
-
-	for k, v := range v {
-		var job *Job
-		var reusableWorkflowCallJob *ReusableWorkflowCallJob
-		dc := &mapstructure.DecoderConfig{
-			DecodeHook: mapstructure.ComposeDecodeHookFunc(
-				mapstructure.TextUnmarshallerHookFunc(),
-				DecodeRunsOnHookFunc(),
-			),
-			Result: &job,
-		}
-		decoder, err := mapstructure.NewDecoder(dc)
-		if err != nil {
-			return err
-		}
-		if err := decoder.Decode(v); err == nil {
-			normalJobs[k] = job
-			continue
-		} else if err := mapstructure.Decode(v, &reusableWorkflowCallJob); err == nil {
-			reusableWorkflowCallJobs[k] = reusableWorkflowCallJob
-			continue
-		} else {
-			return errors.New("unable to unmarshal jobs")
-		}
-
-	}
-	*j = Jobs{
-		NormalJobs:               normalJobs,
-		ReusableWorkflowCallJobs: reusableWorkflowCallJobs,
-	}
-	return nil
 }
 
 func (strct *Container) UnmarshalJSON(b []byte) error {

@@ -54,5 +54,10 @@ func (p *PermissionsEvent) UnmarshalYAML(node *yaml.Node) error {
 		}
 		return nil
 	}
-	return mapstructure.Decode(node.Value, &p)
+
+	var tmpInterface any
+	if err := node.Decode(&tmpInterface); err != nil {
+		return err
+	}
+	return mapstructure.Decode(tmpInterface, &p)
 }

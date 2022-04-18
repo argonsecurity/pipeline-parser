@@ -1,20 +1,24 @@
 package models
 
-import "github.com/argonsecurity/pipeline-parser/pkg/utils"
+import (
+	"errors"
+	"reflect"
+
+	"github.com/argonsecurity/pipeline-parser/pkg/utils"
+	"github.com/mitchellh/mapstructure"
+	"gopkg.in/yaml.v3"
+)
 
 type Jobs struct {
 	NormalJobs               map[string]*Job
 	ReusableWorkflowCallJobs map[string]*ReusableWorkflowCallJob
 }
 
+type Needs []string
+
 type Concurrency struct {
 	CancelInProgress *bool   `mapstructure:"cancel-in-progress,omitempty" yaml:"cancel-in-progress,omitempty"`
 	Group            *string `mapstructure:"group" yaml:"group"`
-}
-
-func (c *Concurrency) UnmarshalText(text []byte) error {
-	c.Group = utils.GetPtr(string(text))
-	return nil
 }
 
 type Job struct {
@@ -26,7 +30,7 @@ type Job struct {
 	Environment     interface{}           `mapstructure:"environment,omitempty" yaml:"environment,omitempty"`
 	If              string                `mapstructure:"if,omitempty" yaml:"if,omitempty"`
 	Name            string                `mapstructure:"name,omitempty" yaml:"name,omitempty"`
-	Needs           interface{}           `mapstructure:"needs,omitempty" yaml:"needs,omitempty"`
+	Needs           *Needs                `mapstructure:"needs,omitempty" yaml:"needs,omitempty"`
 	Outputs         map[string]string     `mapstructure:"outputs,omitempty" yaml:"outputs,omitempty"`
 	Permissions     *PermissionsEvent     `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
 	RunsOn          *RunsOn               `mapstructure:"runs-on" yaml:"runs-on"`
@@ -44,4 +48,64 @@ type ReusableWorkflowCallJob struct {
 	Secrets     interface{}       `mapstructure:"secrets,omitempty" yaml:"secrets,omitempty"`
 	Uses        string            `mapstructure:"uses" yaml:"uses"`
 	With        interface{}       `mapstructure:"with,omitempty"`
+}
+
+func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
+	var v map[string]any
+	if err := node.Decode(&v); err != nil {
+		return err
+	}
+
+	normalJobs := make(map[string]*Job, 0)
+	reusableWorkflowCallJobs := make(map[string]*ReusableWorkflowCallJob, 0)
+
+	for k, v := range v {
+		var job *Job
+		var reusableWorkflowCallJob *ReusableWorkflowCallJob
+		dc := &mapstructure.DecoderConfig{
+			DecodeHook: mapstructure.ComposeDecodeHookFunc(
+				mapstructure.TextUnmarshallerHookFunc(),
+				DecodeRunsOnHookFunc(),
+				DecodeNeeds,
+			),
+			Result: &job,
+		}
+		decoder, err := mapstructure.NewDecoder(dc)
+		if err != nil {
+			return err
+		}
+		if err := decoder.Decode(v); err == nil {
+			normalJobs[k] = job
+			continue
+		} else if err := mapstructure.Decode(v, &reusableWorkflowCallJob); err == nil {
+			reusableWorkflowCallJobs[k] = reusableWorkflowCallJob
+			continue
+		} else {
+			return errors.New("unable to unmarshal jobs")
+		}
+
+	}
+	*j = Jobs{
+		NormalJobs:               normalJobs,
+		ReusableWorkflowCallJobs: reusableWorkflowCallJobs,
+	}
+	return nil
+}
+
+func (c *Concurrency) UnmarshalText(text []byte) error {
+	c.Group = utils.GetPtr(string(text))
+	return nil
+}
+
+func DecodeNeeds(f, t reflect.Type, data any) (any, error) {
+	var needs []string
+	if err := mapstructure.Decode(data, &needs); err == nil {
+		return needs, nil
+	}
+
+	var needsString string
+	if err := mapstructure.Decode(data, &needsString); err == nil {
+		return []string{needsString}, nil
+	}
+	return nil, errors.New("unable to decode needs")
 }
