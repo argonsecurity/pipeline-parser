@@ -11,42 +11,42 @@ const (
 )
 
 func parseWorkflowJobs(workflow *githubModels.Workflow) *[]models.Job {
-	return utils.GetPtr(utils.MapToSlice(workflow.Jobs.NormalJobs, parseNormalJob))
+	return utils.GetPtr(utils.MapToSlice(workflow.Jobs.NormalJobs, parseJob))
 }
 
-func parseNormalJob(jobName string, normalJob *githubModels.Job) models.Job {
-	job := models.Job{
+func parseJob(jobName string, job *githubModels.Job) models.Job {
+	parsedJob := models.Job{
 		ID:                   &jobName,
 		Name:                 &jobName,
-		ContinueOnError:      &normalJob.ContinueOnError,
-		EnvironmentVariables: parseEnvironmentVariables(normalJob.Env),
+		ContinueOnError:      &job.ContinueOnError,
+		EnvironmentVariables: parseEnvironmentVariables(job.Env),
 	}
 
-	if normalJob.TimeoutMinutes != nil && *normalJob.TimeoutMinutes == 0 {
-		timeout := int(*normalJob.TimeoutMinutes) * 60 * 1000
-		job.TimeoutMS = &timeout
+	if job.TimeoutMinutes != nil && *job.TimeoutMinutes == 0 {
+		timeout := int(*job.TimeoutMinutes) * 60 * 1000
+		parsedJob.TimeoutMS = &timeout
 	} else {
 		defaultTimeout := defaultTimeoutMS
-		job.TimeoutMS = &defaultTimeout
+		parsedJob.TimeoutMS = &defaultTimeout
 	}
 
-	if normalJob.If != "" {
-		job.Conditions = &[]models.Condition{models.Condition(normalJob.If)}
+	if job.If != "" {
+		parsedJob.Conditions = &[]models.Condition{models.Condition(job.If)}
 	}
 
-	if normalJob.Concurrency != nil {
-		job.ConcurrencyGroup = normalJob.Concurrency.Group
+	if job.Concurrency != nil {
+		parsedJob.ConcurrencyGroup = job.Concurrency.Group
 	}
 
-	if normalJob.Steps != nil {
-		job.Steps = parseJobSteps(normalJob.Steps)
+	if job.Steps != nil {
+		parsedJob.Steps = parseJobSteps(job.Steps)
 	}
 
-	if normalJob.RunsOn != nil {
-		job.Runner = parseRunsOnToRunner(normalJob.RunsOn)
+	if job.RunsOn != nil {
+		parsedJob.Runner = parseRunsOnToRunner(job.RunsOn)
 	}
 
-	return job
+	return parsedJob
 }
 
 func parseJobConcurrency(concurrency interface{}) *string {
