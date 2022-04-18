@@ -10,20 +10,3 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v1
-      # - name: Cache Data
-      #   id: cache-data
-      #   uses: actions/cache@v1
-      #   with:
-      #     path: sourcecred_data
-      #     key: ${{ runner.os }}-sourcecred_data
-      # - name: Generate SourceCred Graphic
-      #   env:
-      #     TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     TEXT
-      # - name: Update Branch
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     UPDATE_BRANCH: contributors-automated
-      #   run: |
-      #     SCRIPT
