@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
 )
 
@@ -41,13 +42,13 @@ type Ref struct {
 }
 
 type Workflow struct {
-	Concurrency *Concurrency      `mapstructure:"concurrency,omitempty" yaml:"concurrency,omitempty"`
-	Defaults    *Defaults         `mapstructure:"defaults,omitempty" yaml:"defaults,omitempty"`
-	Env         interface{}       `mapstructure:"env,omitempty" yaml:"env,omitempty"`
-	Jobs        *Jobs             `mapstructure:"jobs" yaml:"jobs"`
-	Name        string            `mapstructure:"name,omitempty" yaml:"name,omitempty"`
-	On          interface{}       `mapstructure:"on" yaml:"on"`
-	Permissions *PermissionsEvent `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
+	Concurrency *Concurrency                 `mapstructure:"concurrency,omitempty" yaml:"concurrency,omitempty"`
+	Defaults    *Defaults                    `mapstructure:"defaults,omitempty" yaml:"defaults,omitempty"`
+	Env         *models.EnvironmentVariables `mapstructure:"env,omitempty" yaml:"env,omitempty"`
+	Jobs        *Jobs                        `mapstructure:"jobs" yaml:"jobs"`
+	Name        string                       `mapstructure:"name,omitempty" yaml:"name,omitempty"`
+	On          *On                          `mapstructure:"on" yaml:"on"`
+	Permissions *PermissionsEvent            `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
 }
 
 type Run struct {

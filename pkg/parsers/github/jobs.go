@@ -19,7 +19,7 @@ func parseJob(jobName string, job *githubModels.Job) models.Job {
 		ID:                   &jobName,
 		Name:                 &jobName,
 		ContinueOnError:      &job.ContinueOnError,
-		EnvironmentVariables: parseEnvironmentVariables(job.Env),
+		EnvironmentVariables: job.Env,
 	}
 
 	if job.TimeoutMinutes != nil && *job.TimeoutMinutes == 0 {

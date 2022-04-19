@@ -1,5 +1,10 @@
 package models
 
+import (
+	"github.com/mitchellh/mapstructure"
+	"gopkg.in/yaml.v3"
+)
+
 type Inputs map[string]struct {
 	Description string      `mapstructure:"description"`
 	Default     interface{} `mapstructure:"default"`
@@ -32,8 +37,14 @@ type WorkflowRun struct {
 	Ref       `mapstructure:"ref,squash"`
 }
 
-type Events map[string]*struct {
+type Events map[string]Event
+
+type Event struct {
 	Types []string `mapstructure:"types"`
+}
+
+type Cron struct {
+	Cron string `mapstructure:"cron" yarn:"cron"`
 }
 
 type On struct {
@@ -47,6 +58,65 @@ type On struct {
 	Events
 }
 
-type Cron struct {
-	Cron string `mapstructure:"cron" yarn:"cron"`
+func (on *On) UnmarshalYAML(node *yaml.Node) error {
+	events := make([]string, 0)
+	if err := node.Decode(&events); err == nil {
+		for _, event := range events {
+			on.unmarshalKey(event, nil)
+		}
+		return nil
+	}
+
+	var triggersMap map[string]any
+	if err := node.Decode(&triggersMap); err != nil {
+		return err
+	}
+
+	for k, v := range triggersMap {
+		on.unmarshalKey(k, v)
+	}
+	return nil
+}
+
+func (on *On) unmarshalKey(key string, value any) {
+	switch key {
+	case "push":
+		if value == nil {
+			on.Push = &Ref{}
+		} else {
+			mapstructure.Decode(value, &on.Push)
+		}
+	case "pull_request":
+		if value == nil {
+			on.PullRequest = &Ref{}
+		} else {
+			mapstructure.Decode(value, &on.PullRequest)
+		}
+	case "pull_request_target":
+		if value == nil {
+			on.PullRequestTarget = &Ref{}
+		} else {
+			mapstructure.Decode(value, &on.PullRequestTarget)
+		}
+	case "workflow_call":
+		if value == nil {
+			on.WorkflowCall = &WorkflowCall{}
+		} else {
+			mapstructure.Decode(value, &on.WorkflowCall)
+		}
+	case "workflow_run":
+		if value == nil {
+			on.WorkflowRun = &WorkflowRun{}
+		} else {
+			mapstructure.Decode(value, &on.WorkflowRun)
+		}
+	case "workflow_dispatch":
+		if value == nil {
+			on.WorkflowDispatch = &WorkflowDispatch{}
+		} else {
+			mapstructure.Decode(value, &on.WorkflowDispatch)
+		}
+	default:
+		on.Events[key] = value.(Event)
+	}
 }

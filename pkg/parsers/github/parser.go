@@ -33,6 +33,6 @@ func parseWorkflowDefaults(workflow *githubModels.Workflow) *models.Defaults {
 
 	return &models.Defaults{
 		TokenPermissions:     parseTokenPermissions(workflow.Permissions),
-		EnvironmentVariables: parseEnvironmentVariables(workflow.Env),
+		EnvironmentVariables: workflow.Env,
 	}
 }

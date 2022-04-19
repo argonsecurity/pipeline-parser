@@ -1,12 +1,9 @@
 package github
 
 import (
-	"errors"
-
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/parsers/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/mitchellh/mapstructure"
 )
 
 const (
@@ -37,46 +34,42 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) (*[]models.Trigger, 
 	}
 
 	// Handle workflow.on if each event has a specific configuration
-	var on githubModels.On
-	if err := mapstructure.Decode(workflow.On, &on); err == nil {
-		triggers := []models.Trigger{}
-		events := utils.Filter(utils.GetMapKeys(on.Events), func(event string) bool {
-			_, ok := githubEventToModelEvent[event]
-			return !ok
-		})
-		triggers = append(triggers, generateTriggersFromEvents(events)...)
+	on := workflow.On
+	triggers := []models.Trigger{}
+	events := utils.Filter(utils.GetMapKeys(on.Events), func(event string) bool {
+		_, ok := githubEventToModelEvent[event]
+		return !ok
+	})
+	triggers = append(triggers, generateTriggersFromEvents(events)...)
 
-		if on.Push != nil {
-			triggers = append(triggers, parseRef(on.Push, models.PushEvent))
-		}
-
-		if on.PullRequest != nil {
-			triggers = append(triggers, parseRef(on.PullRequest, models.PullRequestEvent))
-		}
-
-		if on.PullRequestTarget != nil {
-			triggers = append(triggers, parseRef(on.PullRequestTarget, models.EventType(pullRequestTargetEvent)))
-		}
-
-		if on.WorkflowDispatch != nil {
-			triggers = append(triggers, parseWorkflowDispatch(on.WorkflowDispatch))
-		}
-
-		if on.WorkflowCall != nil {
-			triggers = append(triggers, parseWorkflowCall(on.WorkflowCall))
-		}
-
-		if on.WorkflowRun != nil {
-			triggers = append(triggers, parseWorkflowRun(on.WorkflowRun))
-		}
-
-		if on.Schedule != nil {
-			triggers = append(triggers, parseSchedule(on.Schedule)...)
-		}
-		return &triggers, nil
+	if on.Push != nil {
+		triggers = append(triggers, parseRef(on.Push, models.PushEvent))
 	}
 
-	return nil, errors.New("workflow.on is of an unknown format")
+	if on.PullRequest != nil {
+		triggers = append(triggers, parseRef(on.PullRequest, models.PullRequestEvent))
+	}
+
+	if on.PullRequestTarget != nil {
+		triggers = append(triggers, parseRef(on.PullRequestTarget, models.EventType(pullRequestTargetEvent)))
+	}
+
+	if on.WorkflowDispatch != nil {
+		triggers = append(triggers, parseWorkflowDispatch(on.WorkflowDispatch))
+	}
+
+	if on.WorkflowCall != nil {
+		triggers = append(triggers, parseWorkflowCall(on.WorkflowCall))
+	}
+
+	if on.WorkflowRun != nil {
+		triggers = append(triggers, parseWorkflowRun(on.WorkflowRun))
+	}
+
+	if on.Schedule != nil {
+		triggers = append(triggers, parseSchedule(on.Schedule)...)
+	}
+	return &triggers, nil
 }
 
 func parseWorkflowRun(workflowRun *githubModels.WorkflowRun) models.Trigger {
@@ -115,23 +108,27 @@ func parseInputs(inputs githubModels.Inputs) []models.Parameter {
 }
 
 func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) models.Trigger {
-	return models.Trigger{
-		Event:     models.ManualEvent,
-		Paramters: parseInputs(workflowDispatch.Inputs),
+	trigger := models.Trigger{
+		Event: models.ManualEvent,
 	}
+
+	if workflowDispatch.Inputs != nil {
+		trigger.Paramters = parseInputs(workflowDispatch.Inputs)
+	}
+	return trigger
 }
 
 func parseRef(ref *githubModels.Ref, event models.EventType) models.Trigger {
 	trigger := models.Trigger{
 		Event: event,
-		Paths: &models.Filter{
-			AllowList: []string{},
-			DenyList:  []string{},
-		},
-		Branches: &models.Filter{
-			AllowList: []string{},
-			DenyList:  []string{},
-		},
+	}
+
+	if len(ref.Paths)+len(ref.PathsIgnore) > 0 {
+		trigger.Paths = &models.Filter{}
+	}
+
+	if len(ref.Branches)+len(ref.BranchesIgnore) > 0 {
+		trigger.Branches = &models.Filter{}
 	}
 
 	for _, path := range ref.Paths {

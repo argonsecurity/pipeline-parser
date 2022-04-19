@@ -4,6 +4,7 @@ import (
 	"errors"
 	"reflect"
 
+	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
@@ -22,22 +23,22 @@ type Concurrency struct {
 }
 
 type Job struct {
-	Concurrency     *Concurrency          `mapstructure:"concurrency,omitempty" yaml:"concurrency,omitempty"`
-	Container       interface{}           `mapstructure:"container,omitempty" yaml:"container,omitempty"`
-	ContinueOnError bool                  `mapstructure:"continue-on-error,omitempty" yaml:"continue-on-error,omitempty"`
-	Defaults        *Defaults             `mapstructure:"defaults,omitempty" yaml:"defaults,omitempty"`
-	Env             interface{}           `mapstructure:"env,omitempty" yaml:"env,omitempty"`
-	Environment     interface{}           `mapstructure:"environment,omitempty" yaml:"environment,omitempty"`
-	If              string                `mapstructure:"if,omitempty" yaml:"if,omitempty"`
-	Name            string                `mapstructure:"name,omitempty" yaml:"name,omitempty"`
-	Needs           *Needs                `mapstructure:"needs,omitempty" yaml:"needs,omitempty"`
-	Outputs         map[string]string     `mapstructure:"outputs,omitempty" yaml:"outputs,omitempty"`
-	Permissions     *PermissionsEvent     `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
-	RunsOn          *RunsOn               `mapstructure:"runs-on" yaml:"runs-on"`
-	Services        map[string]*Container `mapstructure:"services,omitempty" yaml:"services,omitempty"`
-	Steps           *[]Step               `mapstructure:"steps,omitempty" yaml:"steps,omitempty"`
-	Strategy        *Strategy             `mapstructure:"strategy,omitempty" yaml:"strategy,omitempty"`
-	TimeoutMinutes  *float64              `mapstructure:"timeout-minutes,omitempty" yaml:"timeout-minutes,omitempty"`
+	Concurrency     *Concurrency                 `mapstructure:"concurrency,omitempty" yaml:"concurrency,omitempty"`
+	Container       interface{}                  `mapstructure:"container,omitempty" yaml:"container,omitempty"`
+	ContinueOnError bool                         `mapstructure:"continue-on-error,omitempty" yaml:"continue-on-error,omitempty"`
+	Defaults        *Defaults                    `mapstructure:"defaults,omitempty" yaml:"defaults,omitempty"`
+	Env             *models.EnvironmentVariables `mapstructure:"env,omitempty" yaml:"env,omitempty"`
+	Environment     interface{}                  `mapstructure:"environment,omitempty" yaml:"environment,omitempty"`
+	If              string                       `mapstructure:"if,omitempty" yaml:"if,omitempty"`
+	Name            string                       `mapstructure:"name,omitempty" yaml:"name,omitempty"`
+	Needs           *Needs                       `mapstructure:"needs,omitempty" yaml:"needs,omitempty"`
+	Outputs         map[string]string            `mapstructure:"outputs,omitempty" yaml:"outputs,omitempty"`
+	Permissions     *PermissionsEvent            `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
+	RunsOn          *RunsOn                      `mapstructure:"runs-on" yaml:"runs-on"`
+	Services        map[string]*Container        `mapstructure:"services,omitempty" yaml:"services,omitempty"`
+	Steps           *[]Step                      `mapstructure:"steps,omitempty" yaml:"steps,omitempty"`
+	Strategy        *Strategy                    `mapstructure:"strategy,omitempty" yaml:"strategy,omitempty"`
+	TimeoutMinutes  *float64                     `mapstructure:"timeout-minutes,omitempty" yaml:"timeout-minutes,omitempty"`
 }
 
 type ReusableWorkflowCallJob struct {
