@@ -9,16 +9,14 @@ import (
 )
 
 var (
-	sha1Regex        = regexp.MustCompile(`[0-9a-fA-F]{40}`)
-	semverRegex      = regexp.MustCompile(`^v?((0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))|\d+)?`)
-	semverMajorRegex = regexp.MustCompile(`v?(0|[1-9]\d*)`)
+	sha1Regex   = regexp.MustCompile(`[0-9a-fA-F]{40}`)
+	semverRegex = regexp.MustCompile(`v?([0-9]+)(\.[0-9]+)?(\.[0-9]+)?(-([0-9A-Za-z\-]+(\.[0-9A-Za-z\-]+)*))?(\+([0-9A-Za-z\-]+(\.[0-9A-Za-z\-]+)*))?`)
 
 	githubActionNameRegex = regexp.MustCompile(`(.+?)(?:@(.+)|$)`)
 
 	regexToType = map[*regexp.Regexp]models.VersionType{
-		sha1Regex:        models.CommitSHA,
-		semverRegex:      models.TagVersion,
-		semverMajorRegex: models.TagVersion,
+		sha1Regex:   models.CommitSHA,
+		semverRegex: models.TagVersion,
 	}
 )
 
@@ -93,8 +91,6 @@ func parseActionHeader(header string) (string, string, models.VersionType) {
 		if sha1Regex.MatchString(version) {
 			versionType = models.CommitSHA
 		} else if semverRegex.MatchString(version) {
-			versionType = models.TagVersion
-		} else if semverMajorRegex.MatchString(version) {
 			versionType = models.TagVersion
 		} else {
 			versionType = models.BranchVersion

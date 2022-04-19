@@ -31,31 +31,78 @@ func readFile(filename string) []byte {
 func Test_GitHubParser(t *testing.T) {
 	testCases := []TestCase{
 		{
-			Filename: "plain-scheduled.yaml",
+			Filename: "steps.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("plain scheduled"),
-				Triggers: &[]models.Trigger{
+				Name: utils.GetPtr("steps"),
+				Jobs: SortJobs(&[]models.Job{
 					{
-						Event:     models.ScheduledEvent,
-						Scheduled: utils.GetPtr("30 2 * * *"),
-					},
-				},
-				Jobs: utils.GetPtr([]models.Job{
-					{
-						ID:   utils.GetPtr("GenerateSourcecred"),
-						Name: utils.GetPtr("GenerateSourcecred"),
-						Runner: &models.Runner{
-							OS:     utils.GetPtr("linux"),
-							Labels: &[]string{"ubuntu-latest"},
-						},
+						ID:   utils.GetPtr("job1"),
+						Name: utils.GetPtr("Job 1"),
 						Steps: &[]models.Step{
 							{
-								Name: utils.GetPtr("Checkout Repository"),
+								Name: utils.GetPtr("task without params"),
 								Type: "task",
 								Task: &models.Task{
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1"),
 									VersionType: "tag",
+								},
+							},
+							{
+								Name: utils.GetPtr("task with params"),
+								Type: "task",
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("v1"),
+									VersionType: "tag",
+									Inputs: &[]models.Parameter{
+										{
+											Name:  utils.GetPtr("repo"),
+											Value: "repository",
+										},
+									},
+								},
+							},
+							{
+								Name: utils.GetPtr("task with commit ID version"),
+								Type: "task",
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("c44948622e1b6bb0eb0cec5b813c1ac561158e1e"),
+									VersionType: "commit",
+								},
+							},
+							{
+								Name: utils.GetPtr("task with branch version"),
+								Type: "task",
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("master"),
+									VersionType: "branch",
+								},
+							},
+							{
+								Name: utils.GetPtr("task with tag version"),
+								Type: "task",
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("v1.1.1"),
+									VersionType: "tag",
+								},
+							},
+							{
+								Name: utils.GetPtr("shell"),
+								Type: "shell",
+								Shell: &models.Shell{
+									Script: utils.GetPtr("command line"),
+								},
+							},
+							{
+								Name: utils.GetPtr("custom shell"),
+								Type: "shell",
+								Shell: &models.Shell{
+									Script: utils.GetPtr("command line"),
+									Type:   utils.GetPtr("cmd"),
 								},
 							},
 						},
