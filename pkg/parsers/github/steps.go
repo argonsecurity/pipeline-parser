@@ -1,7 +1,6 @@
 package github
 
 import (
-	"fmt"
 	"regexp"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
@@ -117,6 +116,6 @@ func parseActionInput(with map[string]any) *[]models.Parameter {
 func parseActionInputItem(k string, val any) models.Parameter {
 	return models.Parameter{
 		Name:  &k,
-		Value: utils.GetPtr(fmt.Sprint(val)),
+		Value: val,
 	}
 }

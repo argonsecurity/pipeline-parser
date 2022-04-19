@@ -19,7 +19,7 @@ type Variable struct {
 
 type Parameter struct {
 	Name        *string
-	Value       *string
+	Value       any
 	Description *string
 	Default     any
 }
