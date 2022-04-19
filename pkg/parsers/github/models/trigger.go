@@ -80,6 +80,8 @@ func (on *On) UnmarshalYAML(node *yaml.Node) error {
 
 func (on *On) unmarshalKey(key string, value any) {
 	switch key {
+	case "schedule":
+		mapstructure.Decode(value, &on.Schedule)
 	case "push":
 		if value == nil {
 			on.Push = &Ref{}

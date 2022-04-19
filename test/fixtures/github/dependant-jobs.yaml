@@ -1,0 +1,33 @@
+name: manual
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths-ignore:
+      - "**.md"
+  push:
+    branches:
+      - develop
+
+jobs:
+  build-core:
+    name: Build and Test semgrep-core
+    runs-on: ubuntu-latest
+    container: returntocorp/ocaml:alpine
+    steps:
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: ocaml-build-artifacts
+          path: ocaml-build-artifacts.tgz
+
+  release-ubuntu:
+    name: Check builds for ubuntu
+    needs: [build-core]
+    runs-on: ubuntu-latest
+    container: returntocorp/sgrep-build:ubuntu-16.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true

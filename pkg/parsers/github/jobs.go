@@ -46,6 +46,10 @@ func parseJob(jobName string, job *githubModels.Job) models.Job {
 		parsedJob.Runner = parseRunsOnToRunner(job.RunsOn)
 	}
 
+	if job.Needs != nil {
+		parsedJob.Dependencies = (*[]string)(job.Needs)
+	}
+
 	return parsedJob
 }
 
