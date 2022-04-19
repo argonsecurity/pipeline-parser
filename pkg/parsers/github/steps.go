@@ -120,6 +120,3 @@ func parseActionInputItem(k string, val any) models.Parameter {
 		Value: utils.GetPtr(fmt.Sprint(val)),
 	}
 }
-
-// 	Shell            any
-// 	With             any
