@@ -21,7 +21,7 @@ func GetCommand() *cobra.Command {
 			}
 
 			for _, workflowPath := range args {
-				if fi, err := os.Stat(workflowPath); os.IsNotExist(err) || !fi.IsDir() {
+				if fi, err := os.Stat(workflowPath); !os.IsNotExist(err) && !fi.IsDir() {
 					buf, err := ioutil.ReadFile(workflowPath)
 					if err != nil {
 						return nil
