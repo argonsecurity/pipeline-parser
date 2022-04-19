@@ -30,41 +30,41 @@ func readFile(filename string) []byte {
 
 func Test_GitHubParser(t *testing.T) {
 	testCases := []TestCase{
-		// {
-		// 	Filename: "plain-scheduled.yaml",
-		// 	Expected: &models.Pipeline{
-		// 		Name: utils.GetPtr("plain scheduled"),
-		// 		Triggers: &[]models.Trigger{
-		// 			{
-		// 				Event:     models.ScheduledEvent,
-		// 				Scheduled: utils.GetPtr("30 2 * * *"),
-		// 			},
-		// 		},
-		// 		Jobs: utils.GetPtr([]models.Job{
-		// 			{
-		// 				ID:   utils.GetPtr("GenerateSourcecred"),
-		// 				Name: utils.GetPtr("GenerateSourcecred"),
-		// 				Runner: &models.Runner{
-		// 					OS:     utils.GetPtr("linux"),
-		// 					Labels: &[]string{"ubuntu-latest"},
-		// 				},
-		// 				Steps: &[]models.Step{
-		// 					{
-		// 						Name: utils.GetPtr("Checkout Repository"),
-		// 						Type: "task",
-		// 						Task: &models.Task{
-		// 							Name:        utils.GetPtr("actions/checkout"),
-		// 							Version:     utils.GetPtr("v1"),
-		// 							VersionType: "tag",
-		// 						},
-		// 					},
-		// 				},
-		// 				TimeoutMS:       utils.GetPtr(21600000),
-		// 				ContinueOnError: utils.GetPtr(false),
-		// 			},
-		// 		}),
-		// 	},
-		// },
+		{
+			Filename: "plain-scheduled.yaml",
+			Expected: &models.Pipeline{
+				Name: utils.GetPtr("plain scheduled"),
+				Triggers: &[]models.Trigger{
+					{
+						Event:     models.ScheduledEvent,
+						Scheduled: utils.GetPtr("30 2 * * *"),
+					},
+				},
+				Jobs: utils.GetPtr([]models.Job{
+					{
+						ID:   utils.GetPtr("GenerateSourcecred"),
+						Name: utils.GetPtr("GenerateSourcecred"),
+						Runner: &models.Runner{
+							OS:     utils.GetPtr("linux"),
+							Labels: &[]string{"ubuntu-latest"},
+						},
+						Steps: &[]models.Step{
+							{
+								Name: utils.GetPtr("Checkout Repository"),
+								Type: "task",
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("v1"),
+									VersionType: "tag",
+								},
+							},
+						},
+						TimeoutMS:       utils.GetPtr(21600000),
+						ContinueOnError: utils.GetPtr(false),
+					},
+				}),
+			},
+		},
 		{
 			Filename: "dependant-jobs.yaml",
 			Expected: &models.Pipeline{

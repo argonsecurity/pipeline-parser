@@ -22,6 +22,10 @@ func parseJob(jobName string, job *githubModels.Job) models.Job {
 		EnvironmentVariables: job.Env,
 	}
 
+	if job.Name == "" {
+		parsedJob.Name = job.ID
+	}
+
 	if job.TimeoutMinutes != nil && *job.TimeoutMinutes == 0 {
 		timeout := int(*job.TimeoutMinutes) * 60 * 1000
 		parsedJob.TimeoutMS = &timeout
