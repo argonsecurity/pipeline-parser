@@ -279,6 +279,43 @@ func Test_GitHubParser(t *testing.T) {
 				}),
 			},
 		},
+		{
+			Filename: "environment-variables.yaml",
+			Expected: &models.Pipeline{
+				Name: utils.GetPtr("environment-variables"),
+				Jobs: SortJobs(&[]models.Job{
+					{
+						ID:   utils.GetPtr("job1"),
+						Name: utils.GetPtr("Job 1"),
+						EnvironmentVariables: &models.EnvironmentVariables{
+							"STRING": "string",
+							"NUMBER": 1,
+						},
+						ContinueOnError: utils.GetPtr(false),
+						TimeoutMS:       utils.GetPtr(21600000),
+						Steps: &[]models.Step{
+							{
+								Name: utils.GetPtr("Step 1"),
+								Type: "shell",
+								Shell: &models.Shell{
+									Script: utils.GetPtr("command line"),
+								},
+								EnvironmentVariables: &models.EnvironmentVariables{
+									"STRING": "string",
+									"NUMBER": 1,
+								},
+							},
+						},
+					},
+				}),
+				Defaults: &models.Defaults{
+					EnvironmentVariables: &models.EnvironmentVariables{
+						"STRING": "string",
+						"NUMBER": 1,
+					},
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
