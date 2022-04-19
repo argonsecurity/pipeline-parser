@@ -54,5 +54,9 @@ func parseJob(jobName string, job *githubModels.Job) models.Job {
 		parsedJob.Dependencies = (*[]string)(job.Needs)
 	}
 
+	if job.Permissions != nil {
+		parsedJob.TokenPermissions = parseTokenPermissions(job.Permissions)
+	}
+
 	return parsedJob
 }

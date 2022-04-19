@@ -1,0 +1,10 @@
+name: permissions
+permissions:
+  actions: read
+  statuses: write
+  pull-requests: read
+
+jobs:
+  job1:
+    name: Job 1
+    permissions: read-all

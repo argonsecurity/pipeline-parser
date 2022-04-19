@@ -93,6 +93,7 @@ func decodeJob(data any, job *Job) error {
 			mapstructure.TextUnmarshallerHookFunc(),
 			DecodeRunsOnHookFunc(),
 			DecodeNeedsHookFunc(),
+			DecodeTokenPermissionsHookFunc(),
 		),
 		Result: &job,
 	}

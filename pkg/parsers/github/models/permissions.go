@@ -1,6 +1,8 @@
 package models
 
 import (
+	"reflect"
+
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
 )
@@ -60,4 +62,28 @@ func (p *PermissionsEvent) UnmarshalYAML(node *yaml.Node) error {
 		return err
 	}
 	return mapstructure.Decode(tmpInterface, &p)
+}
+
+func DecodeTokenPermissionsHookFunc() mapstructure.DecodeHookFuncType {
+	return func(f, t reflect.Type, data any) (any, error) {
+		if t != reflect.TypeOf(PermissionsEvent{}) {
+			return data, nil
+		}
+
+		if f.Kind() == reflect.String {
+			if data == readAll {
+				return createFullPermissions("read"), nil
+			} else if data == writeAll {
+				return createFullPermissions("write"), nil
+			}
+		}
+
+		if f.Kind() == reflect.Map {
+			permissions := PermissionsEvent{}
+			mapstructure.Decode(data, &permissions)
+			return permissions, nil
+		}
+
+		return data, nil
+	}
 }

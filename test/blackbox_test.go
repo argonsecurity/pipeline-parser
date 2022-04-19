@@ -28,6 +28,25 @@ func readFile(filename string) []byte {
 	return b
 }
 
+func getAllGitHubPermissions(permission models.Permission) *map[string]models.Permission {
+	allPermissions := map[string]models.Permission{
+		"run-pipeline":        permission,
+		"checks":              permission,
+		"contents":            permission,
+		"deployments":         permission,
+		"discussions":         permission,
+		"id-token":            permission,
+		"issues":              permission,
+		"packages":            permission,
+		"pages":               permission,
+		"pull-request":        permission,
+		"repository-projects": permission,
+		"security-events":     permission,
+		"statuses":            permission,
+	}
+	return &allPermissions
+}
+
 func Test_GitHubParser(t *testing.T) {
 	testCases := []TestCase{
 		{
@@ -187,6 +206,35 @@ func Test_GitHubParser(t *testing.T) {
 						},
 					},
 				}),
+			},
+		},
+		{
+			Filename: "token-permissions.yaml",
+			Expected: &models.Pipeline{
+				Name: utils.GetPtr("permissions"),
+				Jobs: SortJobs(&[]models.Job{
+					{
+						ID:               utils.GetPtr("job1"),
+						Name:             utils.GetPtr("Job 1"),
+						ContinueOnError:  utils.GetPtr(false),
+						TokenPermissions: getAllGitHubPermissions(models.Permission{Read: true}),
+						TimeoutMS:        utils.GetPtr(21600000),
+					},
+				}),
+				Defaults: &models.Defaults{
+					TokenPermissions: &map[string]models.Permission{
+
+						"run-pipeline": {
+							Read: true,
+						},
+						"statuses": {
+							Write: true,
+						},
+						"pull-request": {
+							Read: true,
+						},
+					},
+				},
 			},
 		},
 	}
