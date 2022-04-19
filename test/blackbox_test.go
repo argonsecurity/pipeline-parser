@@ -68,74 +68,20 @@ func Test_GitHubParser(t *testing.T) {
 		{
 			Filename: "dependant-jobs.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("manual"),
-				Triggers: SortTriggers(&[]models.Trigger{
-					{
-						Event: models.ManualEvent,
-					},
-					{
-						Event: models.PullRequestEvent,
-						Paths: &models.Filter{
-							DenyList: []string{"**.md"},
-						},
-					},
-					{
-						Event: models.PushEvent,
-						Branches: &models.Filter{
-							AllowList: []string{"develop"},
-						},
-					},
-				}),
+				Name: utils.GetPtr("dependable jobs"),
 				Jobs: SortJobs(&[]models.Job{
 					{
-						ID:              utils.GetPtr("release-ubuntu"),
-						Name:            utils.GetPtr("release-ubuntu"),
+						ID:              utils.GetPtr("dependant-job"),
+						Name:            utils.GetPtr("Dependant Job"),
 						ContinueOnError: utils.GetPtr(false),
-						Runner: &models.Runner{
-							OS:     utils.GetPtr("linux"),
-							Labels: &[]string{"ubuntu-latest"},
-						},
-						Steps: &[]models.Step{
-							{
-								Name: utils.GetPtr("Checkout"),
-								Type: "task",
-								Task: &models.Task{
-									Name:        utils.GetPtr("actions/checkout"),
-									Version:     utils.GetPtr("v2"),
-									VersionType: "tag",
-									Inputs: &[]models.Parameter{
-										{Name: utils.GetPtr("submodules"), Value: true},
-									},
-								},
-							},
-						},
-						TimeoutMS:    utils.GetPtr(21600000),
-						Dependencies: &[]string{"build-core"},
+						TimeoutMS:       utils.GetPtr(21600000),
+						Dependencies:    &[]string{"dependable-job"},
 					},
 					{
-						ID:              utils.GetPtr("build-core"),
-						Name:            utils.GetPtr("build-core"),
+						ID:              utils.GetPtr("dependable-job"),
+						Name:            utils.GetPtr("Dependable Job"),
 						ContinueOnError: utils.GetPtr(false),
-						Runner: &models.Runner{
-							OS:     utils.GetPtr("linux"),
-							Labels: &[]string{"ubuntu-latest"},
-						},
-						Steps: &[]models.Step{
-							{
-								Name: utils.GetPtr("Upload artifacts"),
-								Type: "task",
-								Task: &models.Task{
-									Name:        utils.GetPtr("actions/upload-artifact"),
-									Version:     utils.GetPtr("v1"),
-									VersionType: "tag",
-									Inputs: SortParameters(&[]models.Parameter{
-										{Name: utils.GetPtr("path"), Value: "ocaml-build-artifacts.tgz"},
-										{Name: utils.GetPtr("name"), Value: "ocaml-build-artifacts"},
-									}),
-								},
-							},
-						},
-						TimeoutMS: utils.GetPtr(21600000),
+						TimeoutMS:       utils.GetPtr(21600000),
 					},
 				}),
 			},
@@ -156,8 +102,12 @@ func Test_GitHubParser(t *testing.T) {
 			continue
 		}
 
-		pipeline.Jobs = SortJobs(pipeline.Jobs)
-		pipeline.Triggers = SortTriggers(pipeline.Triggers)
+		if pipeline.Jobs != nil {
+			pipeline.Jobs = SortJobs(pipeline.Jobs)
+		}
+		if pipeline.Triggers != nil {
+			pipeline.Triggers = SortTriggers(pipeline.Triggers)
+		}
 
 		if diff := deep.Equal(pipeline, testCase.Expected); diff != nil {
 			t.Errorf("%s: %s", testCase.Filename, diff)

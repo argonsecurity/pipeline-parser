@@ -23,6 +23,7 @@ type Concurrency struct {
 }
 
 type Job struct {
+	ID              *string                      `mapstructure:"id" yaml:"id"`
 	Concurrency     *Concurrency                 `mapstructure:"concurrency,omitempty" yaml:"concurrency,omitempty"`
 	Container       interface{}                  `mapstructure:"container,omitempty" yaml:"container,omitempty"`
 	ContinueOnError bool                         `mapstructure:"continue-on-error,omitempty" yaml:"continue-on-error,omitempty"`
@@ -60,26 +61,14 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 	normalJobs := make(map[string]*Job, 0)
 	reusableWorkflowCallJobs := make(map[string]*ReusableWorkflowCallJob, 0)
 
-	for k, v := range v {
-		var job *Job
+	for jobId, jobObject := range v {
+		job := &Job{ID: utils.GetPtr(jobId)}
 		var reusableWorkflowCallJob *ReusableWorkflowCallJob
-		dc := &mapstructure.DecoderConfig{
-			DecodeHook: mapstructure.ComposeDecodeHookFunc(
-				mapstructure.TextUnmarshallerHookFunc(),
-				DecodeRunsOnHookFunc(),
-				DecodeNeeds,
-			),
-			Result: &job,
-		}
-		decoder, err := mapstructure.NewDecoder(dc)
-		if err != nil {
-			return err
-		}
-		if err := decoder.Decode(v); err == nil {
-			normalJobs[k] = job
+		if err := decodeJob(jobObject, job); err == nil {
+			normalJobs[jobId] = job
 			continue
-		} else if err := mapstructure.Decode(v, &reusableWorkflowCallJob); err == nil {
-			reusableWorkflowCallJobs[k] = reusableWorkflowCallJob
+		} else if err := mapstructure.Decode(jobObject, &reusableWorkflowCallJob); err == nil {
+			reusableWorkflowCallJobs[jobId] = reusableWorkflowCallJob
 			continue
 		} else {
 			return errors.New("unable to unmarshal jobs")
@@ -98,19 +87,37 @@ func (c *Concurrency) UnmarshalText(text []byte) error {
 	return nil
 }
 
-func DecodeNeeds(f, t reflect.Type, data any) (any, error) {
-	if t != reflect.TypeOf(Needs{}) {
-		return data, nil
+func decodeJob(data any, job *Job) error {
+	dc := &mapstructure.DecoderConfig{
+		DecodeHook: mapstructure.ComposeDecodeHookFunc(
+			mapstructure.TextUnmarshallerHookFunc(),
+			DecodeRunsOnHookFunc(),
+			DecodeNeedsHookFunc(),
+		),
+		Result: &job,
 	}
+	decoder, err := mapstructure.NewDecoder(dc)
+	if err != nil {
+		return err
+	}
+	return decoder.Decode(data)
+}
 
-	var needs []string
-	if err := mapstructure.Decode(data, &needs); err == nil {
-		return needs, nil
-	}
+func DecodeNeedsHookFunc() mapstructure.DecodeHookFunc {
+	return func(f, t reflect.Type, data any) (any, error) {
+		if t != reflect.TypeOf(Needs{}) {
+			return data, nil
+		}
 
-	var needsString string
-	if err := mapstructure.Decode(data, &needsString); err == nil {
-		return []string{needsString}, nil
+		var needs []string
+		if err := mapstructure.Decode(data, &needs); err == nil {
+			return needs, nil
+		}
+
+		var needsString string
+		if err := mapstructure.Decode(data, &needsString); err == nil {
+			return []string{needsString}, nil
+		}
+		return nil, errors.New("unable to decode needs")
 	}
-	return nil, errors.New("unable to decode needs")
 }

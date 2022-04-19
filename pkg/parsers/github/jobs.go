@@ -16,8 +16,8 @@ func parseWorkflowJobs(workflow *githubModels.Workflow) *[]models.Job {
 
 func parseJob(jobName string, job *githubModels.Job) models.Job {
 	parsedJob := models.Job{
-		ID:                   &jobName,
-		Name:                 &jobName,
+		ID:                   job.ID,
+		Name:                 &job.Name,
 		ContinueOnError:      &job.ContinueOnError,
 		EnvironmentVariables: job.Env,
 	}
