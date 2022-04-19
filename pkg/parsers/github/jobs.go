@@ -56,16 +56,3 @@ func parseJob(jobName string, job *githubModels.Job) models.Job {
 
 	return parsedJob
 }
-
-func parseJobConcurrency(concurrency interface{}) *string {
-	if concurrency == nil {
-		return nil
-	}
-
-	concurrencyAsString, ok := concurrency.(string)
-	if ok {
-		return &concurrencyAsString
-	}
-
-	return nil
-}
