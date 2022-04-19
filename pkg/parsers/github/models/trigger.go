@@ -73,12 +73,14 @@ func (on *On) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	for k, v := range triggersMap {
-		on.unmarshalKey(k, v)
+		if err := on.unmarshalKey(k, v); err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
-func (on *On) unmarshalKey(key string, value any) {
+func (on *On) unmarshalKey(key string, value any) error {
 	switch key {
 	case "schedule":
 		mapstructure.Decode(value, &on.Schedule)
@@ -86,39 +88,40 @@ func (on *On) unmarshalKey(key string, value any) {
 		if value == nil {
 			on.Push = &Ref{}
 		} else {
-			mapstructure.Decode(value, &on.Push)
+			return mapstructure.Decode(value, &on.Push)
 		}
 	case "pull_request":
 		if value == nil {
 			on.PullRequest = &Ref{}
 		} else {
-			mapstructure.Decode(value, &on.PullRequest)
+			return mapstructure.Decode(value, &on.PullRequest)
 		}
 	case "pull_request_target":
 		if value == nil {
 			on.PullRequestTarget = &Ref{}
 		} else {
-			mapstructure.Decode(value, &on.PullRequestTarget)
+			return mapstructure.Decode(value, &on.PullRequestTarget)
 		}
 	case "workflow_call":
 		if value == nil {
 			on.WorkflowCall = &WorkflowCall{}
 		} else {
-			mapstructure.Decode(value, &on.WorkflowCall)
+			return mapstructure.Decode(value, &on.WorkflowCall)
 		}
 	case "workflow_run":
 		if value == nil {
 			on.WorkflowRun = &WorkflowRun{}
 		} else {
-			mapstructure.Decode(value, &on.WorkflowRun)
+			return mapstructure.Decode(value, &on.WorkflowRun)
 		}
 	case "workflow_dispatch":
 		if value == nil {
 			on.WorkflowDispatch = &WorkflowDispatch{}
 		} else {
-			mapstructure.Decode(value, &on.WorkflowDispatch)
+			return mapstructure.Decode(value, &on.WorkflowDispatch)
 		}
 	default:
 		on.Events[key] = value.(Event)
 	}
+	return nil
 }

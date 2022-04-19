@@ -20,7 +20,9 @@ func Parse(data []byte) (*models.Pipeline, error) {
 		return nil, err
 	}
 	pipeline.Triggers = triggers
-	pipeline.Jobs = parseWorkflowJobs(workflow)
+	if workflow.Jobs != nil {
+		pipeline.Jobs = parseWorkflowJobs(workflow)
+	}
 	pipeline.Defaults = parseWorkflowDefaults(workflow)
 
 	return pipeline, nil

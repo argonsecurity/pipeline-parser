@@ -73,17 +73,20 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) (*[]models.Trigger, 
 }
 
 func parseWorkflowRun(workflowRun *githubModels.WorkflowRun) models.Trigger {
-	return models.Trigger{
+	trigger := models.Trigger{
 		Event:     models.PipelineRunEvent,
 		Pipelines: workflowRun.Workflows,
-		Filters: map[string]any{
-			"types": workflowRun.Types,
-		},
 		Branches: &models.Filter{
 			AllowList: workflowRun.Branches,
 			DenyList:  workflowRun.BranchesIgnore,
 		},
 	}
+
+	if workflowRun.Types != nil {
+		trigger.Filters = map[string]any{"types": workflowRun.Types}
+	}
+
+	return trigger
 }
 
 func parseWorkflowCall(workflowCall *githubModels.WorkflowCall) models.Trigger {

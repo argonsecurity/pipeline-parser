@@ -86,6 +86,62 @@ func Test_GitHubParser(t *testing.T) {
 				}),
 			},
 		},
+		{
+			Filename: "all-triggers.yaml",
+			Expected: &models.Pipeline{
+				Name: utils.GetPtr("all-triggers"),
+				Triggers: SortTriggers(&[]models.Trigger{
+					{
+						Event:     models.ScheduledEvent,
+						Scheduled: utils.GetPtr("30 2 * * *"),
+					},
+					{
+						Event: models.PushEvent,
+						Branches: &models.Filter{
+							AllowList: []string{"master"},
+						},
+					},
+					{
+						Event: models.PipelineRunEvent,
+						Branches: &models.Filter{
+							DenyList: []string{"master"},
+						},
+					},
+					{
+						Event: models.PullRequestEvent,
+						Paths: &models.Filter{
+							DenyList: []string{"*/test/*"},
+						},
+					},
+					{
+						Event: "pull_request_target",
+						Paths: &models.Filter{
+							AllowList: []string{"*/test/*"},
+						},
+					},
+					{
+						Event: models.ManualEvent,
+						Paramters: []models.Parameter{
+							{
+								Name:        utils.GetPtr("workflow-input"),
+								Description: utils.GetPtr("The workflow input"),
+								Default:     "default-value",
+							},
+						},
+					},
+					{
+						Event: models.PipelineTriggerEvent,
+						Paramters: []models.Parameter{
+							{
+								Name:        utils.GetPtr("workflow-input"),
+								Description: utils.GetPtr("The workflow input"),
+								Default:     "default-value",
+							},
+						},
+					},
+				}),
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
