@@ -25,5 +25,6 @@ type Runner struct {
 	Labels         *[]string
 	OS             *string
 	Arch           *string
+	SelfHosted     *bool
 	DockerMetadata *DockerMetadata
 }

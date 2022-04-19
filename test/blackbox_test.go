@@ -237,6 +237,48 @@ func Test_GitHubParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			Filename: "runners.yaml",
+			Expected: &models.Pipeline{
+				Name: utils.GetPtr("runners"),
+				Jobs: SortJobs(&[]models.Job{
+					{
+						ID:              utils.GetPtr("job1"),
+						Name:            utils.GetPtr("Job 1"),
+						ContinueOnError: utils.GetPtr(false),
+						TimeoutMS:       utils.GetPtr(21600000),
+						Runner: &models.Runner{
+							OS:         utils.GetPtr("linux"),
+							Labels:     &[]string{"ubuntu-latest"},
+							SelfHosted: utils.GetPtr(false),
+						},
+					},
+					{
+						ID:              utils.GetPtr("job2"),
+						Name:            utils.GetPtr("Job 2"),
+						TimeoutMS:       utils.GetPtr(21600000),
+						ContinueOnError: utils.GetPtr(false),
+						Runner: &models.Runner{
+							OS:         utils.GetPtr("windows"),
+							Labels:     &[]string{"self-hosted", "windows-latest"},
+							SelfHosted: utils.GetPtr(true),
+						},
+					},
+					{
+						ID:              utils.GetPtr("job3"),
+						Name:            utils.GetPtr("Job 3"),
+						TimeoutMS:       utils.GetPtr(21600000),
+						ContinueOnError: utils.GetPtr(false),
+						Runner: &models.Runner{
+							OS:         utils.GetPtr("linux"),
+							Arch:       utils.GetPtr("x64"),
+							Labels:     &[]string{"self-hosted", "linux", "x64"},
+							SelfHosted: utils.GetPtr(true),
+						},
+					},
+				}),
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

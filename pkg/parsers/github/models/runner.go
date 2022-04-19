@@ -61,7 +61,9 @@ func DecodeRunsOnHookFunc() mapstructure.DecodeHookFuncType {
 		if f.Kind() == reflect.String {
 			tags = []string{data.(string)}
 		} else {
-			tags = data.([]string)
+			if err := mapstructure.Decode(data, &tags); err != nil {
+				return data, err
+			}
 		}
 
 		return generateRunsOnFromTags(tags), nil
