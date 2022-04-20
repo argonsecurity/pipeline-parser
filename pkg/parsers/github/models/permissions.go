@@ -80,10 +80,11 @@ func DecodeTokenPermissionsHookFunc() mapstructure.DecodeHookFuncType {
 
 		if f.Kind() == reflect.Map {
 			permissions := PermissionsEvent{}
-			mapstructure.Decode(data, &permissions)
+			if err := mapstructure.Decode(data, &permissions); err != nil {
+				return nil, err
+			}
 			return permissions, nil
 		}
-
 		return data, nil
 	}
 }

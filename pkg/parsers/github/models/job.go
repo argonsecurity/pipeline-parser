@@ -1,9 +1,7 @@
 package models
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
 	"reflect"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
@@ -133,93 +131,5 @@ func DecodeNeedsHookFunc() mapstructure.DecodeHookFunc {
 
 func (c *Concurrency) UnmarshalText(text []byte) error {
 	c.Group = utils.GetPtr(string(text))
-	return nil
-}
-
-func (j *Job) UnmarshalYAML(node *yaml.Node) error {
-	var jsonMap map[string]json.RawMessage
-	if err := node.Decode(&jsonMap); err != nil {
-		return err
-	}
-	return j.unmarshal(jsonMap)
-}
-
-func (j *Job) unmarshal(jsonMap map[string]json.RawMessage) error {
-	var runsOnReceived bool
-	for k, v := range jsonMap {
-		switch k {
-		case "concurrency":
-			if err := json.Unmarshal([]byte(v), &j.Concurrency); err != nil {
-				return err
-			}
-		case "container":
-			if err := json.Unmarshal([]byte(v), &j.Container); err != nil {
-				return err
-			}
-		case "continue-on-error":
-			if err := json.Unmarshal([]byte(v), &j.ContinueOnError); err != nil {
-				return err
-			}
-		case "defaults":
-			if err := json.Unmarshal([]byte(v), &j.Defaults); err != nil {
-				return err
-			}
-		case "env":
-			if err := json.Unmarshal([]byte(v), &j.Env); err != nil {
-				return err
-			}
-		case "environment":
-			if err := json.Unmarshal([]byte(v), &j.Environment); err != nil {
-				return err
-			}
-		case "if":
-			if err := json.Unmarshal([]byte(v), &j.If); err != nil {
-				return err
-			}
-		case "name":
-			if err := json.Unmarshal([]byte(v), &j.Name); err != nil {
-				return err
-			}
-		case "needs":
-			if err := json.Unmarshal([]byte(v), &j.Needs); err != nil {
-				return err
-			}
-		case "outputs":
-			if err := json.Unmarshal([]byte(v), &j.Outputs); err != nil {
-				return err
-			}
-		case "permissions":
-			if err := json.Unmarshal([]byte(v), &j.Permissions); err != nil {
-				return err
-			}
-		case "runs-on":
-			if err := json.Unmarshal([]byte(v), &j.RunsOn); err != nil {
-				return err
-			}
-			runsOnReceived = true
-		case "services":
-			if err := json.Unmarshal([]byte(v), &j.Services); err != nil {
-				return err
-			}
-		case "steps":
-			if err := json.Unmarshal([]byte(v), &j.Steps); err != nil {
-				return err
-			}
-		case "strategy":
-			if err := json.Unmarshal([]byte(v), &j.Strategy); err != nil {
-				return err
-			}
-		case "timeout-minutes":
-			if err := json.Unmarshal([]byte(v), &j.TimeoutMinutes); err != nil {
-				return err
-			}
-		default:
-			return fmt.Errorf("additional property not allowed: \"" + k + "\"")
-		}
-	}
-	// check if runs-on (a required property) was received
-	if !runsOnReceived {
-		return errors.New("\"runs-on\" is required but was not present")
-	}
 	return nil
 }
