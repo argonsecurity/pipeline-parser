@@ -7,6 +7,7 @@ import (
 )
 
 func Parse(data []byte) (*models.Pipeline, error) {
+	var err error
 	workflow := &githubModels.Workflow{}
 	if err := yaml.Unmarshal(data, workflow); err != nil {
 		return nil, err
@@ -15,26 +16,41 @@ func Parse(data []byte) (*models.Pipeline, error) {
 	pipeline := &models.Pipeline{
 		Name: &workflow.Name,
 	}
-	triggers, err := parseWorkflowTriggers(workflow)
-	if err != nil {
+
+	if pipeline.Triggers, err = parseWorkflowTriggers(workflow); err != nil {
 		return nil, err
 	}
-	pipeline.Triggers = triggers
+
 	if workflow.Jobs != nil {
-		pipeline.Jobs = parseWorkflowJobs(workflow)
+		if pipeline.Jobs, err = parseWorkflowJobs(workflow); err != nil {
+			return nil, err
+		}
 	}
-	pipeline.Defaults = parseWorkflowDefaults(workflow)
+
+	if pipeline.Defaults, err = parseWorkflowDefaults(workflow); err != nil {
+		return nil, err
+	}
 
 	return pipeline, nil
 }
 
-func parseWorkflowDefaults(workflow *githubModels.Workflow) *models.Defaults {
+func parseWorkflowDefaults(workflow *githubModels.Workflow) (*models.Defaults, error) {
 	if workflow.Permissions == nil && workflow.Env == nil {
-		return nil
+		return nil, nil
 	}
 
-	return &models.Defaults{
-		TokenPermissions:     parseTokenPermissions(workflow.Permissions),
-		EnvironmentVariables: workflow.Env,
+	defaults := &models.Defaults{}
+	if workflow.Permissions != nil {
+		permissions, err := parseTokenPermissions(workflow.Permissions)
+		if err != nil {
+			return nil, err
+		}
+		defaults.TokenPermissions = permissions
 	}
+
+	if workflow.Env != nil {
+		defaults.EnvironmentVariables = workflow.Env
+	}
+
+	return defaults, nil
 }

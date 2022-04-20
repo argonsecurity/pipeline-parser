@@ -20,3 +20,17 @@ func MapToSlice[T any, U any, K comparable](m map[K]T, cb func(k K, v T) U) []U 
 	}
 	return result
 }
+
+func MapToSliceErr[T any, U any, K comparable](m map[K]T, cb func(k K, v T) (U, error)) ([]U, error) {
+	result := make([]U, len(m))
+	var i int
+	for k, v := range m {
+		item, err := cb(k, v)
+		if err != nil {
+			return nil, err
+		}
+		result[i] = item
+		i += 1
+	}
+	return result, nil
+}

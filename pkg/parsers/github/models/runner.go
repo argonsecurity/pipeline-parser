@@ -53,7 +53,7 @@ func DecodeRunsOnHookFunc() mapstructure.DecodeHookFuncType {
 		f reflect.Type,
 		t reflect.Type,
 		data any) (any, error) {
-		if (f.Kind() != reflect.String && f.Kind() != reflect.Slice) || t != reflect.TypeOf(RunsOn{}) {
+		if t != reflect.TypeOf(RunsOn{}) {
 			return data, nil
 		}
 

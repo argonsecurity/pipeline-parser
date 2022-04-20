@@ -6,15 +6,19 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
-const (
+var (
 	defaultTimeoutMS int = 360 * 60 * 1000
 )
 
-func parseWorkflowJobs(workflow *githubModels.Workflow) *[]models.Job {
-	return utils.GetPtr(utils.MapToSlice(workflow.Jobs.NormalJobs, parseJob))
+func parseWorkflowJobs(workflow *githubModels.Workflow) (*[]models.Job, error) {
+	jobs, err := utils.MapToSliceErr(workflow.Jobs.NormalJobs, parseJob)
+	if err != nil {
+		return nil, err
+	}
+	return &jobs, nil
 }
 
-func parseJob(jobName string, job *githubModels.Job) models.Job {
+func parseJob(jobName string, job *githubModels.Job) (models.Job, error) {
 	parsedJob := models.Job{
 		ID:                   job.ID,
 		Name:                 &job.Name,
@@ -30,8 +34,7 @@ func parseJob(jobName string, job *githubModels.Job) models.Job {
 		timeout := int(*job.TimeoutMinutes) * 60 * 1000
 		parsedJob.TimeoutMS = &timeout
 	} else {
-		defaultTimeout := defaultTimeoutMS
-		parsedJob.TimeoutMS = &defaultTimeout
+		parsedJob.TimeoutMS = &defaultTimeoutMS
 	}
 
 	if job.If != "" {
@@ -55,8 +58,12 @@ func parseJob(jobName string, job *githubModels.Job) models.Job {
 	}
 
 	if job.Permissions != nil {
-		parsedJob.TokenPermissions = parseTokenPermissions(job.Permissions)
+		permissions, err := parseTokenPermissions(job.Permissions)
+		if err != nil {
+			return models.Job{}, err
+		}
+		parsedJob.TokenPermissions = permissions
 	}
 
-	return parsedJob
+	return parsedJob, nil
 }
