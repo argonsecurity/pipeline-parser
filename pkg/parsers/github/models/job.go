@@ -43,37 +43,39 @@ type Job struct {
 }
 
 type ReusableWorkflowCallJob struct {
+	ID          *string           `mapstructure:"id" yaml:"id"`
 	If          string            `mapstructure:"if,omitempty" yaml:"if,omitempty"`
 	Name        string            `mapstructure:"name,omitempty" yaml:"name,omitempty"`
-	Needs       interface{}       `mapstructure:"needs,omitempty" yaml:"needs,omitempty"`
+	Needs       *Needs            `mapstructure:"needs,omitempty" yaml:"needs,omitempty"`
 	Permissions *PermissionsEvent `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
 	Secrets     interface{}       `mapstructure:"secrets,omitempty" yaml:"secrets,omitempty"`
 	Uses        string            `mapstructure:"uses" yaml:"uses"`
-	With        interface{}       `mapstructure:"with,omitempty"`
+	With        map[string]any    `mapstructure:"with,omitempty"`
 }
 
 func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
-	var v map[string]any
-	if err := node.Decode(&v); err != nil {
+	var nodeAsMap map[string]any
+	if err := node.Decode(&nodeAsMap); err != nil {
 		return err
 	}
 
 	normalJobs := make(map[string]*Job, 0)
 	reusableWorkflowCallJobs := make(map[string]*ReusableWorkflowCallJob, 0)
 
-	for jobId, jobObject := range v {
-		job := &Job{ID: utils.GetPtr(jobId)}
-		var reusableWorkflowCallJob *ReusableWorkflowCallJob
-		if err := decodeJob(jobObject, job); err == nil {
-			normalJobs[jobId] = job
-			continue
-		} else if err := mapstructure.Decode(jobObject, &reusableWorkflowCallJob); err == nil {
-			reusableWorkflowCallJobs[jobId] = reusableWorkflowCallJob
-			continue
+	for jobId, jobObject := range nodeAsMap {
+		if isJobReusableWorkflowJob(jobObject) {
+			reusableJob := &ReusableWorkflowCallJob{ID: utils.GetPtr(jobId)}
+			if err := decodeWithHooks(jobObject, reusableJob); err != nil {
+				return err
+			}
+			reusableWorkflowCallJobs[jobId] = reusableJob
 		} else {
-			return errors.New("unable to unmarshal jobs")
+			job := &Job{ID: utils.GetPtr(jobId)}
+			if err := decodeWithHooks(jobObject, job); err != nil {
+				return err
+			}
+			normalJobs[jobId] = job
 		}
-
 	}
 	*j = Jobs{
 		NormalJobs:               normalJobs,
@@ -82,12 +84,16 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
-func (c *Concurrency) UnmarshalText(text []byte) error {
-	c.Group = utils.GetPtr(string(text))
-	return nil
+func isJobReusableWorkflowJob(job any) bool {
+	var jobAsMap map[string]any
+	if err := mapstructure.Decode(job, &jobAsMap); err != nil {
+		return false
+	}
+	_, ok := jobAsMap["uses"]
+	return ok
 }
 
-func decodeJob(data any, job *Job) error {
+func decodeWithHooks[T any](data any, target T) error {
 	dc := &mapstructure.DecoderConfig{
 		DecodeHook: mapstructure.ComposeDecodeHookFunc(
 			mapstructure.TextUnmarshallerHookFunc(),
@@ -95,7 +101,7 @@ func decodeJob(data any, job *Job) error {
 			DecodeNeedsHookFunc(),
 			DecodeTokenPermissionsHookFunc(),
 		),
-		Result: &job,
+		Result: &target,
 	}
 	decoder, err := mapstructure.NewDecoder(dc)
 	if err != nil {
@@ -121,4 +127,9 @@ func DecodeNeedsHookFunc() mapstructure.DecodeHookFunc {
 		}
 		return nil, errors.New("unable to decode needs")
 	}
+}
+
+func (c *Concurrency) UnmarshalText(text []byte) error {
+	c.Group = utils.GetPtr(string(text))
+	return nil
 }
