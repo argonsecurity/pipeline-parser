@@ -1,9 +1,9 @@
 name: Build Pipeline Parser
-
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,11 +27,11 @@ jobs:
           GOPRIVATE: github.com/argonsecurity/*
 
    build:
+    name: Build
     if: ${{ ( github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '#build') || (github.ref  == 'refs/heads/main') || (github.ref  == 'refs/heads/master')) && !contains(github.event.head_commit.message, '#skip-build') }}
     needs: tests
     runs-on: ubuntu-latest
     steps:
-
       - name: Set Repo Envs
         run: |
           echo "git_repo_name=pipeline-parser" | tee -a $GITHUB_ENV
