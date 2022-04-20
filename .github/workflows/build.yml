@@ -51,7 +51,7 @@ jobs:
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.9
         with:
-          versionSpec: "5.10.0"
+          versionSpec: "5.8.3"
 
       - name: Bump Version
         if: "${{ github.ref  != 'refs/heads/main' && github.ref  != 'refs/heads/master' }}"
