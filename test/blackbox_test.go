@@ -322,6 +322,28 @@ func Test_GitHubParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			Filename: "concurrent-jobs.yaml",
+			Expected: &models.Pipeline{
+				Name: utils.GetPtr("concurrent-jobs"),
+				Jobs: SortJobs(&[]models.Job{
+					{
+						ID:               utils.GetPtr("job1"),
+						Name:             utils.GetPtr("Job 1"),
+						ContinueOnError:  utils.GetPtr(false),
+						TimeoutMS:        utils.GetPtr(21600000),
+						ConcurrencyGroup: utils.GetPtr("ci"),
+					},
+					{
+						ID:               utils.GetPtr("job2"),
+						Name:             utils.GetPtr("Job 2"),
+						ContinueOnError:  utils.GetPtr(false),
+						TimeoutMS:        utils.GetPtr(21600000),
+						ConcurrencyGroup: utils.GetPtr("ci"),
+					},
+				}),
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

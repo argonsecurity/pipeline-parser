@@ -1,0 +1,9 @@
+name: concurrent-jobs
+jobs:
+  job1:
+    name: Job 1
+    concurrency: ci
+
+  job2:
+    name: Job 2
+    concurrency: ci

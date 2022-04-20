@@ -168,7 +168,6 @@ func parseSchedule(schedule *[]githubModels.Cron) []models.Trigger {
 			Scheduled: utils.GetPtr(cron.Cron),
 		}
 	})
-
 }
 
 func generateTriggersFromEvents(events []string) []models.Trigger {
