@@ -91,16 +91,6 @@ jobs:
         env:
           GH_ACCESS_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - name: GoReleaser
-        uses: goreleaser/goreleaser-action@v2
-        with:
-          distribution: goreleaser
-          version: latest
-          args: release --rm-dist
-        env:
-          GOPRIVATE: github.com/argonsecurity/*
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Argon Security Manifest
         uses: argonsecurity/actions/generate-manifest@ed8d7940ab9a9140ff04f777945500f72a4c2836
         with:
