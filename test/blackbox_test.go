@@ -205,6 +205,12 @@ func Test_GitHubParser(t *testing.T) {
 							},
 						},
 					},
+					{
+						Event: "label",
+						Filters: map[string]any{
+							"types": []string{"created"},
+						},
+					},
 				}),
 			},
 		},

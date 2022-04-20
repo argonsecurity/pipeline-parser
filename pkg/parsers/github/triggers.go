@@ -4,6 +4,7 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/parsers/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
+	"github.com/mitchellh/mapstructure"
 )
 
 const (
@@ -36,11 +37,6 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) (*[]models.Trigger, 
 	// Handle workflow.on if each event has a specific configuration
 	on := workflow.On
 	triggers := []models.Trigger{}
-	events := utils.Filter(utils.GetMapKeys(on.Events), func(event string) bool {
-		_, ok := githubEventToModelEvent[event]
-		return !ok
-	})
-	triggers = append(triggers, generateTriggersFromEvents(events)...)
 
 	if on.Push != nil {
 		triggers = append(triggers, parseRef(on.Push, models.PushEvent))
@@ -69,7 +65,22 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) (*[]models.Trigger, 
 	if on.Schedule != nil {
 		triggers = append(triggers, parseSchedule(on.Schedule)...)
 	}
+
+	if len(on.Events) > 0 {
+		triggers = append(triggers, parseEvents(on.Events)...)
+	}
+
 	return &triggers, nil
+}
+
+func parseEvents(events githubModels.Events) []models.Trigger {
+	return utils.MapToSlice(events, func(eventName string, event githubModels.Event) models.Trigger {
+		trigger := models.Trigger{
+			Event: models.EventType(eventName),
+		}
+		mapstructure.Decode(event, &trigger.Filters)
+		return trigger
+	})
 }
 
 func parseWorkflowRun(workflowRun *githubModels.WorkflowRun) models.Trigger {

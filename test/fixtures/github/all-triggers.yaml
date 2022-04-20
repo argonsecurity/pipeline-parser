@@ -26,3 +26,5 @@ on:
   workflow_run:
     branches-ignore:
       - master
+  label:
+    types: [created]

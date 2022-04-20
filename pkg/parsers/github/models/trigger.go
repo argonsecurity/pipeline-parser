@@ -121,7 +121,14 @@ func (on *On) unmarshalKey(key string, value any) error {
 			return mapstructure.Decode(value, &on.WorkflowDispatch)
 		}
 	default:
-		on.Events[key] = value.(Event)
+		if on.Events == nil {
+			on.Events = make(Events)
+		}
+		var event Event
+		if err := mapstructure.Decode(value, &event); err != nil {
+			return err
+		}
+		on.Events[key] = event
 	}
 	return nil
 }
