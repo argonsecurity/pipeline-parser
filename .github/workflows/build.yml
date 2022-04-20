@@ -25,9 +25,9 @@ jobs:
         env:
           GOPRIVATE: github.com/argonsecurity/*
 
-   build:
+  build:
     if: ${{ ( github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '#build') || (github.ref  == 'refs/heads/main') || (github.ref  == 'refs/heads/master')) && !contains(github.event.head_commit.message, '#skip-build') }}
-    needs: tests
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Set Repo Envs
@@ -35,7 +35,7 @@ jobs:
           echo "git_repo_name=pipeline-parser" | tee -a $GITHUB_ENV
           echo "status=failed" | tee -a $GITHUB_ENV
 
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v2
 
       - name: Argon Integrity
