@@ -1,0 +1,30 @@
+name: all-triggers
+on:
+  schedule:
+    - cron: 30 2 * * *
+  push:
+    branches:
+      - master
+  pull_request:
+    paths-ignore:
+      - "*/test/*"
+  pull_request_target:
+    paths:
+      - "*/test/*"
+  workflow_dispatch:
+    inputs:
+      workflow-input:
+        description: "The workflow input"
+        default: "default-value"
+        required: true
+  workflow_call:
+    inputs:
+      workflow-input:
+        description: "The workflow input"
+        default: "default-value"
+        required: true
+  workflow_run:
+    branches-ignore:
+      - master
+  label:
+    types: [created]

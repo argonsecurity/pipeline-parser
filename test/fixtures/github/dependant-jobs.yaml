@@ -1,0 +1,9 @@
+name: dependable jobs
+
+jobs:
+  dependable-job:
+    name: Dependable Job
+
+  dependant-job:
+    name: Dependant Job
+    needs: [dependable-job]

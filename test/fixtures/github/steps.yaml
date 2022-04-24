@@ -1,0 +1,29 @@
+name: steps
+
+jobs:
+  job1:
+    name: Job 1
+    steps:
+      - name: task without params
+        uses: actions/checkout@v1
+
+      - name: task with params
+        uses: actions/checkout@v1
+        with:
+          repo: repository
+
+      - name: task with commit ID version
+        uses: actions/checkout@c44948622e1b6bb0eb0cec5b813c1ac561158e1e
+
+      - name: task with branch version
+        uses: actions/checkout@master
+
+      - name: task with tag version
+        uses: actions/checkout@v1.1.1
+
+      - name: shell
+        run: command line
+
+      - name: custom shell
+        shell: cmd
+        run: command line

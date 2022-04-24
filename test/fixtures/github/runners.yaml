@@ -1,0 +1,12 @@
+name: runners
+
+jobs:
+  job1:
+    name: Job 1
+    runs-on: ubuntu-latest
+  job2:
+    name: Job 2
+    runs-on: [self-hosted, windows-latest]
+  job3:
+    name: Job 3
+    runs-on: [self-hosted, linux, x64]
