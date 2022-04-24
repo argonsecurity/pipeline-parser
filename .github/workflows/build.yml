@@ -86,7 +86,7 @@ jobs:
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
-          git tag "${TAG}" || true
+          git tag "v${TAG}" || true
           git push --tags  || true
 
       - name: Configure Git URL
