@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# get all the staged files in th commit
+STAGED_GO_FILES=$(git diff --cached --name-only -- '*.go')
+
+# check to see if this is empty
+if [[ $STAGED_GO_FILES == "" ]]; then
+    echo "No Go Files to Update"
+# format all the staged go files
+else
+    for file in $STAGED_GO_FILES; do
+        # format the file
+        go fmt $file
+        # add any potential changes from the formatting to the commit
+        git add $file
+    done
+fi
+
+# execute go mod tidy
+go mod tidy
+# add potential changes from the tidy command to the commit
+git add go.mod go.sum
