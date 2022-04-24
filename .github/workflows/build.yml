@@ -65,6 +65,7 @@ jobs:
           git config user.email "<>"
 
       - name: Determine Version
+        id: gitversion
         uses: gittools/actions/gitversion/execute@v0.9.9
 
       - name: Set Version
