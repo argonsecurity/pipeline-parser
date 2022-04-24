@@ -16,8 +16,7 @@ else
     done
 fi
 
-cd client
 # execute go mod tidy
 go mod tidy
 # add potential changes from the tidy command to the commit
-git add go.mod go.sume
+git add go.mod go.sum
