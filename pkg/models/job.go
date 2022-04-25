@@ -16,4 +16,5 @@ type Job struct {
 	Tags                 *[]string
 	TokenPermissions     *map[string]Permission
 	Dependencies         *[]string
+	Metadata             Metadata
 }

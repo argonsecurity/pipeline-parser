@@ -2,26 +2,18 @@ package enhancers
 
 import (
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
-	"github.com/argonsecurity/pipeline-parser/pkg/enhancers/common"
-	"github.com/argonsecurity/pipeline-parser/pkg/enhancers/github"
+	"github.com/argonsecurity/pipeline-parser/pkg/enhancers/config"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 )
 
-type Enhancer interface {
-	EnhanceJob(job models.Job) models.Job
-	EnhanceStep(step models.Step) models.Step
-}
-
 var (
-	commonEnhancer Enhancer = &common.CommonEnhancer{}
-
-	platformToEnhancerMapping = map[consts.Platform]Enhancer{
-		consts.GitHubPlatform: &github.GitHubEnhancer{},
+	platformToEnhancerMapping = map[consts.Platform]config.EnhancementConfiguration{
+		consts.GitHubPlatform: config.GithubConfiguration,
 	}
 )
 
 func Enhance(pipeline *models.Pipeline, platform consts.Platform) (*models.Pipeline, error) {
-	enhancer, ok := platformToEnhancerMapping[platform]
+	platformConfig, ok := platformToEnhancerMapping[platform]
 	if !ok {
 		return pipeline, &consts.ErrInvalidPlatform{Platform: platform}
 	}
@@ -29,13 +21,13 @@ func Enhance(pipeline *models.Pipeline, platform consts.Platform) (*models.Pipel
 	if pipeline.Jobs != nil {
 		jobs := make([]models.Job, len(*pipeline.Jobs))
 		for i, job := range *pipeline.Jobs {
-			job = enhancer.EnhanceJob(job)
-			job = commonEnhancer.EnhanceJob(job)
+			job = enhanceJob(job, config.CommonConfiguration)
+			job = enhanceJob(job, platformConfig)
 			if job.Steps != nil {
 				steps := make([]models.Step, len(*job.Steps))
 				for i, step := range *job.Steps {
-					step = enhancer.EnhanceStep(step)
-					step = commonEnhancer.EnhanceStep(step)
+					step = enhanceStep(step, config.CommonConfiguration)
+					step = enhanceStep(step, platformConfig)
 					steps[i] = step
 				}
 				job.Steps = &steps

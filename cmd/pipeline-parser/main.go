@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
-	"github.com/argonsecurity/pipeline-parser/pkg/handlers"
+	"github.com/argonsecurity/pipeline-parser/pkg/handler"
 	"github.com/spf13/cobra"
 )
 
@@ -32,7 +32,7 @@ func GetCommand() *cobra.Command {
 					if err != nil {
 						return nil
 					}
-					pipeline, err := handlers.Handle(buf, consts.GitHubPlatform)
+					pipeline, err := handler.Handle(buf, consts.GitHubPlatform)
 					if err != nil {
 						return err
 					}

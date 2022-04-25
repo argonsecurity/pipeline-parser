@@ -1,4 +1,4 @@
-package handlers
+package handler
 
 import (
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
