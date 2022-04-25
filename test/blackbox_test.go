@@ -6,6 +6,7 @@ import (
 	"sort"
 	"testing"
 
+	githubLoader "github.com/argonsecurity/pipeline-parser/pkg/loaders/github"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/parsers/github"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -347,7 +348,13 @@ func Test_GitHubParser(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		pipeline, err := github.Parse(readFile(filepath.Join(workflowFolderPath, testCase.Filename)))
+		buf := readFile(filepath.Join(workflowFolderPath, testCase.Filename))
+		workflow, err := githubLoader.Load(buf)
+		if err != nil {
+			panic(err) // should not happen
+		}
+
+		pipeline, err := github.Parse(workflow)
 		if err != nil {
 			if !testCase.ShouldFail {
 				t.Errorf("%s: %s", testCase.Filename, err)
