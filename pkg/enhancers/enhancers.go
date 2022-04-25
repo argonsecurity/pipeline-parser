@@ -4,14 +4,18 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers/common"
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers/github"
-	enhancerModels "github.com/argonsecurity/pipeline-parser/pkg/enhancers/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 )
 
-var (
-	commonEnhancer enhancerModels.Enhancer = &common.CommonEnhancer{}
+type Enhancer interface {
+	EnhanceJob(job models.Job) models.Job
+	EnhanceStep(step models.Step) models.Step
+}
 
-	platformToEnhancerMapping = map[consts.Platform]enhancerModels.Enhancer{
+var (
+	commonEnhancer Enhancer = &common.CommonEnhancer{}
+
+	platformToEnhancerMapping = map[consts.Platform]Enhancer{
 		consts.GitHubPlatform: &github.GitHubEnhancer{},
 	}
 )

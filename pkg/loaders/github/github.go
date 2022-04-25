@@ -5,11 +5,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func Load(data []byte) (*models.Workflow, error) {
-	workflow := &models.Workflow{}
-	if err := yaml.Unmarshal(data, workflow); err != nil {
-		return nil, err
-	}
+type GitHubLoader struct{}
 
-	return workflow, nil
+func (g *GitHubLoader) Load(data []byte) (*models.Workflow, error) {
+	var workflow *models.Workflow
+	err := yaml.Unmarshal(data, workflow)
+	return workflow, err
 }
