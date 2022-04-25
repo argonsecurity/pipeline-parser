@@ -5,7 +5,9 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 )
 
-func Parse(workflow *githubModels.Workflow) (*models.Pipeline, error) {
+type GitHubParser struct{}
+
+func (g *GitHubParser) Parse(workflow *githubModels.Workflow) (*models.Pipeline, error) {
 	var err error
 	pipeline := &models.Pipeline{
 		Name: &workflow.Name,

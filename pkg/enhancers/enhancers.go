@@ -20,7 +20,7 @@ var (
 	}
 )
 
-func Enhance(pipeline models.Pipeline, platform consts.Platform) (models.Pipeline, error) {
+func Enhance(pipeline *models.Pipeline, platform consts.Platform) (*models.Pipeline, error) {
 	enhancer, ok := platformToEnhancerMapping[platform]
 	if !ok {
 		return pipeline, &consts.ErrInvalidPlatform{Platform: platform}
