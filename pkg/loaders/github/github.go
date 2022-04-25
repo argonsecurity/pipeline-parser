@@ -8,7 +8,7 @@ import (
 type GitHubLoader struct{}
 
 func (g *GitHubLoader) Load(data []byte) (*models.Workflow, error) {
-	var workflow *models.Workflow
+	workflow := &models.Workflow{}
 	err := yaml.Unmarshal(data, workflow)
 	return workflow, err
 }

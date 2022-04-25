@@ -26,22 +26,24 @@ func Enhance(pipeline *models.Pipeline, platform consts.Platform) (*models.Pipel
 		return pipeline, &consts.ErrInvalidPlatform{Platform: platform}
 	}
 
-	jobs := make([]models.Job, len(*pipeline.Jobs))
-	for _, job := range *pipeline.Jobs {
-		job = enhancer.EnhanceJob(job)
-		job = commonEnhancer.EnhanceJob(job)
-
-		steps := make([]models.Step, len(*job.Steps))
-		for _, step := range *job.Steps {
-			step = enhancer.EnhanceStep(step)
-			step = commonEnhancer.EnhanceStep(step)
-			steps = append(steps, step)
+	if pipeline.Jobs != nil {
+		jobs := make([]models.Job, len(*pipeline.Jobs))
+		for i, job := range *pipeline.Jobs {
+			job = enhancer.EnhanceJob(job)
+			job = commonEnhancer.EnhanceJob(job)
+			if job.Steps != nil {
+				steps := make([]models.Step, len(*job.Steps))
+				for i, step := range *job.Steps {
+					step = enhancer.EnhanceStep(step)
+					step = commonEnhancer.EnhanceStep(step)
+					steps[i] = step
+				}
+				job.Steps = &steps
+			}
+			jobs[i] = job
 		}
-		job.Steps = &steps
-		jobs = append(jobs, job)
+
+		pipeline.Jobs = &jobs
 	}
-
-	pipeline.Jobs = &jobs
-
 	return pipeline, nil
 }
