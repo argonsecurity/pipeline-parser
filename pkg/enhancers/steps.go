@@ -6,24 +6,6 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
-func isLabelConfigAppliedToStep(step models.Step, config config.ObjectiveConfiguration) bool {
-	if step.Type == models.ShellStepType {
-		if utils.AnyMatch(config.ShellRegexes, *step.Shell.Script) {
-			return true
-		}
-	} else {
-		if utils.SliceContains(config.Tasks, *step.Task.Name) {
-			return true
-		}
-	}
-
-	if utils.AnyMatch(config.Names, *step.Name) {
-		return true
-	}
-
-	return false
-}
-
 func enhanceStep(step models.Step, config config.EnhancementConfiguration) models.Step {
 	if step.Type == models.ShellStepType {
 		if utils.AnyMatch(config.Build.ShellRegexes, *step.Shell.Script) {
@@ -64,10 +46,5 @@ func enhanceStep(step models.Step, config config.EnhancementConfiguration) model
 		step.Metadata.Deploy = true
 	}
 
-	for label, config := range config.LabelMapping {
-		if isLabelConfigAppliedToStep(step, config) {
-			step.Metadata.Labels = append(step.Metadata.Labels, label)
-		}
-	}
 	return step
 }

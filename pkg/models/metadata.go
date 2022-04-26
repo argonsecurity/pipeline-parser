@@ -4,5 +4,4 @@ type Metadata struct {
 	Build  bool
 	Test   bool
 	Deploy bool
-	Labels []string
 }

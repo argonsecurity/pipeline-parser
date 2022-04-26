@@ -19,12 +19,6 @@ func enhanceJob(job models.Job, config config.EnhancementConfiguration) models.J
 		job.Metadata.Deploy = true
 	}
 
-	for label, labelConfig := range config.LabelMapping {
-		if utils.AnyMatch(labelConfig.Names, *job.Name) {
-			job.Metadata.Labels = append(job.Metadata.Labels, label)
-		}
-	}
-
 	for _, step := range *job.Steps {
 		if step.Metadata.Build {
 			job.Metadata.Build = true

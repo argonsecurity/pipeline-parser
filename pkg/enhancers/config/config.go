@@ -9,8 +9,7 @@ type ObjectiveConfiguration struct {
 }
 
 type EnhancementConfiguration struct {
-	Build        ObjectiveConfiguration
-	Test         ObjectiveConfiguration
-	Deploy       ObjectiveConfiguration
-	LabelMapping map[string]ObjectiveConfiguration
+	Build  ObjectiveConfiguration
+	Test   ObjectiveConfiguration
+	Deploy ObjectiveConfiguration
 }
