@@ -19,17 +19,19 @@ func enhanceJob(job models.Job, config config.EnhancementConfiguration) models.J
 		job.Metadata.Deploy = true
 	}
 
-	for _, step := range *job.Steps {
-		if step.Metadata.Build {
-			job.Metadata.Build = true
-		}
+	if job.Steps != nil {
+		for _, step := range *job.Steps {
+			if step.Metadata.Build {
+				job.Metadata.Build = true
+			}
 
-		if step.Metadata.Test {
-			job.Metadata.Test = true
-		}
+			if step.Metadata.Test {
+				job.Metadata.Test = true
+			}
 
-		if step.Metadata.Deploy {
-			job.Metadata.Deploy = true
+			if step.Metadata.Deploy {
+				job.Metadata.Deploy = true
+			}
 		}
 	}
 
