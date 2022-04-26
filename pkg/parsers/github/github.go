@@ -1,18 +1,14 @@
 package github
 
 import (
+	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
-	githubModels "github.com/argonsecurity/pipeline-parser/pkg/parsers/github/models"
-	"gopkg.in/yaml.v3"
 )
 
-func Parse(data []byte) (*models.Pipeline, error) {
-	var err error
-	workflow := &githubModels.Workflow{}
-	if err := yaml.Unmarshal(data, workflow); err != nil {
-		return nil, err
-	}
+type GitHubParser struct{}
 
+func (g *GitHubParser) Parse(workflow *githubModels.Workflow) (*models.Pipeline, error) {
+	var err error
 	pipeline := &models.Pipeline{
 		Name: &workflow.Name,
 	}

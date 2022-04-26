@@ -1,8 +1,8 @@
 package github
 
 import (
+	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
-	githubModels "github.com/argonsecurity/pipeline-parser/pkg/parsers/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/mitchellh/mapstructure"
 )

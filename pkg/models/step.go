@@ -31,6 +31,7 @@ type Step struct {
 	Conditions           *[]Condition
 	Shell                *Shell
 	Task                 *Task
+	Metadata             Metadata
 }
 
 type Task struct {
