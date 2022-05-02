@@ -20,7 +20,7 @@ var (
 	}
 )
 
-func parseJobSteps(steps *[]githubModels.Step) *[]models.Step {
+func parseJobSteps(steps *githubModels.Steps) *[]models.Step {
 	if steps == nil {
 		return nil
 	}

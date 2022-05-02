@@ -57,7 +57,7 @@ type Job struct {
 	Permissions     *PermissionsEvent            `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
 	RunsOn          *RunsOn                      `mapstructure:"runs-on" yaml:"runs-on"`
 	Services        map[string]*Container        `mapstructure:"services,omitempty" yaml:"services,omitempty"`
-	Steps           *[]Step                      `mapstructure:"steps,omitempty" yaml:"steps,omitempty"`
+	Steps           *Steps                       `mapstructure:"steps,omitempty" yaml:"steps,omitempty"`
 	Strategy        *Strategy                    `mapstructure:"strategy,omitempty" yaml:"strategy,omitempty"`
 	TimeoutMinutes  *float64                     `mapstructure:"timeout-minutes,omitempty" yaml:"timeout-minutes,omitempty"`
 	FileLocation    *models.FileLocation
@@ -76,15 +76,15 @@ type ReusableWorkflowCallJob struct {
 }
 
 func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
-	var nodeAsMap map[string]yaml.Node
-	if err := node.Decode(&nodeAsMap); err != nil {
+	var jobIdsToJobNodes map[string]yaml.Node
+	if err := node.Decode(&jobIdsToJobNodes); err != nil {
 		return err
 	}
 
 	normalJobs := make(map[string]*Job, 0)
 	reusableWorkflowCallJobs := make(map[string]*ReusableWorkflowCallJob, 0)
 
-	for jobId, jobObject := range nodeAsMap {
+	for jobId, jobObject := range jobIdsToJobNodes {
 		if isJobReusableWorkflowJob(jobObject) {
 			reusableJob := &ReusableWorkflowCallJob{ID: utils.GetPtr(jobId)}
 			if err := jobObject.Decode(reusableJob); err != nil {

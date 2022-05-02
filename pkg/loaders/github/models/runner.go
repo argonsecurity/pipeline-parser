@@ -2,12 +2,10 @@ package models
 
 import (
 	"errors"
-	"reflect"
 	"strings"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
 )
 
@@ -64,28 +62,6 @@ func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
 
 	r = generateRunsOnFromTags(tags)
 	return nil
-}
-
-func DecodeRunsOnHookFunc() mapstructure.DecodeHookFuncType {
-	return func(
-		f reflect.Type,
-		t reflect.Type,
-		data any) (any, error) {
-		if t != reflect.TypeOf(RunsOn{}) {
-			return data, nil
-		}
-
-		var tags []string
-		if f.Kind() == reflect.String {
-			tags = []string{data.(string)}
-		} else {
-			if err := mapstructure.Decode(data, &tags); err != nil {
-				return data, err
-			}
-		}
-
-		return generateRunsOnFromTags(tags), nil
-	}
 }
 
 func generateRunsOnFromTags(tags []string) *RunsOn {
