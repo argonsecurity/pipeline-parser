@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strings"
 
+	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"gopkg.in/yaml.v3"
@@ -42,10 +43,11 @@ var (
 )
 
 type RunsOn struct {
-	OS         *string
-	Arch       *string
-	SelfHosted bool
-	Tags       []string
+	OS           *string
+	Arch         *string
+	SelfHosted   bool
+	Tags         []string
+	FileLocation *models.FileLocation
 }
 
 func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
@@ -61,6 +63,7 @@ func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	r = generateRunsOnFromTags(tags)
+	r.FileLocation = loadersUtils.GetFileLocation(node)
 	return nil
 }
 

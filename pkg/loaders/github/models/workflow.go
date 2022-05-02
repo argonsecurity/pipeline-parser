@@ -34,6 +34,7 @@ type Ref struct {
 	PathsIgnore    []string `mapstructure:"paths-ignore,omitempty" yaml:"paths-ignore,omitempty"`
 	Tags           []string `mapstructure:"tags,omitempty" yaml:"tags,omitempty"`
 	TagsIgnore     []string `mapstructure:"tags-ignore,omitempty" yaml:"tags-ignore,omitempty"`
+	FileLocation   *models.FileLocation
 }
 
 type Workflow struct {
