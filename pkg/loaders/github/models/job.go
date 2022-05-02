@@ -109,7 +109,7 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 }
 
 func isJobReusableWorkflowJob(job any) bool {
-	var jobAsMap map[string]*yaml.Node
+	var jobAsMap map[string]any
 	if err := mapstructure.Decode(job, &jobAsMap); err != nil {
 		return false
 	}
