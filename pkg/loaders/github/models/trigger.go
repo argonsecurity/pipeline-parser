@@ -8,37 +8,37 @@ import (
 )
 
 type Inputs map[string]struct {
-	Description string      `mapstructure:"description"`
-	Default     interface{} `mapstructure:"default"`
-	Required    bool        `mapstructure:"required"`
-	Type        string      `mapstructure:"type"`
-	Options     []string    `mapstructure:"options,omitempty"`
+	Description string
+	Default     interface{}
+	Required    bool
+	Type        string
+	Options     []string
 }
 
 type Outputs map[string]*struct {
-	Description string `mapstructure:"description"`
-	Value       string `mapstructure:"value"`
+	Description string
+	Value       string
 }
 
 type WorkflowDispatch struct {
-	Inputs       Inputs `mapstructure:"inputs"`
+	Inputs       Inputs
 	FileLocation *models.FileLocation
 }
 
 type WorkflowCall struct {
-	Inputs  Inputs  `mapstructure:"inputs"`
-	Outputs Outputs `mapstructure:"outputs"`
+	Inputs  Inputs
+	Outputs Outputs
 	Secrets map[string]*struct {
-		Description string `mapstructure:"description"`
-		Required    bool   `mapstructure:"required"`
+		Description string
+		Required    bool
 	}
 	FileLocation *models.FileLocation
 }
 
 type WorkflowRun struct {
-	Types        []string `mapstructure:"types"`
-	Workflows    []string `mapstructure:"workflows"`
-	Ref          `mapstructure:"ref,squash"`
+	Types     []string
+	Workflows []string
+	Ref
 	FileLocation *models.FileLocation
 }
 
@@ -49,7 +49,7 @@ type Event struct {
 }
 
 type Cron struct {
-	Cron         string `mapstructure:"cron" yarn:"cron"`
+	Cron         string
 	FileLocation *models.FileLocation
 }
 
@@ -60,7 +60,7 @@ type On struct {
 	WorkflowCall      *WorkflowCall
 	Schedule          *[]Cron
 	WorkflowRun       *WorkflowRun
-	WorkflowDispatch  *WorkflowDispatch `mapstructure:"workflow_dispatch"`
+	WorkflowDispatch  *WorkflowDispatch
 	FileLocation      *models.FileLocation
 	Events
 }
