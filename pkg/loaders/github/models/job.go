@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"reflect"
 
 	loaderUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
@@ -18,13 +17,32 @@ type Jobs struct {
 
 type Needs []string
 
+func (n *Needs) UnmarshalYAML(node *yaml.Node) error {
+	var needs []string
+	if err := node.Decode(&needs); err == nil {
+		*n = needs
+		return nil
+	}
+
+	var needsString string
+	if err := node.Decode(&needsString); err == nil {
+		*n = []string{needsString}
+		return nil
+	}
+	return errors.New("unable to decode needs")
+}
+
 type Concurrency struct {
 	CancelInProgress *bool   `mapstructure:"cancel-in-progress,omitempty" yaml:"cancel-in-progress,omitempty"`
 	Group            *string `mapstructure:"group" yaml:"group"`
 }
 
+func (c *Concurrency) UnmarshalYAML(node *yaml.Node) error {
+	(*c).Group = &node.Value
+	return nil
+}
+
 type Job struct {
-	*yaml.Node
 	ID              *string                      `mapstructure:"id" yaml:"id"`
 	Concurrency     *Concurrency                 `mapstructure:"concurrency,omitempty" yaml:"concurrency,omitempty"`
 	Container       interface{}                  `mapstructure:"container,omitempty" yaml:"container,omitempty"`
@@ -42,23 +60,23 @@ type Job struct {
 	Steps           *[]Step                      `mapstructure:"steps,omitempty" yaml:"steps,omitempty"`
 	Strategy        *Strategy                    `mapstructure:"strategy,omitempty" yaml:"strategy,omitempty"`
 	TimeoutMinutes  *float64                     `mapstructure:"timeout-minutes,omitempty" yaml:"timeout-minutes,omitempty"`
-	FileLocation    models.FileLocation
+	FileLocation    *models.FileLocation
 }
 
 type ReusableWorkflowCallJob struct {
-	ID           *string             `mapstructure:"id" yaml:"id"`
-	If           string              `mapstructure:"if,omitempty" yaml:"if,omitempty"`
-	Name         string              `mapstructure:"name,omitempty" yaml:"name,omitempty"`
-	Needs        *Needs              `mapstructure:"needs,omitempty" yaml:"needs,omitempty"`
-	Permissions  *PermissionsEvent   `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
-	Secrets      interface{}         `mapstructure:"secrets,omitempty" yaml:"secrets,omitempty"`
-	Uses         string              `mapstructure:"uses" yaml:"uses"`
-	With         map[string]any      `mapstructure:"with,omitempty"`
-	FileLocation models.FileLocation `mapstructure:""`
+	ID           *string              `mapstructure:"id" yaml:"id"`
+	If           string               `mapstructure:"if,omitempty" yaml:"if,omitempty"`
+	Name         string               `mapstructure:"name,omitempty" yaml:"name,omitempty"`
+	Needs        *Needs               `mapstructure:"needs,omitempty" yaml:"needs,omitempty"`
+	Permissions  *PermissionsEvent    `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
+	Secrets      interface{}          `mapstructure:"secrets,omitempty" yaml:"secrets,omitempty"`
+	Uses         string               `mapstructure:"uses" yaml:"uses"`
+	With         map[string]any       `mapstructure:"with,omitempty"`
+	FileLocation *models.FileLocation `mapstructure:""`
 }
 
 func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
-	var nodeAsMap map[string]*yaml.Node
+	var nodeAsMap map[string]yaml.Node
 	if err := node.Decode(&nodeAsMap); err != nil {
 		return err
 	}
@@ -69,14 +87,14 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 	for jobId, jobObject := range nodeAsMap {
 		if isJobReusableWorkflowJob(jobObject) {
 			reusableJob := &ReusableWorkflowCallJob{ID: utils.GetPtr(jobId)}
-			if err := decodeWithHooks(jobObject, reusableJob); err != nil {
+			if err := jobObject.Decode(reusableJob); err != nil {
 				return err
 			}
 			reusableJob.FileLocation = loaderUtils.GetFileLocation(node)
 			reusableWorkflowCallJobs[jobId] = reusableJob
 		} else {
 			job := &Job{ID: utils.GetPtr(jobId)}
-			if err := decodeWithHooks(jobObject, job); err != nil {
+			if err := jobObject.Decode(job); err != nil {
 				return err
 			}
 			job.FileLocation = loaderUtils.GetFileLocation(node)
@@ -97,75 +115,4 @@ func isJobReusableWorkflowJob(job any) bool {
 	}
 	_, ok := jobAsMap["uses"]
 	return ok
-}
-
-func decodeWithHooks[T any](data any, target T) error {
-	dc := &mapstructure.DecoderConfig{
-		DecodeHook: mapstructure.ComposeDecodeHookFunc(
-			mapstructure.TextUnmarshallerHookFunc(),
-			DecodeRunsOnHookFunc(),
-			DecodeNeedsHookFunc(),
-			DecodeTokenPermissionsHookFunc(),
-			// DecodeFileLocationFunc(),
-		),
-		Result: &target,
-	}
-	decoder, err := mapstructure.NewDecoder(dc)
-	if err != nil {
-		return err
-	}
-	return decoder.Decode(data)
-}
-
-// func DecodeFileLocationFunc() mapstructure.DecodeHookFunc {
-// 	return func(f reflect.Type, t reflect.Type, data interface{}) (interface{}, error) {
-// 		if t != reflect.TypeOf(Job{}) && t != reflect.TypeOf(ReusableWorkflowCallJob{}) && f != reflect.TypeOf(&yaml.Node{}) {
-// 			return data, nil
-// 		}
-
-// 		var fileLocation models.FileLocation
-// 		fileLocation.StartRef = &models.FileRef{}
-
-// 		node := data.(*yaml.Node)
-// 		fileLocation.StartRef.Line = node.Line
-// 		fileLocation.StartRef.Column = node.Column
-// 		fileLocation.EndRef = getEndFileRef(node)
-
-// 		if t == reflect.TypeOf(Job{}) {
-// 		}
-
-// 		return ReusableWorkflowCallJob{FileLocation: fileLocation}, nil
-// 	}
-// }
-
-// func getEndFileRef(n *yaml.Node) *models.FileRef {
-// 	if n.Content == nil {
-// 		return &models.FileRef{Line: n.Line, Column: n.Column}
-// 	}
-
-// 	return getEndFileRef(n.Content[len(n.Content)-1])
-// }
-
-func DecodeNeedsHookFunc() mapstructure.DecodeHookFunc {
-	return func(f, t reflect.Type, data any) (any, error) {
-		if t != reflect.TypeOf(Needs{}) {
-			return data, nil
-		}
-
-		var needs []string
-		if err := mapstructure.Decode(data, &needs); err == nil {
-			return needs, nil
-		}
-
-		var needsString string
-		if err := mapstructure.Decode(data, &needsString); err == nil {
-			return []string{needsString}, nil
-		}
-		return nil, errors.New("unable to decode needs")
-	}
-}
-
-func (c *Concurrency) UnmarshalText(text []byte) error {
-	c.Group = utils.GetPtr(string(text))
-	return nil
 }

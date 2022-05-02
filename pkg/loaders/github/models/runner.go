@@ -1,12 +1,14 @@
 package models
 
 import (
+	"errors"
 	"reflect"
 	"strings"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/mitchellh/mapstructure"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -46,6 +48,22 @@ type RunsOn struct {
 	Arch       *string
 	SelfHosted bool
 	Tags       []string
+}
+
+func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
+	var tags []string
+	if node.Tag == "!!str" {
+		tags = []string{node.Value}
+	} else if node.Tag == "!!seq" {
+		tags = utils.Map(node.Content, func(n *yaml.Node) string {
+			return n.Value
+		})
+	} else {
+		return errors.New("invalid RunsOn tags")
+	}
+
+	r = generateRunsOnFromTags(tags)
+	return nil
 }
 
 func DecodeRunsOnHookFunc() mapstructure.DecodeHookFuncType {

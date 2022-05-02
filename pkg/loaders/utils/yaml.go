@@ -5,8 +5,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func GetFileLocation(node *yaml.Node) models.FileLocation {
-	return models.FileLocation{
+func GetFileLocation(node *yaml.Node) *models.FileLocation {
+	return &models.FileLocation{
 		StartRef: &models.FileRef{
 			Line:   node.Line,
 			Column: node.Column,
