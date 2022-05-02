@@ -4,6 +4,7 @@ import (
 	"errors"
 	"reflect"
 
+	loaderUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/mitchellh/mapstructure"
@@ -23,6 +24,7 @@ type Concurrency struct {
 }
 
 type Job struct {
+	*yaml.Node
 	ID              *string                      `mapstructure:"id" yaml:"id"`
 	Concurrency     *Concurrency                 `mapstructure:"concurrency,omitempty" yaml:"concurrency,omitempty"`
 	Container       interface{}                  `mapstructure:"container,omitempty" yaml:"container,omitempty"`
@@ -40,21 +42,23 @@ type Job struct {
 	Steps           *[]Step                      `mapstructure:"steps,omitempty" yaml:"steps,omitempty"`
 	Strategy        *Strategy                    `mapstructure:"strategy,omitempty" yaml:"strategy,omitempty"`
 	TimeoutMinutes  *float64                     `mapstructure:"timeout-minutes,omitempty" yaml:"timeout-minutes,omitempty"`
+	FileLocation    models.FileLocation
 }
 
 type ReusableWorkflowCallJob struct {
-	ID          *string           `mapstructure:"id" yaml:"id"`
-	If          string            `mapstructure:"if,omitempty" yaml:"if,omitempty"`
-	Name        string            `mapstructure:"name,omitempty" yaml:"name,omitempty"`
-	Needs       *Needs            `mapstructure:"needs,omitempty" yaml:"needs,omitempty"`
-	Permissions *PermissionsEvent `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
-	Secrets     interface{}       `mapstructure:"secrets,omitempty" yaml:"secrets,omitempty"`
-	Uses        string            `mapstructure:"uses" yaml:"uses"`
-	With        map[string]any    `mapstructure:"with,omitempty"`
+	ID           *string             `mapstructure:"id" yaml:"id"`
+	If           string              `mapstructure:"if,omitempty" yaml:"if,omitempty"`
+	Name         string              `mapstructure:"name,omitempty" yaml:"name,omitempty"`
+	Needs        *Needs              `mapstructure:"needs,omitempty" yaml:"needs,omitempty"`
+	Permissions  *PermissionsEvent   `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
+	Secrets      interface{}         `mapstructure:"secrets,omitempty" yaml:"secrets,omitempty"`
+	Uses         string              `mapstructure:"uses" yaml:"uses"`
+	With         map[string]any      `mapstructure:"with,omitempty"`
+	FileLocation models.FileLocation `mapstructure:""`
 }
 
 func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
-	var nodeAsMap map[string]any
+	var nodeAsMap map[string]*yaml.Node
 	if err := node.Decode(&nodeAsMap); err != nil {
 		return err
 	}
@@ -68,12 +72,14 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 			if err := decodeWithHooks(jobObject, reusableJob); err != nil {
 				return err
 			}
+			reusableJob.FileLocation = loaderUtils.GetFileLocation(node)
 			reusableWorkflowCallJobs[jobId] = reusableJob
 		} else {
 			job := &Job{ID: utils.GetPtr(jobId)}
 			if err := decodeWithHooks(jobObject, job); err != nil {
 				return err
 			}
+			job.FileLocation = loaderUtils.GetFileLocation(node)
 			normalJobs[jobId] = job
 		}
 	}
@@ -85,7 +91,7 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 }
 
 func isJobReusableWorkflowJob(job any) bool {
-	var jobAsMap map[string]any
+	var jobAsMap map[string]*yaml.Node
 	if err := mapstructure.Decode(job, &jobAsMap); err != nil {
 		return false
 	}
@@ -100,6 +106,7 @@ func decodeWithHooks[T any](data any, target T) error {
 			DecodeRunsOnHookFunc(),
 			DecodeNeedsHookFunc(),
 			DecodeTokenPermissionsHookFunc(),
+			// DecodeFileLocationFunc(),
 		),
 		Result: &target,
 	}
@@ -109,6 +116,35 @@ func decodeWithHooks[T any](data any, target T) error {
 	}
 	return decoder.Decode(data)
 }
+
+// func DecodeFileLocationFunc() mapstructure.DecodeHookFunc {
+// 	return func(f reflect.Type, t reflect.Type, data interface{}) (interface{}, error) {
+// 		if t != reflect.TypeOf(Job{}) && t != reflect.TypeOf(ReusableWorkflowCallJob{}) && f != reflect.TypeOf(&yaml.Node{}) {
+// 			return data, nil
+// 		}
+
+// 		var fileLocation models.FileLocation
+// 		fileLocation.StartRef = &models.FileRef{}
+
+// 		node := data.(*yaml.Node)
+// 		fileLocation.StartRef.Line = node.Line
+// 		fileLocation.StartRef.Column = node.Column
+// 		fileLocation.EndRef = getEndFileRef(node)
+
+// 		if t == reflect.TypeOf(Job{}) {
+// 		}
+
+// 		return ReusableWorkflowCallJob{FileLocation: fileLocation}, nil
+// 	}
+// }
+
+// func getEndFileRef(n *yaml.Node) *models.FileRef {
+// 	if n.Content == nil {
+// 		return &models.FileRef{Line: n.Line, Column: n.Column}
+// 	}
+
+// 	return getEndFileRef(n.Content[len(n.Content)-1])
+// }
 
 func DecodeNeedsHookFunc() mapstructure.DecodeHookFunc {
 	return func(f, t reflect.Type, data any) (any, error) {

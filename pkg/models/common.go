@@ -28,3 +28,13 @@ type Entity struct {
 	ID   *string
 	Name *string
 }
+
+type FileRef struct {
+	Line   int
+	Column int
+}
+
+type FileLocation struct {
+	StartRef *FileRef
+	EndRef   *FileRef
+}
