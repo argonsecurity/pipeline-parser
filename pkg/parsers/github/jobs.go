@@ -24,6 +24,7 @@ func parseJob(jobName string, job *githubModels.Job) (models.Job, error) {
 		Name:                 &job.Name,
 		ContinueOnError:      &job.ContinueOnError,
 		EnvironmentVariables: parseEnvironmentVariablesRef(job.Env),
+		FileLocation:         job.FileLocation,
 	}
 
 	if job.Name == "" {

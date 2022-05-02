@@ -22,4 +22,5 @@ type Job struct {
 	TokenPermissions     *TokenPermissions
 	Dependencies         *[]string
 	Metadata             Metadata
+	FileLocation         *FileLocation
 }

@@ -3,7 +3,7 @@ package models
 type Pipeline struct {
 	Id           *string
 	Name         *string
-	Triggers     *[]Trigger
+	Triggers     *Triggers
 	Jobs         *[]Job
 	Imports      *[]string
 	Parameters   *[]Parameter
@@ -18,6 +18,7 @@ type Defaults struct {
 	Conditions           *[]Condition
 	TokenPermissions     *TokenPermissions
 	Settings             *map[string]any
+	FileLocation         *FileLocation
 }
 
 type Repository struct {

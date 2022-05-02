@@ -159,62 +159,64 @@ func Test_GitHubParser(t *testing.T) {
 			Filename: "all-triggers.yaml",
 			Expected: &models.Pipeline{
 				Name: utils.GetPtr("all-triggers"),
-				Triggers: SortTriggers(&[]models.Trigger{
-					{
-						Event:     models.ScheduledEvent,
-						Scheduled: utils.GetPtr("30 2 * * *"),
-					},
-					{
-						Event: models.PushEvent,
-						Branches: &models.Filter{
-							AllowList: []string{"master"},
+				Triggers: &models.Triggers{
+					Triggers: SortTriggers(&[]models.Trigger{
+						{
+							Event:     models.ScheduledEvent,
+							Scheduled: utils.GetPtr("30 2 * * *"),
 						},
-					},
-					{
-						Event: models.PipelineRunEvent,
-						Branches: &models.Filter{
-							DenyList: []string{"master"},
-						},
-					},
-					{
-						Event: models.PullRequestEvent,
-						Paths: &models.Filter{
-							DenyList: []string{"*/test/*"},
-						},
-					},
-					{
-						Event: "pull_request_target",
-						Paths: &models.Filter{
-							AllowList: []string{"*/test/*"},
-						},
-					},
-					{
-						Event: models.ManualEvent,
-						Paramters: []models.Parameter{
-							{
-								Name:        utils.GetPtr("workflow-input"),
-								Description: utils.GetPtr("The workflow input"),
-								Default:     "default-value",
+						{
+							Event: models.PushEvent,
+							Branches: &models.Filter{
+								AllowList: []string{"master"},
 							},
 						},
-					},
-					{
-						Event: models.PipelineTriggerEvent,
-						Paramters: []models.Parameter{
-							{
-								Name:        utils.GetPtr("workflow-input"),
-								Description: utils.GetPtr("The workflow input"),
-								Default:     "default-value",
+						{
+							Event: models.PipelineRunEvent,
+							Branches: &models.Filter{
+								DenyList: []string{"master"},
 							},
 						},
-					},
-					{
-						Event: "label",
-						Filters: map[string]any{
-							"types": []string{"created"},
+						{
+							Event: models.PullRequestEvent,
+							Paths: &models.Filter{
+								DenyList: []string{"*/test/*"},
+							},
 						},
-					},
-				}),
+						{
+							Event: "pull_request_target",
+							Paths: &models.Filter{
+								AllowList: []string{"*/test/*"},
+							},
+						},
+						{
+							Event: models.ManualEvent,
+							Paramters: []models.Parameter{
+								{
+									Name:        utils.GetPtr("workflow-input"),
+									Description: utils.GetPtr("The workflow input"),
+									Default:     "default-value",
+								},
+							},
+						},
+						{
+							Event: models.PipelineTriggerEvent,
+							Paramters: []models.Parameter{
+								{
+									Name:        utils.GetPtr("workflow-input"),
+									Description: utils.GetPtr("The workflow input"),
+									Default:     "default-value",
+								},
+							},
+						},
+						{
+							Event: "label",
+							Filters: map[string]any{
+								"types": []string{"created"},
+							},
+						},
+					}),
+				},
 			},
 		},
 		{
@@ -376,7 +378,9 @@ func Test_GitHubParser(t *testing.T) {
 			pipeline.Jobs = SortJobs(pipeline.Jobs)
 		}
 		if pipeline.Triggers != nil {
-			pipeline.Triggers = SortTriggers(pipeline.Triggers)
+			pipeline.Triggers = &models.Triggers{
+				Triggers: SortTriggers(pipeline.Triggers.Triggers),
+			}
 		}
 
 		if diff := deep.Equal(pipeline, testCase.Expected); diff != nil {

@@ -32,6 +32,7 @@ type Step struct {
 	Shell                *Shell
 	Task                 *Task
 	Metadata             Metadata
+	FileLocation         *FileLocation
 }
 
 type Task struct {

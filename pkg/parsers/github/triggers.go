@@ -24,53 +24,59 @@ var (
 	}
 )
 
-func parseWorkflowTriggers(workflow *githubModels.Workflow) *[]models.Trigger {
+func parseWorkflowTriggers(workflow *githubModels.Workflow) *models.Triggers {
 	if workflow.On == nil {
 		return nil
 	}
 
 	// Handle workflow.on if it is a list of event names
 	if events, isEventListFormat := utils.ToSlice[string](workflow.On); isEventListFormat {
-		return utils.GetPtr(generateTriggersFromEvents(events))
+		return &models.Triggers{
+			Triggers:     utils.GetPtr(generateTriggersFromEvents(events)),
+			FileLocation: workflow.On.FileLocation,
+		}
 	}
 
 	// Handle workflow.on if each event has a specific configuration
 	on := workflow.On
-	triggers := []models.Trigger{}
+	triggerSlice := []models.Trigger{}
 
 	if on.Push != nil {
-		triggers = append(triggers, parseRef(on.Push, models.PushEvent))
+		triggerSlice = append(triggerSlice, parseRef(on.Push, models.PushEvent))
 	}
 
 	if on.PullRequest != nil {
-		triggers = append(triggers, parseRef(on.PullRequest, models.PullRequestEvent))
+		triggerSlice = append(triggerSlice, parseRef(on.PullRequest, models.PullRequestEvent))
 	}
 
 	if on.PullRequestTarget != nil {
-		triggers = append(triggers, parseRef(on.PullRequestTarget, models.EventType(pullRequestTargetEvent)))
+		triggerSlice = append(triggerSlice, parseRef(on.PullRequestTarget, models.EventType(pullRequestTargetEvent)))
 	}
 
 	if on.WorkflowDispatch != nil {
-		triggers = append(triggers, parseWorkflowDispatch(on.WorkflowDispatch))
+		triggerSlice = append(triggerSlice, parseWorkflowDispatch(on.WorkflowDispatch))
 	}
 
 	if on.WorkflowCall != nil {
-		triggers = append(triggers, parseWorkflowCall(on.WorkflowCall))
+		triggerSlice = append(triggerSlice, parseWorkflowCall(on.WorkflowCall))
 	}
 
 	if on.WorkflowRun != nil {
-		triggers = append(triggers, parseWorkflowRun(on.WorkflowRun))
+		triggerSlice = append(triggerSlice, parseWorkflowRun(on.WorkflowRun))
 	}
 
 	if on.Schedule != nil {
-		triggers = append(triggers, parseSchedule(on.Schedule)...)
+		triggerSlice = append(triggerSlice, parseSchedule(on.Schedule)...)
 	}
 
 	if len(on.Events) > 0 {
-		triggers = append(triggers, parseEvents(on.Events)...)
+		triggerSlice = append(triggerSlice, parseEvents(on.Events)...)
 	}
 
-	return &triggers
+	return &models.Triggers{
+		Triggers:     &triggerSlice,
+		FileLocation: workflow.On.FileLocation,
+	}
 }
 
 func parseEvents(events githubModels.Events) []models.Trigger {
