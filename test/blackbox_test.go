@@ -29,7 +29,7 @@ func readFile(filename string) []byte {
 	return b
 }
 
-func getAllGitHubPermissions(permission models.Permission) *map[string]models.Permission {
+func getAllGitHubPermissions(permission models.Permission) *models.TokenPermissions {
 	allPermissions := map[string]models.Permission{
 		"run-pipeline":        permission,
 		"checks":              permission,
@@ -45,7 +45,9 @@ func getAllGitHubPermissions(permission models.Permission) *map[string]models.Pe
 		"security-events":     permission,
 		"statuses":            permission,
 	}
-	return &allPermissions
+	return &models.TokenPermissions{
+		Permissions: allPermissions,
+	}
 }
 
 func Test_GitHubParser(t *testing.T) {
@@ -229,16 +231,18 @@ func Test_GitHubParser(t *testing.T) {
 					},
 				}),
 				Defaults: &models.Defaults{
-					TokenPermissions: &map[string]models.Permission{
+					TokenPermissions: &models.TokenPermissions{
+						Permissions: map[string]models.Permission{
 
-						"run-pipeline": {
-							Read: true,
-						},
-						"statuses": {
-							Write: true,
-						},
-						"pull-request": {
-							Read: true,
+							"run-pipeline": {
+								Read: true,
+							},
+							"statuses": {
+								Write: true,
+							},
+							"pull-request": {
+								Read: true,
+							},
 						},
 					},
 				},
@@ -294,9 +298,11 @@ func Test_GitHubParser(t *testing.T) {
 					{
 						ID:   utils.GetPtr("job1"),
 						Name: utils.GetPtr("Job 1"),
-						EnvironmentVariables: &models.EnvironmentVariables{
-							"STRING": "string",
-							"NUMBER": 1,
+						EnvironmentVariables: &models.EnvironmentVariablesRef{
+							EnvironmentVariables: models.EnvironmentVariables{
+								"STRING": "string",
+								"NUMBER": 1,
+							},
 						},
 						ContinueOnError: utils.GetPtr(false),
 						TimeoutMS:       utils.GetPtr(21600000),
@@ -307,18 +313,22 @@ func Test_GitHubParser(t *testing.T) {
 								Shell: &models.Shell{
 									Script: utils.GetPtr("command line"),
 								},
-								EnvironmentVariables: &models.EnvironmentVariables{
-									"STRING": "string",
-									"NUMBER": 1,
+								EnvironmentVariables: &models.EnvironmentVariablesRef{
+									EnvironmentVariables: models.EnvironmentVariables{
+										"STRING": "string",
+										"NUMBER": 1,
+									},
 								},
 							},
 						},
 					},
 				}),
 				Defaults: &models.Defaults{
-					EnvironmentVariables: &models.EnvironmentVariables{
-						"STRING": "string",
-						"NUMBER": 1,
+					EnvironmentVariables: &models.EnvironmentVariablesRef{
+						EnvironmentVariables: models.EnvironmentVariables{
+							"STRING": "string",
+							"NUMBER": 1,
+						},
 					},
 				},
 			},

@@ -13,9 +13,7 @@ func (g *GitHubParser) Parse(workflow *githubModels.Workflow) (*models.Pipeline,
 		Name: &workflow.Name,
 	}
 
-	if pipeline.Triggers, err = parseWorkflowTriggers(workflow); err != nil {
-		return nil, err
-	}
+	pipeline.Triggers = parseWorkflowTriggers(workflow)
 
 	if workflow.Jobs != nil {
 		if pipeline.Jobs, err = parseWorkflowJobs(workflow); err != nil {

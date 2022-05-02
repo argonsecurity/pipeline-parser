@@ -43,23 +43,23 @@ func (c *Concurrency) UnmarshalYAML(node *yaml.Node) error {
 }
 
 type Job struct {
-	ID              *string                      `yaml:"id"`
-	Concurrency     *Concurrency                 `yaml:"concurrency,omitempty"`
-	Container       interface{}                  `yaml:"container,omitempty"`
-	ContinueOnError bool                         `yaml:"continue-on-error,omitempty"`
-	Defaults        *Defaults                    `yaml:"defaults,omitempty"`
-	Env             *models.EnvironmentVariables `yaml:"env,omitempty"`
-	Environment     interface{}                  `yaml:"environment,omitempty"`
-	If              string                       `yaml:"if,omitempty"`
-	Name            string                       `yaml:"name,omitempty"`
-	Needs           *Needs                       `yaml:"needs,omitempty"`
-	Outputs         map[string]string            `yaml:"outputs,omitempty"`
-	Permissions     *PermissionsEvent            `yaml:"permissions,omitempty"`
-	RunsOn          *RunsOn                      `yaml:"runs-on"`
-	Services        map[string]*Container        `yaml:"services,omitempty"`
-	Steps           *Steps                       `yaml:"steps,omitempty"`
-	Strategy        *Strategy                    `yaml:"strategy,omitempty"`
-	TimeoutMinutes  *float64                     `yaml:"timeout-minutes,omitempty"`
+	ID              *string                  `yaml:"id"`
+	Concurrency     *Concurrency             `yaml:"concurrency,omitempty"`
+	Container       interface{}              `yaml:"container,omitempty"`
+	ContinueOnError bool                     `yaml:"continue-on-error,omitempty"`
+	Defaults        *Defaults                `yaml:"defaults,omitempty"`
+	Env             *EnvironmentVariablesRef `yaml:"env,omitempty"`
+	Environment     interface{}              `yaml:"environment,omitempty"`
+	If              string                   `yaml:"if,omitempty"`
+	Name            string                   `yaml:"name,omitempty"`
+	Needs           *Needs                   `yaml:"needs,omitempty"`
+	Outputs         map[string]string        `yaml:"outputs,omitempty"`
+	Permissions     *PermissionsEvent        `yaml:"permissions,omitempty"`
+	RunsOn          *RunsOn                  `yaml:"runs-on"`
+	Services        map[string]*Container    `yaml:"services,omitempty"`
+	Steps           *Steps                   `yaml:"steps,omitempty"`
+	Strategy        *Strategy                `yaml:"strategy,omitempty"`
+	TimeoutMinutes  *float64                 `yaml:"timeout-minutes,omitempty"`
 	FileLocation    *models.FileLocation
 }
 

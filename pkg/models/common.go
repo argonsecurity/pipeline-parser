@@ -1,6 +1,11 @@
 package models
 
 type EnvironmentVariables map[string]any
+type EnvironmentVariablesRef struct {
+	EnvironmentVariables
+	FileLocation *FileLocation
+}
+
 type Condition string
 
 type Filter struct {

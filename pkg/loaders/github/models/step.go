@@ -9,17 +9,17 @@ import (
 type Steps []Step
 
 type Step struct {
-	ContinueOnError  *bool                        `yaml:"continue-on-error,omitempty"`
-	Env              *models.EnvironmentVariables `yaml:"env,omitempty"`
-	Id               string                       `yaml:"id,omitempty"`
-	If               string                       `yaml:"if,omitempty"`
-	Name             string                       `yaml:"name,omitempty"`
-	Run              string                       `yaml:"run,omitempty"`
-	Shell            string                       `yaml:"shell,omitempty"`
-	TimeoutMinutes   int                          `yaml:"timeout-minutes,omitempty"`
-	Uses             string                       `yaml:"uses,omitempty"`
-	With             map[string]any               `yaml:"with,omitempty"`
-	WorkingDirectory string                       `yaml:"working-directory,omitempty"`
+	ContinueOnError  *bool                    `yaml:"continue-on-error,omitempty"`
+	Env              *EnvironmentVariablesRef `yaml:"env,omitempty"`
+	Id               string                   `yaml:"id,omitempty"`
+	If               string                   `yaml:"if,omitempty"`
+	Name             string                   `yaml:"name,omitempty"`
+	Run              string                   `yaml:"run,omitempty"`
+	Shell            string                   `yaml:"shell,omitempty"`
+	TimeoutMinutes   int                      `yaml:"timeout-minutes,omitempty"`
+	Uses             string                   `yaml:"uses,omitempty"`
+	With             map[string]any           `yaml:"with,omitempty"`
+	WorkingDirectory string                   `yaml:"working-directory,omitempty"`
 	FileLocation     *models.FileLocation
 }
 

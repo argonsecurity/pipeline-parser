@@ -38,13 +38,13 @@ type Ref struct {
 }
 
 type Workflow struct {
-	Concurrency *Concurrency                 `yaml:"concurrency,omitempty"`
-	Defaults    *Defaults                    `yaml:"defaults,omitempty"`
-	Env         *models.EnvironmentVariables `yaml:"env,omitempty"`
-	Jobs        *Jobs                        `yaml:"jobs"`
-	Name        string                       `yaml:"name,omitempty"`
-	On          *On                          `yaml:"on"`
-	Permissions *PermissionsEvent            `yaml:"permissions,omitempty"`
+	Concurrency *Concurrency                    `yaml:"concurrency,omitempty"`
+	Defaults    *Defaults                       `yaml:"defaults,omitempty"`
+	Env         *models.EnvironmentVariablesRef `yaml:"env,omitempty"`
+	Jobs        *Jobs                           `yaml:"jobs"`
+	Name        string                          `yaml:"name,omitempty"`
+	On          *On                             `yaml:"on"`
+	Permissions *PermissionsEvent               `yaml:"permissions,omitempty"`
 }
 
 type Run struct {

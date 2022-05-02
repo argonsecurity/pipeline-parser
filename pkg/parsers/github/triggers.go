@@ -24,14 +24,14 @@ var (
 	}
 )
 
-func parseWorkflowTriggers(workflow *githubModels.Workflow) (*[]models.Trigger, error) {
+func parseWorkflowTriggers(workflow *githubModels.Workflow) *[]models.Trigger {
 	if workflow.On == nil {
-		return nil, nil
+		return nil
 	}
 
 	// Handle workflow.on if it is a list of event names
 	if events, isEventListFormat := utils.ToSlice[string](workflow.On); isEventListFormat {
-		return utils.GetPtr(generateTriggersFromEvents(events)), nil
+		return utils.GetPtr(generateTriggersFromEvents(events))
 	}
 
 	// Handle workflow.on if each event has a specific configuration
@@ -70,7 +70,7 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) (*[]models.Trigger, 
 		triggers = append(triggers, parseEvents(on.Events)...)
 	}
 
-	return &triggers, nil
+	return &triggers
 }
 
 func parseEvents(events githubModels.Events) []models.Trigger {
