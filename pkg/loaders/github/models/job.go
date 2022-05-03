@@ -1,8 +1,9 @@
 package models
 
 import (
-	"errors"
+	"fmt"
 
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -18,18 +19,17 @@ type Jobs struct {
 type Needs []string
 
 func (n *Needs) UnmarshalYAML(node *yaml.Node) error {
-	var needs []string
-	if err := node.Decode(&needs); err == nil {
-		*n = needs
+	if node.Tag == consts.SequenceTag {
+		*n = utils.Map(node.Content, func(n *yaml.Node) string { return n.Value })
 		return nil
 	}
 
-	var needsString string
-	if err := node.Decode(&needsString); err == nil {
-		*n = []string{needsString}
+	if node.Tag == consts.StringTag {
+		*n = []string{node.Value}
 		return nil
 	}
-	return errors.New("unable to decode needs")
+
+	return fmt.Errorf("unsupported needs tag: %s", node.Tag)
 }
 
 type Concurrency struct {
