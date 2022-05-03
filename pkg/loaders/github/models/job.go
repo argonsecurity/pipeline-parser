@@ -19,7 +19,11 @@ type Needs []string
 
 func (n *Needs) UnmarshalYAML(node *yaml.Node) error {
 	if node.Tag == consts.SequenceTag {
-		*n = utils.Map(node.Content, func(n *yaml.Node) string { return n.Value })
+		tags, err := loadersUtils.ParseYamlStringSequenceToSlice(node)
+		if err != nil {
+			return err
+		}
+		*n = tags
 		return nil
 	}
 

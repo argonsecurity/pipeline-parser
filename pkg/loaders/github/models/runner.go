@@ -53,12 +53,13 @@ type RunsOn struct {
 
 func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
 	var tags []string
+	var err error
 	if node.Tag == consts.StringTag {
 		tags = []string{node.Value}
 	} else if node.Tag == consts.SequenceTag {
-		tags = utils.Map(node.Content, func(n *yaml.Node) string {
-			return n.Value
-		})
+		if tags, err = loadersUtils.ParseYamlStringSequenceToSlice(node); err != nil {
+			return err
+		}
 	} else {
 		return errors.New("invalid RunsOn tags")
 	}
