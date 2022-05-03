@@ -18,21 +18,21 @@ type Jobs struct {
 type Needs []string
 
 func (n *Needs) UnmarshalYAML(node *yaml.Node) error {
+	var tags []string
+	var err error
+
 	if node.Tag == consts.SequenceTag {
-		tags, err := loadersUtils.ParseYamlStringSequenceToSlice(node)
-		if err != nil {
+		if tags, err = loadersUtils.ParseYamlStringSequenceToSlice(node); err != nil {
 			return err
 		}
-		*n = tags
-		return nil
+	} else if node.Tag == consts.StringTag {
+		tags = []string{node.Value}
+	} else {
+		return fmt.Errorf("unexpected tag %s", node.Tag)
 	}
 
-	if node.Tag == consts.StringTag {
-		*n = []string{node.Value}
-		return nil
-	}
-
-	return fmt.Errorf("unsupported needs tag: %s", node.Tag)
+	*n = tags
+	return nil
 }
 
 type Concurrency struct {
