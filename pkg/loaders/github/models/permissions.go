@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/mitchellh/mapstructure"
@@ -49,7 +50,7 @@ func createFullPermissions(permission string) *PermissionsEvent {
 }
 
 func (p *PermissionsEvent) UnmarshalYAML(node *yaml.Node) error {
-	if node.Tag == "!!str" {
+	if node.Tag == consts.StringTag {
 		switch node.Value {
 		case readAll:
 			*p = *createFullPermissions("read")

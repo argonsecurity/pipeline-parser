@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
@@ -72,7 +73,7 @@ type On struct {
 
 func (on *On) UnmarshalYAML(node *yaml.Node) error {
 	on.FileLocation = loadersUtils.GetFileLocation(node)
-	if node.Tag == "!!seq" {
+	if node.Tag == consts.SequenceTag {
 		fileLocation := loadersUtils.GetFileLocation(node)
 		for _, event := range node.Content {
 			on.unmarshalString(event.Value, &yaml.Node{}, fileLocation)

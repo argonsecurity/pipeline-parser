@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -52,9 +53,9 @@ type RunsOn struct {
 
 func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
 	var tags []string
-	if node.Tag == "!!str" {
+	if node.Tag == consts.StringTag {
 		tags = []string{node.Value}
-	} else if node.Tag == "!!seq" {
+	} else if node.Tag == consts.SequenceTag {
 		tags = utils.Map(node.Content, func(n *yaml.Node) string {
 			return n.Value
 		})
