@@ -4,7 +4,6 @@ import (
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/mitchellh/mapstructure"
 )
 
 const (
@@ -66,7 +65,7 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) *models.Triggers {
 	}
 
 	if on.Schedule != nil {
-		triggerSlice = append(triggerSlice, parseSchedule(on.Schedule)...)
+		triggerSlice = append(triggerSlice, parseSchedule(on.Schedule))
 	}
 
 	if len(on.Events) > 0 {
@@ -83,16 +82,20 @@ func parseEvents(events githubModels.Events) []models.Trigger {
 	return utils.MapToSlice(events, func(eventName string, event githubModels.Event) models.Trigger {
 		trigger := models.Trigger{
 			Event: models.EventType(eventName),
+			Filters: map[string]any{
+				"types": event.Types,
+			},
+			FileLocation: event.FileLocation,
 		}
-		mapstructure.Decode(event, &trigger.Filters)
 		return trigger
 	})
 }
 
 func parseWorkflowRun(workflowRun *githubModels.WorkflowRun) models.Trigger {
 	trigger := models.Trigger{
-		Event:     models.PipelineRunEvent,
-		Pipelines: workflowRun.Workflows,
+		FileLocation: workflowRun.FileLocation,
+		Event:        models.PipelineRunEvent,
+		Pipelines:    workflowRun.Workflows,
 		Branches: &models.Filter{
 			AllowList: workflowRun.Branches,
 			DenyList:  workflowRun.BranchesIgnore,
@@ -108,8 +111,9 @@ func parseWorkflowRun(workflowRun *githubModels.WorkflowRun) models.Trigger {
 
 func parseWorkflowCall(workflowCall *githubModels.WorkflowCall) models.Trigger {
 	return models.Trigger{
-		Event:     models.PipelineTriggerEvent,
-		Paramters: parseInputs(workflowCall.Inputs),
+		Event:        models.PipelineTriggerEvent,
+		Paramters:    parseInputs(workflowCall.Inputs),
+		FileLocation: workflowCall.FileLocation,
 	}
 }
 
@@ -129,7 +133,8 @@ func parseInputs(inputs githubModels.Inputs) []models.Parameter {
 
 func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) models.Trigger {
 	trigger := models.Trigger{
-		Event: models.ManualEvent,
+		Event:        models.ManualEvent,
+		FileLocation: workflowDispatch.FileLocation,
 	}
 
 	if workflowDispatch.Inputs != nil {
@@ -140,7 +145,8 @@ func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) mode
 
 func parseRef(ref *githubModels.Ref, event models.EventType) models.Trigger {
 	trigger := models.Trigger{
-		Event: event,
+		Event:        event,
+		FileLocation: ref.FileLocation,
 	}
 
 	if len(ref.Paths)+len(ref.PathsIgnore) > 0 {
@@ -167,13 +173,15 @@ func parseRef(ref *githubModels.Ref, event models.EventType) models.Trigger {
 	return trigger
 }
 
-func parseSchedule(schedule *[]githubModels.Cron) []models.Trigger {
-	return utils.Map(*schedule, func(cron githubModels.Cron) models.Trigger {
-		return models.Trigger{
-			Event:     models.ScheduledEvent,
-			Scheduled: utils.GetPtr(cron.Cron),
-		}
-	})
+func parseSchedule(schedule *githubModels.Schedule) models.Trigger {
+	return models.Trigger{
+		Event: models.ScheduledEvent,
+		Schedules: utils.GetPtr(utils.Map(*schedule.Crons, func(cron githubModels.Cron) string {
+			return cron.Cron
+		})),
+		FileLocation: schedule.FileLocation,
+	}
+
 }
 
 func generateTriggersFromEvents(events []string) []models.Trigger {

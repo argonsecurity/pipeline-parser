@@ -11,11 +11,11 @@ func GetFileLocation(node *yaml.Node) *models.FileLocation {
 			Line:   node.Line,
 			Column: node.Column,
 		},
-		EndRef: getEndFileRef(node),
+		EndRef: GetEndFileRef(node),
 	}
 }
 
-func getEndFileRef(node *yaml.Node) *models.FileRef {
+func GetEndFileRef(node *yaml.Node) *models.FileRef {
 	if node.Content == nil {
 		return &models.FileRef{
 			Line:   node.Line,
@@ -23,5 +23,15 @@ func getEndFileRef(node *yaml.Node) *models.FileRef {
 		}
 	}
 
-	return getEndFileRef(node.Content[len(node.Content)-1])
+	return GetEndFileRef(node.Content[len(node.Content)-1])
+}
+
+func GetMapKeyFileLocation(jobIDNode, jobNode *yaml.Node) *models.FileLocation {
+	return &models.FileLocation{
+		StartRef: &models.FileRef{
+			Line:   jobIDNode.Line,
+			Column: jobIDNode.Column,
+		},
+		EndRef: GetEndFileRef(jobNode),
+	}
 }

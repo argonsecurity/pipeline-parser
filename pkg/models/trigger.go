@@ -20,7 +20,7 @@ type Trigger struct {
 	Filters      map[string]any
 	Event        EventType
 	Disabled     *bool
-	Scheduled    *string
+	Schedules    *[]string
 	FileLocation *FileLocation
 }
 

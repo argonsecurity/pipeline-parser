@@ -3,7 +3,7 @@ package models
 import (
 	"errors"
 
-	loaderUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
+	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/mitchellh/mapstructure"
@@ -84,23 +84,29 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 	normalJobs := make(map[string]*Job, 0)
 	reusableWorkflowCallJobs := make(map[string]*ReusableWorkflowCallJob, 0)
 
-	for jobId, jobObject := range jobIdsToJobNodes {
-		if isJobReusableWorkflowJob(jobObject) {
-			reusableJob := &ReusableWorkflowCallJob{ID: utils.GetPtr(jobId)}
-			if err := jobObject.Decode(reusableJob); err != nil {
+	for i := 0; i < len(node.Content); i += 2 {
+		jobIDNode := node.Content[i]
+		jobNode := node.Content[i+1]
+
+		jobID := jobIDNode.Value
+
+		if isJobReusableWorkflowJob(jobNode) {
+			reusableJob := &ReusableWorkflowCallJob{ID: utils.GetPtr(jobID)}
+			if err := jobNode.Decode(reusableJob); err != nil {
 				return err
 			}
-			reusableJob.FileLocation = loaderUtils.GetFileLocation(node)
-			reusableWorkflowCallJobs[jobId] = reusableJob
+			reusableJob.FileLocation = loadersUtils.GetMapKeyFileLocation(jobIDNode, jobNode)
+			reusableWorkflowCallJobs[jobID] = reusableJob
 		} else {
-			job := &Job{ID: utils.GetPtr(jobId)}
-			if err := jobObject.Decode(job); err != nil {
+			job := &Job{ID: utils.GetPtr(jobID)}
+			if err := jobNode.Decode(job); err != nil {
 				return err
 			}
-			job.FileLocation = loaderUtils.GetFileLocation(node)
-			normalJobs[jobId] = job
+			job.FileLocation = loadersUtils.GetMapKeyFileLocation(jobIDNode, jobNode)
+			normalJobs[jobID] = job
 		}
 	}
+
 	*j = Jobs{
 		NormalJobs:               normalJobs,
 		ReusableWorkflowCallJobs: reusableWorkflowCallJobs,
