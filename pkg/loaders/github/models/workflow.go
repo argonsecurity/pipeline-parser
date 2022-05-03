@@ -37,16 +37,6 @@ type Ref struct {
 	FileLocation   *models.FileLocation
 }
 
-type Workflow struct {
-	Concurrency *Concurrency                    `yaml:"concurrency,omitempty"`
-	Defaults    *Defaults                       `yaml:"defaults,omitempty"`
-	Env         *models.EnvironmentVariablesRef `yaml:"env,omitempty"`
-	Jobs        *Jobs                           `yaml:"jobs"`
-	Name        string                          `yaml:"name,omitempty"`
-	On          *On                             `yaml:"on"`
-	Permissions *PermissionsEvent               `yaml:"permissions,omitempty"`
-}
-
 type Run struct {
 	Shell            interface{} `yaml:"shell,omitempty"`
 	WorkingDirectory string      `yaml:"working-directory,omitempty"`
@@ -56,4 +46,14 @@ type Strategy struct {
 	FailFast    bool        `yaml:"fail-fast,omitempty"`
 	Matrix      interface{} `yaml:"matrix"`
 	MaxParallel float64     `yaml:"max-parallel,omitempty"`
+}
+
+type Workflow struct {
+	Concurrency *Concurrency             `yaml:"concurrency,omitempty"`
+	Defaults    *Defaults                `yaml:"defaults,omitempty"`
+	Env         *EnvironmentVariablesRef `yaml:"env,omitempty"`
+	Jobs        *Jobs                    `yaml:"jobs"`
+	Name        string                   `yaml:"name,omitempty"`
+	On          *On                      `yaml:"on"`
+	Permissions *PermissionsEvent        `yaml:"permissions,omitempty"`
 }

@@ -62,7 +62,7 @@ func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
 		return errors.New("invalid RunsOn tags")
 	}
 
-	r = generateRunsOnFromTags(tags)
+	*r = *generateRunsOnFromTags(tags)
 	r.FileLocation = loadersUtils.GetFileLocation(node)
 	return nil
 }

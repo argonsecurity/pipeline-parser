@@ -85,7 +85,7 @@ func (on *On) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 	}
-	on.FileLocation.StartRef.Line -= 1
+	on.FileLocation.StartRef.Line-- // The line of the "on" node is currently not accessible, this is a patch
 	return nil
 }
 

@@ -19,5 +19,6 @@ func (e *EnvironmentVariablesRef) UnmarshalYAML(node *yaml.Node) error {
 
 	e.EnvironmentVariables = env
 	e.FileLocation = loadersUtils.GetFileLocation(node)
+	e.FileLocation.StartRef.Line-- // The "env" node is not accessible, this is a patch
 	return nil
 }

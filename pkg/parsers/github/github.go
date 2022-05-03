@@ -34,17 +34,12 @@ func parseWorkflowDefaults(workflow *githubModels.Workflow) (*models.Defaults, e
 	}
 
 	defaults := &models.Defaults{}
-	if workflow.Permissions != nil {
-		permissions, err := parseTokenPermissions(workflow.Permissions)
-		if err != nil {
-			return nil, err
-		}
-		defaults.TokenPermissions = permissions
+	permissions, err := parseTokenPermissions(workflow.Permissions)
+	if err != nil {
+		return nil, err
 	}
-
-	if workflow.Env != nil {
-		defaults.EnvironmentVariables = workflow.Env
-	}
+	defaults.TokenPermissions = permissions
+	defaults.EnvironmentVariables = parseEnvironmentVariablesRef(workflow.Env)
 
 	return defaults, nil
 }

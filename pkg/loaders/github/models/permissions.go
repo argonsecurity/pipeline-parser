@@ -69,5 +69,6 @@ func (p *PermissionsEvent) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	p.FileLocation = loadersUtils.GetFileLocation(node)
+	p.FileLocation.StartRef.Line--
 	return nil
 }
