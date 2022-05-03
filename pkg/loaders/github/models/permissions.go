@@ -70,6 +70,6 @@ func (p *PermissionsEvent) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	p.FileLocation = loadersUtils.GetFileLocation(node)
-	p.FileLocation.StartRef.Line--
+	p.FileLocation.StartRef.Line-- // The "permissions" node is not accessible, this is a patch
 	return nil
 }
