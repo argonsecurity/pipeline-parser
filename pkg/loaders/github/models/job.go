@@ -7,7 +7,6 @@ import (
 	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
 )
 
@@ -76,13 +75,8 @@ type ReusableWorkflowCallJob struct {
 }
 
 func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
-	var jobIdsToJobNodes map[string]yaml.Node
-	if err := node.Decode(&jobIdsToJobNodes); err != nil {
-		return err
-	}
-
-	normalJobs := make(map[string]*Job, 0)
-	reusableWorkflowCallJobs := make(map[string]*ReusableWorkflowCallJob, 0)
+	normalJobs := map[string]*Job{}
+	reusableWorkflowCallJobs := map[string]*ReusableWorkflowCallJob{}
 
 	for i := 0; i < len(node.Content); i += 2 {
 		jobIDNode := node.Content[i]
@@ -90,19 +84,17 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 
 		jobID := jobIDNode.Value
 
-		if isJobReusableWorkflowJob(jobNode) {
-			reusableJob := &ReusableWorkflowCallJob{ID: utils.GetPtr(jobID)}
-			if err := jobNode.Decode(reusableJob); err != nil {
+		if isReusableWorkflowJob(jobNode) {
+			job, err := parseReusableWorkflowNode(jobIDNode, jobNode)
+			if err != nil {
 				return err
 			}
-			reusableJob.FileLocation = loadersUtils.GetMapKeyFileLocation(jobIDNode, jobNode)
-			reusableWorkflowCallJobs[jobID] = reusableJob
+			reusableWorkflowCallJobs[jobID] = job
 		} else {
-			job := &Job{ID: utils.GetPtr(jobID)}
-			if err := jobNode.Decode(job); err != nil {
+			job, err := parseJobNode(jobIDNode, jobNode)
+			if err != nil {
 				return err
 			}
-			job.FileLocation = loadersUtils.GetMapKeyFileLocation(jobIDNode, jobNode)
 			normalJobs[jobID] = job
 		}
 	}
@@ -114,11 +106,29 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
-func isJobReusableWorkflowJob(job any) bool {
-	var jobAsMap map[string]any
-	if err := mapstructure.Decode(job, &jobAsMap); err != nil {
-		return false
+func parseJobNode(jobID, job *yaml.Node) (*Job, error) {
+	parsedJob := &Job{ID: utils.GetPtr(jobID.Value)}
+	if err := job.Decode(parsedJob); err != nil {
+		return nil, err
 	}
-	_, ok := jobAsMap["uses"]
-	return ok
+	parsedJob.FileLocation = loadersUtils.GetMapKeyFileLocation(jobID, job)
+	return parsedJob, nil
+}
+
+func parseReusableWorkflowNode(jobID, job *yaml.Node) (*ReusableWorkflowCallJob, error) {
+	reusableJob := &ReusableWorkflowCallJob{ID: utils.GetPtr(jobID.Value)}
+	if err := job.Decode(reusableJob); err != nil {
+		return nil, err
+	}
+	reusableJob.FileLocation = loadersUtils.GetMapKeyFileLocation(jobID, job)
+	return reusableJob, nil
+}
+
+func isReusableWorkflowJob(job *yaml.Node) bool {
+	for _, node := range job.Content {
+		if node.Tag == consts.StringTag && node.Value == "uses" {
+			return true
+		}
+	}
+	return false
 }
