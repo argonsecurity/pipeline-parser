@@ -44,11 +44,11 @@ var (
 )
 
 type RunsOn struct {
-	OS           *string
-	Arch         *string
-	SelfHosted   bool
-	Tags         []string
-	FileLocation *models.FileLocation
+	OS            *string
+	Arch          *string
+	SelfHosted    bool
+	Tags          []string
+	FileReference *models.FileReference
 }
 
 func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
@@ -65,7 +65,7 @@ func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	*r = *generateRunsOnFromTags(tags)
-	r.FileLocation = loadersUtils.GetFileLocation(node)
+	r.FileReference = loadersUtils.GetFileReference(node)
 	return nil
 }
 

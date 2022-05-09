@@ -3,7 +3,7 @@ package models
 type EnvironmentVariables map[string]any
 type EnvironmentVariablesRef struct {
 	EnvironmentVariables
-	FileLocation *FileLocation
+	FileReference *FileReference
 }
 
 type Condition string
@@ -34,12 +34,12 @@ type Entity struct {
 	Name *string
 }
 
-type FileRef struct {
+type FileLocation struct {
 	Line   int
 	Column int
 }
 
-type FileLocation struct {
-	StartRef *FileRef
-	EndRef   *FileRef
+type FileReference struct {
+	StartRef *FileLocation
+	EndRef   *FileLocation
 }

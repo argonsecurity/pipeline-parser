@@ -20,7 +20,7 @@ type Step struct {
 	Uses             string                   `yaml:"uses,omitempty"`
 	With             map[string]any           `yaml:"with,omitempty"`
 	WorkingDirectory string                   `yaml:"working-directory,omitempty"`
-	FileLocation     *models.FileLocation
+	FileReference    *models.FileReference
 }
 
 func (s *Steps) UnmarshalYAML(node *yaml.Node) error {
@@ -30,7 +30,7 @@ func (s *Steps) UnmarshalYAML(node *yaml.Node) error {
 		if err := stepNode.Decode(&step); err != nil {
 			return err
 		}
-		step.FileLocation = loadersUtils.GetFileLocation(stepNode)
+		step.FileReference = loadersUtils.GetFileReference(stepNode)
 		steps = append(steps, step)
 	}
 	*s = steps

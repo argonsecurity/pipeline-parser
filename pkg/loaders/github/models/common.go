@@ -8,7 +8,7 @@ import (
 
 type EnvironmentVariablesRef struct {
 	models.EnvironmentVariables
-	FileLocation *models.FileLocation
+	FileReference *models.FileReference
 }
 
 func (e *EnvironmentVariablesRef) UnmarshalYAML(node *yaml.Node) error {
@@ -18,7 +18,7 @@ func (e *EnvironmentVariablesRef) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	e.EnvironmentVariables = env
-	e.FileLocation = loadersUtils.GetFileLocation(node)
-	e.FileLocation.StartRef.Line-- // The "env" node is not accessible, this is a patch
+	e.FileReference = loadersUtils.GetFileReference(node)
+	e.FileReference.StartRef.Line-- // The "env" node is not accessible, this is a patch
 	return nil
 }

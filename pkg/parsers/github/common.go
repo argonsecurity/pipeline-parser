@@ -12,6 +12,6 @@ func parseEnvironmentVariablesRef(envRef *githubModels.EnvironmentVariablesRef) 
 
 	return &models.EnvironmentVariablesRef{
 		EnvironmentVariables: envRef.EnvironmentVariables,
-		FileLocation:         envRef.FileLocation,
+		FileReference:        envRef.FileReference,
 	}
 }

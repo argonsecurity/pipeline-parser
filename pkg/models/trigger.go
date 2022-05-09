@@ -13,18 +13,18 @@ const (
 type EventType string
 
 type Trigger struct {
-	Branches     *Filter
-	Paths        *Filter
-	Parameters   []Parameter
-	Pipelines    []string
-	Filters      map[string]any
-	Event        EventType
-	Disabled     *bool
-	Schedules    *[]string
-	FileLocation *FileLocation
+	Branches      *Filter
+	Paths         *Filter
+	Parameters    []Parameter
+	Pipelines     []string
+	Filters       map[string]any
+	Event         EventType
+	Disabled      *bool
+	Schedules     *[]string
+	FileReference *FileReference
 }
 
 type Triggers struct {
-	Triggers     *[]Trigger
-	FileLocation *FileLocation
+	Triggers      *[]Trigger
+	FileReference *FileReference
 }

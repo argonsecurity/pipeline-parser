@@ -11,7 +11,7 @@ var (
 )
 
 func parseWorkflowJobs(workflow *githubModels.Workflow) (*[]models.Job, error) {
-	jobs, err := utils.MapToSliceErr(workflow.Jobs.NormalJobs, parseJob)
+	jobs, err := utils.MapToSliceErr(workflow.Jobs.CIJobs, parseJob)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func parseJob(jobName string, job *githubModels.Job) (models.Job, error) {
 		Name:                 &job.Name,
 		ContinueOnError:      &job.ContinueOnError,
 		EnvironmentVariables: parseEnvironmentVariablesRef(job.Env),
-		FileLocation:         job.FileLocation,
+		FileReference:        job.FileReference,
 	}
 
 	if job.Name == "" {

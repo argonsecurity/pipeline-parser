@@ -50,13 +50,13 @@ func getAllGitHubPermissions(permission models.Permission) *models.TokenPermissi
 	}
 }
 
-func createFileLocation(l1, c1, l2, c2 int) *models.FileLocation {
-	return &models.FileLocation{
-		StartRef: &models.FileRef{
+func createFileReference(l1, c1, l2, c2 int) *models.FileReference {
+	return &models.FileReference{
+		StartRef: &models.FileLocation{
 			Line:   l1,
 			Column: c1,
 		},
-		EndRef: &models.FileRef{
+		EndRef: &models.FileLocation{
 			Line:   l2,
 			Column: c2,
 		},
@@ -82,7 +82,7 @@ func Test_GitHubParser(t *testing.T) {
 									Version:     utils.GetPtr("v1"),
 									VersionType: "tag",
 								},
-								FileLocation: createFileLocation(7, 9, 8, 15),
+								FileReference: createFileReference(7, 9, 8, 15),
 							},
 							{
 								Name: utils.GetPtr("task with params"),
@@ -98,7 +98,7 @@ func Test_GitHubParser(t *testing.T) {
 										},
 									},
 								},
-								FileLocation: createFileLocation(10, 9, 13, 17),
+								FileReference: createFileReference(10, 9, 13, 17),
 							},
 							{
 								Name: utils.GetPtr("task with commit ID version"),
@@ -108,7 +108,7 @@ func Test_GitHubParser(t *testing.T) {
 									Version:     utils.GetPtr("c44948622e1b6bb0eb0cec5b813c1ac561158e1e"),
 									VersionType: "commit",
 								},
-								FileLocation: createFileLocation(15, 9, 16, 15),
+								FileReference: createFileReference(15, 9, 16, 15),
 							},
 							{
 								Name: utils.GetPtr("task with branch version"),
@@ -118,7 +118,7 @@ func Test_GitHubParser(t *testing.T) {
 									Version:     utils.GetPtr("master"),
 									VersionType: "branch",
 								},
-								FileLocation: createFileLocation(18, 9, 19, 15),
+								FileReference: createFileReference(18, 9, 19, 15),
 							},
 							{
 								Name: utils.GetPtr("task with tag version"),
@@ -128,7 +128,7 @@ func Test_GitHubParser(t *testing.T) {
 									Version:     utils.GetPtr("v1.1.1"),
 									VersionType: "tag",
 								},
-								FileLocation: createFileLocation(21, 9, 22, 15),
+								FileReference: createFileReference(21, 9, 22, 15),
 							},
 							{
 								Name: utils.GetPtr("shell"),
@@ -136,7 +136,7 @@ func Test_GitHubParser(t *testing.T) {
 								Shell: &models.Shell{
 									Script: utils.GetPtr("command line"),
 								},
-								FileLocation: createFileLocation(24, 9, 25, 14),
+								FileReference: createFileReference(24, 9, 25, 14),
 							},
 							{
 								Name: utils.GetPtr("custom shell"),
@@ -145,12 +145,12 @@ func Test_GitHubParser(t *testing.T) {
 									Script: utils.GetPtr("command line"),
 									Type:   utils.GetPtr("cmd"),
 								},
-								FileLocation: createFileLocation(27, 9, 29, 14),
+								FileReference: createFileReference(27, 9, 29, 14),
 							},
 						},
 						TimeoutMS:       utils.GetPtr(21600000),
 						ContinueOnError: utils.GetPtr(false),
-						FileLocation:    createFileLocation(4, 3, 29, 14),
+						FileReference:   createFileReference(4, 3, 29, 14),
 					},
 				}),
 			},
@@ -165,7 +165,7 @@ func Test_GitHubParser(t *testing.T) {
 						Name:            utils.GetPtr("Dependable Job"),
 						ContinueOnError: utils.GetPtr(false),
 						TimeoutMS:       utils.GetPtr(21600000),
-						FileLocation:    createFileLocation(4, 3, 5, 11),
+						FileReference:   createFileReference(4, 3, 5, 11),
 					},
 					{
 						ID:              utils.GetPtr("dependant-job"),
@@ -173,7 +173,7 @@ func Test_GitHubParser(t *testing.T) {
 						ContinueOnError: utils.GetPtr(false),
 						TimeoutMS:       utils.GetPtr(21600000),
 						Dependencies:    &[]string{"dependable-job"},
-						FileLocation:    createFileLocation(7, 3, 9, 13),
+						FileReference:   createFileReference(7, 3, 9, 13),
 					},
 				}),
 			},
@@ -183,40 +183,40 @@ func Test_GitHubParser(t *testing.T) {
 			Expected: &models.Pipeline{
 				Name: utils.GetPtr("all-triggers"),
 				Triggers: &models.Triggers{
-					FileLocation: createFileLocation(2, 3, 30, 13),
+					FileReference: createFileReference(2, 3, 30, 13),
 					Triggers: SortTriggers(&[]models.Trigger{
 						{
-							Event:        models.ScheduledEvent,
-							Schedules:    &[]string{"30 2 * * *"},
-							FileLocation: createFileLocation(3, 3, 4, 13),
+							Event:         models.ScheduledEvent,
+							Schedules:     &[]string{"30 2 * * *"},
+							FileReference: createFileReference(3, 3, 4, 13),
 						},
 						{
 							Event: models.PushEvent,
 							Branches: &models.Filter{
 								AllowList: []string{"master"},
 							},
-							FileLocation: createFileLocation(5, 3, 7, 9),
+							FileReference: createFileReference(5, 3, 7, 9),
 						},
 						{
 							Event: models.PipelineRunEvent,
 							Branches: &models.Filter{
 								DenyList: []string{"master"},
 							},
-							FileLocation: createFileLocation(26, 3, 28, 9),
+							FileReference: createFileReference(26, 3, 28, 9),
 						},
 						{
 							Event: models.PullRequestEvent,
 							Paths: &models.Filter{
 								DenyList: []string{"*/test/*"},
 							},
-							FileLocation: createFileLocation(8, 3, 10, 9),
+							FileReference: createFileReference(8, 3, 10, 9),
 						},
 						{
 							Event: "pull_request_target",
 							Paths: &models.Filter{
 								AllowList: []string{"*/test/*"},
 							},
-							FileLocation: createFileLocation(11, 3, 13, 9),
+							FileReference: createFileReference(11, 3, 13, 9),
 						},
 						{
 							Event: models.ManualEvent,
@@ -227,7 +227,7 @@ func Test_GitHubParser(t *testing.T) {
 									Default:     "default-value",
 								},
 							},
-							FileLocation: createFileLocation(14, 3, 19, 19),
+							FileReference: createFileReference(14, 3, 19, 19),
 						},
 						{
 							Event: models.PipelineTriggerEvent,
@@ -238,14 +238,14 @@ func Test_GitHubParser(t *testing.T) {
 									Default:     "default-value",
 								},
 							},
-							FileLocation: createFileLocation(20, 3, 25, 19),
+							FileReference: createFileReference(20, 3, 25, 19),
 						},
 						{
 							Event: "label",
 							Filters: map[string]any{
 								"types": []string{"created"},
 							},
-							FileLocation: createFileLocation(29, 3, 30, 13),
+							FileReference: createFileReference(29, 3, 30, 13),
 						},
 					}),
 				},
@@ -257,7 +257,7 @@ func Test_GitHubParser(t *testing.T) {
 				Name: utils.GetPtr("permissions"),
 				Jobs: SortJobs(&[]models.Job{
 					{
-						FileLocation:     createFileLocation(8, 3, 10, 18),
+						FileReference:    createFileReference(8, 3, 10, 18),
 						ID:               utils.GetPtr("job1"),
 						Name:             utils.GetPtr("Job 1"),
 						ContinueOnError:  utils.GetPtr(false),
@@ -267,7 +267,7 @@ func Test_GitHubParser(t *testing.T) {
 				}),
 				Defaults: &models.Defaults{
 					TokenPermissions: &models.TokenPermissions{
-						FileLocation: createFileLocation(2, 3, 5, 18),
+						FileReference: createFileReference(2, 3, 5, 18),
 						Permissions: map[string]models.Permission{
 							"run-pipeline": {
 								Read: true,
@@ -294,12 +294,12 @@ func Test_GitHubParser(t *testing.T) {
 						ContinueOnError: utils.GetPtr(false),
 						TimeoutMS:       utils.GetPtr(21600000),
 						Runner: &models.Runner{
-							OS:           utils.GetPtr("linux"),
-							Labels:       &[]string{"ubuntu-latest"},
-							SelfHosted:   utils.GetPtr(false),
-							FileLocation: createFileLocation(6, 14, 6, 14),
+							OS:            utils.GetPtr("linux"),
+							Labels:        &[]string{"ubuntu-latest"},
+							SelfHosted:    utils.GetPtr(false),
+							FileReference: createFileReference(6, 14, 6, 14),
 						},
-						FileLocation: createFileLocation(4, 3, 6, 14),
+						FileReference: createFileReference(4, 3, 6, 14),
 					},
 					{
 						ID:              utils.GetPtr("job2"),
@@ -307,12 +307,12 @@ func Test_GitHubParser(t *testing.T) {
 						TimeoutMS:       utils.GetPtr(21600000),
 						ContinueOnError: utils.GetPtr(false),
 						Runner: &models.Runner{
-							OS:           utils.GetPtr("windows"),
-							Labels:       &[]string{"self-hosted", "windows-latest"},
-							SelfHosted:   utils.GetPtr(true),
-							FileLocation: createFileLocation(9, 14, 9, 28),
+							OS:            utils.GetPtr("windows"),
+							Labels:        &[]string{"self-hosted", "windows-latest"},
+							SelfHosted:    utils.GetPtr(true),
+							FileReference: createFileReference(9, 14, 9, 28),
 						},
-						FileLocation: createFileLocation(7, 3, 9, 28),
+						FileReference: createFileReference(7, 3, 9, 28),
 					},
 					{
 						ID:              utils.GetPtr("job3"),
@@ -320,13 +320,13 @@ func Test_GitHubParser(t *testing.T) {
 						TimeoutMS:       utils.GetPtr(21600000),
 						ContinueOnError: utils.GetPtr(false),
 						Runner: &models.Runner{
-							OS:           utils.GetPtr("linux"),
-							Arch:         utils.GetPtr("x64"),
-							Labels:       &[]string{"self-hosted", "linux", "x64"},
-							SelfHosted:   utils.GetPtr(true),
-							FileLocation: createFileLocation(12, 14, 12, 35),
+							OS:            utils.GetPtr("linux"),
+							Arch:          utils.GetPtr("x64"),
+							Labels:        &[]string{"self-hosted", "linux", "x64"},
+							SelfHosted:    utils.GetPtr(true),
+							FileReference: createFileReference(12, 14, 12, 35),
 						},
-						FileLocation: createFileLocation(10, 3, 12, 35),
+						FileReference: createFileReference(10, 3, 12, 35),
 					},
 				}),
 			},
@@ -344,9 +344,9 @@ func Test_GitHubParser(t *testing.T) {
 								"STRING": "string",
 								"NUMBER": 1,
 							},
-							FileLocation: createFileLocation(10, 7, 12, 15),
+							FileReference: createFileReference(10, 7, 12, 15),
 						},
-						FileLocation:    createFileLocation(8, 3, 18, 19),
+						FileReference:   createFileReference(8, 3, 18, 19),
 						ContinueOnError: utils.GetPtr(false),
 						TimeoutMS:       utils.GetPtr(21600000),
 						Steps: &[]models.Step{
@@ -356,13 +356,13 @@ func Test_GitHubParser(t *testing.T) {
 								Shell: &models.Shell{
 									Script: utils.GetPtr("command line"),
 								},
-								FileLocation: createFileLocation(14, 9, 18, 19),
+								FileReference: createFileReference(14, 9, 18, 19),
 								EnvironmentVariables: &models.EnvironmentVariablesRef{
 									EnvironmentVariables: models.EnvironmentVariables{
 										"STRING": "string",
 										"NUMBER": 1,
 									},
-									FileLocation: createFileLocation(16, 11, 18, 19),
+									FileReference: createFileReference(16, 11, 18, 19),
 								},
 							},
 						},
@@ -374,7 +374,7 @@ func Test_GitHubParser(t *testing.T) {
 							"STRING": "string",
 							"NUMBER": 1,
 						},
-						FileLocation: createFileLocation(3, 3, 5, 11),
+						FileReference: createFileReference(3, 3, 5, 11),
 					},
 				},
 			},
@@ -390,7 +390,7 @@ func Test_GitHubParser(t *testing.T) {
 						ContinueOnError:  utils.GetPtr(false),
 						TimeoutMS:        utils.GetPtr(21600000),
 						ConcurrencyGroup: utils.GetPtr("ci"),
-						FileLocation:     createFileLocation(3, 3, 5, 18),
+						FileReference:    createFileReference(3, 3, 5, 18),
 					},
 					{
 						ID:               utils.GetPtr("job2"),
@@ -398,7 +398,7 @@ func Test_GitHubParser(t *testing.T) {
 						ContinueOnError:  utils.GetPtr(false),
 						TimeoutMS:        utils.GetPtr(21600000),
 						ConcurrencyGroup: utils.GetPtr("ci"),
-						FileLocation:     createFileLocation(7, 3, 9, 18),
+						FileReference:    createFileReference(7, 3, 9, 18),
 					},
 				}),
 			},
@@ -425,8 +425,8 @@ func Test_GitHubParser(t *testing.T) {
 		}
 		if pipeline.Triggers != nil {
 			pipeline.Triggers = &models.Triggers{
-				Triggers:     SortTriggers(pipeline.Triggers.Triggers),
-				FileLocation: pipeline.Triggers.FileLocation,
+				Triggers:      SortTriggers(pipeline.Triggers.Triggers),
+				FileReference: pipeline.Triggers.FileReference,
 			}
 		}
 

@@ -27,5 +27,5 @@ type Runner struct {
 	Arch           *string
 	SelfHosted     *bool
 	DockerMetadata *DockerMetadata
-	FileLocation   *FileLocation
+	FileReference  *FileReference
 }

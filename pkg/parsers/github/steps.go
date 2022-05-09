@@ -33,7 +33,7 @@ func parseJobStep(step githubModels.Step) models.Step {
 	parsedStep := models.Step{
 		Name:                 &step.Name,
 		EnvironmentVariables: parseEnvironmentVariablesRef(step.Env),
-		FileLocation:         step.FileLocation,
+		FileReference:        step.FileReference,
 	}
 
 	if step.ContinueOnError != nil {

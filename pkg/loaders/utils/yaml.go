@@ -8,34 +8,34 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func GetFileLocation(node *yaml.Node) *models.FileLocation {
-	return &models.FileLocation{
-		StartRef: &models.FileRef{
+func GetFileReference(node *yaml.Node) *models.FileReference {
+	return &models.FileReference{
+		StartRef: &models.FileLocation{
 			Line:   node.Line,
 			Column: node.Column,
 		},
-		EndRef: GetEndFileRef(node),
+		EndRef: GetEndFileLocation(node),
 	}
 }
 
-func GetEndFileRef(node *yaml.Node) *models.FileRef {
+func GetEndFileLocation(node *yaml.Node) *models.FileLocation {
 	if node.Content == nil {
-		return &models.FileRef{
+		return &models.FileLocation{
 			Line:   node.Line,
 			Column: node.Column,
 		}
 	}
 
-	return GetEndFileRef(node.Content[len(node.Content)-1])
+	return GetEndFileLocation(node.Content[len(node.Content)-1])
 }
 
-func GetMapKeyFileLocation(jobIDNode, jobNode *yaml.Node) *models.FileLocation {
-	return &models.FileLocation{
-		StartRef: &models.FileRef{
+func GetMapKeyFileReference(jobIDNode, jobNode *yaml.Node) *models.FileReference {
+	return &models.FileReference{
+		StartRef: &models.FileLocation{
 			Line:   jobIDNode.Line,
 			Column: jobIDNode.Column,
 		},
-		EndRef: GetEndFileRef(jobNode),
+		EndRef: GetEndFileLocation(jobNode),
 	}
 }
 

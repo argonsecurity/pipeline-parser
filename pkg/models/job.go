@@ -1,8 +1,8 @@
 package models
 
 type TokenPermissions struct {
-	Permissions  map[string]Permission
-	FileLocation *FileLocation
+	Permissions   map[string]Permission
+	FileReference *FileReference
 }
 
 type Job struct {
@@ -22,5 +22,5 @@ type Job struct {
 	TokenPermissions     *TokenPermissions
 	Dependencies         *[]string
 	Metadata             Metadata
-	FileLocation         *FileLocation
+	FileReference        *FileReference
 }

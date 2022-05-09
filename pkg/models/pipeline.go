@@ -18,7 +18,7 @@ type Defaults struct {
 	Conditions           *[]Condition
 	TokenPermissions     *TokenPermissions
 	Settings             *map[string]any
-	FileLocation         *FileLocation
+	FileReference        *FileReference
 }
 
 type Repository struct {

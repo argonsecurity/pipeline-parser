@@ -64,20 +64,20 @@ type Job struct {
 	Steps           *Steps                   `yaml:"steps,omitempty"`
 	Strategy        *Strategy                `yaml:"strategy,omitempty"`
 	TimeoutMinutes  *float64                 `yaml:"timeout-minutes,omitempty"`
-	FileLocation    *models.FileLocation
+	FileReference   *models.FileReference
 }
 
 // ReusableWorkflowCallJob is a job that executes a workflow
 type ReusableWorkflowCallJob struct {
-	ID           *string           `yaml:"id"`
-	If           string            `yaml:"if,omitempty"`
-	Name         string            `yaml:"name,omitempty"`
-	Needs        *Needs            `yaml:"needs,omitempty"`
-	Permissions  *PermissionsEvent `yaml:"permissions,omitempty"`
-	Secrets      interface{}       `yaml:"secrets,omitempty"`
-	Uses         string            `yaml:"uses"`
-	With         map[string]any
-	FileLocation *models.FileLocation
+	ID            *string           `yaml:"id"`
+	If            string            `yaml:"if,omitempty"`
+	Name          string            `yaml:"name,omitempty"`
+	Needs         *Needs            `yaml:"needs,omitempty"`
+	Permissions   *PermissionsEvent `yaml:"permissions,omitempty"`
+	Secrets       interface{}       `yaml:"secrets,omitempty"`
+	Uses          string            `yaml:"uses"`
+	With          map[string]any
+	FileReference *models.FileReference
 }
 
 func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
@@ -117,7 +117,7 @@ func parseJobNode(jobID, job *yaml.Node) (*Job, error) {
 	if err := job.Decode(parsedJob); err != nil {
 		return nil, err
 	}
-	parsedJob.FileLocation = loadersUtils.GetMapKeyFileLocation(jobID, job)
+	parsedJob.FileReference = loadersUtils.GetMapKeyFileReference(jobID, job)
 	return parsedJob, nil
 }
 
@@ -126,7 +126,7 @@ func parseReusableWorkflowNode(jobID, job *yaml.Node) (*ReusableWorkflowCallJob,
 	if err := job.Decode(reusableJob); err != nil {
 		return nil, err
 	}
-	reusableJob.FileLocation = loadersUtils.GetMapKeyFileLocation(jobID, job)
+	reusableJob.FileReference = loadersUtils.GetMapKeyFileReference(jobID, job)
 	return reusableJob, nil
 }
 

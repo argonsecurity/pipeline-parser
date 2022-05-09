@@ -12,11 +12,11 @@ func parseRunsOnToRunner(runsOn *githubModels.RunsOn) *models.Runner {
 	}
 
 	runner := &models.Runner{
-		OS:           runsOn.OS,
-		Arch:         runsOn.Arch,
-		Labels:       &runsOn.Tags,
-		SelfHosted:   &runsOn.SelfHosted,
-		FileLocation: runsOn.FileLocation,
+		OS:            runsOn.OS,
+		Arch:          runsOn.Arch,
+		Labels:        &runsOn.Tags,
+		SelfHosted:    &runsOn.SelfHosted,
+		FileReference: runsOn.FileReference,
 	}
 	return runner
 }

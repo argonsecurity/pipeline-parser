@@ -34,7 +34,7 @@ type Ref struct {
 	PathsIgnore    []string `yaml:"paths-ignore,omitempty"`
 	Tags           []string `yaml:"tags,omitempty"`
 	TagsIgnore     []string `yaml:"tags-ignore,omitempty"`
-	FileLocation   *models.FileLocation
+	FileReference  *models.FileReference
 }
 
 type Run struct {

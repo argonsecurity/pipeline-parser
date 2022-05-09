@@ -39,8 +39,8 @@ func parseTokenPermissions(permissions *githubModels.PermissionsEvent) (*models.
 	}
 
 	return &models.TokenPermissions{
-		Permissions:  tokenPermissions,
-		FileLocation: permissions.FileLocation,
+		Permissions:   tokenPermissions,
+		FileReference: permissions.FileReference,
 	}, nil
 }
 

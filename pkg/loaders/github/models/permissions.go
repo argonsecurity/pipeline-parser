@@ -28,7 +28,7 @@ type PermissionsEvent struct {
 	SecurityEvents     string `mapstructure:"security-events,omitempty" yaml:"security-events,omitempty"`
 	Statuses           string `mapstructure:"statuses,omitempty" yaml:"statuses,omitempty"`
 
-	FileLocation *models.FileLocation
+	FileReference *models.FileReference
 }
 
 func createFullPermissions(permission string) *PermissionsEvent {
@@ -69,7 +69,7 @@ func (p *PermissionsEvent) UnmarshalYAML(node *yaml.Node) error {
 		return err
 	}
 
-	p.FileLocation = loadersUtils.GetFileLocation(node)
-	p.FileLocation.StartRef.Line-- // The "permissions" node is not accessible, this is a patch
+	p.FileReference = loadersUtils.GetFileReference(node)
+	p.FileReference.StartRef.Line-- // The "permissions" node is not accessible, this is a patch
 	return nil
 }

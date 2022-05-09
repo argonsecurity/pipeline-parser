@@ -31,8 +31,8 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) *models.Triggers {
 	// Handle workflow.on if it is a list of event names
 	if events, isEventListFormat := utils.ToSlice[string](workflow.On); isEventListFormat {
 		return &models.Triggers{
-			Triggers:     utils.GetPtr(generateTriggersFromEvents(events)),
-			FileLocation: workflow.On.FileLocation,
+			Triggers:      utils.GetPtr(generateTriggersFromEvents(events)),
+			FileReference: workflow.On.FileReference,
 		}
 	}
 
@@ -73,8 +73,8 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) *models.Triggers {
 	}
 
 	return &models.Triggers{
-		Triggers:     &triggerSlice,
-		FileLocation: workflow.On.FileLocation,
+		Triggers:      &triggerSlice,
+		FileReference: workflow.On.FileReference,
 	}
 }
 
@@ -85,7 +85,7 @@ func parseEvents(events githubModels.Events) []models.Trigger {
 			Filters: map[string]any{
 				"types": event.Types,
 			},
-			FileLocation: event.FileLocation,
+			FileReference: event.FileReference,
 		}
 		return trigger
 	})
@@ -93,9 +93,9 @@ func parseEvents(events githubModels.Events) []models.Trigger {
 
 func parseWorkflowRun(workflowRun *githubModels.WorkflowRun) models.Trigger {
 	trigger := models.Trigger{
-		FileLocation: workflowRun.FileLocation,
-		Event:        models.PipelineRunEvent,
-		Pipelines:    workflowRun.Workflows,
+		FileReference: workflowRun.FileReference,
+		Event:         models.PipelineRunEvent,
+		Pipelines:     workflowRun.Workflows,
 		Branches: &models.Filter{
 			AllowList: workflowRun.Branches,
 			DenyList:  workflowRun.BranchesIgnore,
@@ -111,9 +111,9 @@ func parseWorkflowRun(workflowRun *githubModels.WorkflowRun) models.Trigger {
 
 func parseWorkflowCall(workflowCall *githubModels.WorkflowCall) models.Trigger {
 	return models.Trigger{
-		Event:        models.PipelineTriggerEvent,
-		Parameters:   parseInputs(workflowCall.Inputs),
-		FileLocation: workflowCall.FileLocation,
+		Event:         models.PipelineTriggerEvent,
+		Parameters:    parseInputs(workflowCall.Inputs),
+		FileReference: workflowCall.FileReference,
 	}
 }
 
@@ -133,8 +133,8 @@ func parseInputs(inputs githubModels.Inputs) []models.Parameter {
 
 func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) models.Trigger {
 	trigger := models.Trigger{
-		Event:        models.ManualEvent,
-		FileLocation: workflowDispatch.FileLocation,
+		Event:         models.ManualEvent,
+		FileReference: workflowDispatch.FileReference,
 	}
 
 	if workflowDispatch.Inputs != nil {
@@ -145,8 +145,8 @@ func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) mode
 
 func parseRef(ref *githubModels.Ref, event models.EventType) models.Trigger {
 	trigger := models.Trigger{
-		Event:        event,
-		FileLocation: ref.FileLocation,
+		Event:         event,
+		FileReference: ref.FileReference,
 	}
 
 	if len(ref.Paths)+len(ref.PathsIgnore) > 0 {
@@ -179,7 +179,7 @@ func parseSchedule(schedule *githubModels.Schedule) models.Trigger {
 		Schedules: utils.GetPtr(utils.Map(*schedule.Crons, func(cron githubModels.Cron) string {
 			return cron.Cron
 		})),
-		FileLocation: schedule.FileLocation,
+		FileReference: schedule.FileReference,
 	}
 
 }
