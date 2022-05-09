@@ -20,7 +20,7 @@ var (
 	}
 )
 
-func parseJobSteps(steps *[]githubModels.Step) *[]models.Step {
+func parseJobSteps(steps *githubModels.Steps) *[]models.Step {
 	if steps == nil {
 		return nil
 	}
@@ -32,7 +32,8 @@ func parseJobSteps(steps *[]githubModels.Step) *[]models.Step {
 func parseJobStep(step githubModels.Step) models.Step {
 	parsedStep := models.Step{
 		Name:                 &step.Name,
-		EnvironmentVariables: step.Env,
+		EnvironmentVariables: parseEnvironmentVariablesRef(step.Env),
+		FileReference:        step.FileReference,
 	}
 
 	if step.ContinueOnError != nil {

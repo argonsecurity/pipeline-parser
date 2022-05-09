@@ -1,6 +1,11 @@
 package models
 
 type EnvironmentVariables map[string]any
+type EnvironmentVariablesRef struct {
+	EnvironmentVariables
+	FileReference *FileReference
+}
+
 type Condition string
 
 type Filter struct {
@@ -27,4 +32,14 @@ type Parameter struct {
 type Entity struct {
 	ID   *string
 	Name *string
+}
+
+type FileLocation struct {
+	Line   int
+	Column int
+}
+
+type FileReference struct {
+	StartRef *FileLocation
+	EndRef   *FileLocation
 }

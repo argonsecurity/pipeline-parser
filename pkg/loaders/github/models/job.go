@@ -1,135 +1,140 @@
 package models
 
 import (
-	"errors"
-	"reflect"
+	"fmt"
 
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
+	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
 )
 
 type Jobs struct {
-	NormalJobs               map[string]*Job
+	CIJobs                   map[string]*Job
 	ReusableWorkflowCallJobs map[string]*ReusableWorkflowCallJob
 }
 
 type Needs []string
 
+func (n *Needs) UnmarshalYAML(node *yaml.Node) error {
+	var tags []string
+	var err error
+
+	if node.Tag == consts.SequenceTag {
+		if tags, err = loadersUtils.ParseYamlStringSequenceToSlice(node); err != nil {
+			return err
+		}
+	} else if node.Tag == consts.StringTag {
+		tags = []string{node.Value}
+	} else {
+		return fmt.Errorf("unexpected tag %s", node.Tag)
+	}
+
+	*n = tags
+	return nil
+}
+
 type Concurrency struct {
-	CancelInProgress *bool   `mapstructure:"cancel-in-progress,omitempty" yaml:"cancel-in-progress,omitempty"`
-	Group            *string `mapstructure:"group" yaml:"group"`
+	CancelInProgress *bool   `yaml:"cancel-in-progress,omitempty"`
+	Group            *string `yaml:"group"`
 }
 
+func (c *Concurrency) UnmarshalYAML(node *yaml.Node) error {
+	(*c).Group = &node.Value
+	return nil
+}
+
+// Job is a normal CI job
 type Job struct {
-	ID              *string                      `mapstructure:"id" yaml:"id"`
-	Concurrency     *Concurrency                 `mapstructure:"concurrency,omitempty" yaml:"concurrency,omitempty"`
-	Container       interface{}                  `mapstructure:"container,omitempty" yaml:"container,omitempty"`
-	ContinueOnError bool                         `mapstructure:"continue-on-error,omitempty" yaml:"continue-on-error,omitempty"`
-	Defaults        *Defaults                    `mapstructure:"defaults,omitempty" yaml:"defaults,omitempty"`
-	Env             *models.EnvironmentVariables `mapstructure:"env,omitempty" yaml:"env,omitempty"`
-	Environment     interface{}                  `mapstructure:"environment,omitempty" yaml:"environment,omitempty"`
-	If              string                       `mapstructure:"if,omitempty" yaml:"if,omitempty"`
-	Name            string                       `mapstructure:"name,omitempty" yaml:"name,omitempty"`
-	Needs           *Needs                       `mapstructure:"needs,omitempty" yaml:"needs,omitempty"`
-	Outputs         map[string]string            `mapstructure:"outputs,omitempty" yaml:"outputs,omitempty"`
-	Permissions     *PermissionsEvent            `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
-	RunsOn          *RunsOn                      `mapstructure:"runs-on" yaml:"runs-on"`
-	Services        map[string]*Container        `mapstructure:"services,omitempty" yaml:"services,omitempty"`
-	Steps           *[]Step                      `mapstructure:"steps,omitempty" yaml:"steps,omitempty"`
-	Strategy        *Strategy                    `mapstructure:"strategy,omitempty" yaml:"strategy,omitempty"`
-	TimeoutMinutes  *float64                     `mapstructure:"timeout-minutes,omitempty" yaml:"timeout-minutes,omitempty"`
+	ID              *string                  `yaml:"id"`
+	Concurrency     *Concurrency             `yaml:"concurrency,omitempty"`
+	Container       interface{}              `yaml:"container,omitempty"`
+	ContinueOnError bool                     `yaml:"continue-on-error,omitempty"`
+	Defaults        *Defaults                `yaml:"defaults,omitempty"`
+	Env             *EnvironmentVariablesRef `yaml:"env,omitempty"`
+	Environment     interface{}              `yaml:"environment,omitempty"`
+	If              string                   `yaml:"if,omitempty"`
+	Name            string                   `yaml:"name,omitempty"`
+	Needs           *Needs                   `yaml:"needs,omitempty"`
+	Outputs         map[string]string        `yaml:"outputs,omitempty"`
+	Permissions     *PermissionsEvent        `yaml:"permissions,omitempty"`
+	RunsOn          *RunsOn                  `yaml:"runs-on"`
+	Services        map[string]*Container    `yaml:"services,omitempty"`
+	Steps           *Steps                   `yaml:"steps,omitempty"`
+	Strategy        *Strategy                `yaml:"strategy,omitempty"`
+	TimeoutMinutes  *float64                 `yaml:"timeout-minutes,omitempty"`
+	FileReference   *models.FileReference
 }
 
+// ReusableWorkflowCallJob is a job that executes a workflow
 type ReusableWorkflowCallJob struct {
-	ID          *string           `mapstructure:"id" yaml:"id"`
-	If          string            `mapstructure:"if,omitempty" yaml:"if,omitempty"`
-	Name        string            `mapstructure:"name,omitempty" yaml:"name,omitempty"`
-	Needs       *Needs            `mapstructure:"needs,omitempty" yaml:"needs,omitempty"`
-	Permissions *PermissionsEvent `mapstructure:"permissions,omitempty" yaml:"permissions,omitempty"`
-	Secrets     interface{}       `mapstructure:"secrets,omitempty" yaml:"secrets,omitempty"`
-	Uses        string            `mapstructure:"uses" yaml:"uses"`
-	With        map[string]any    `mapstructure:"with,omitempty"`
+	ID            *string           `yaml:"id"`
+	If            string            `yaml:"if,omitempty"`
+	Name          string            `yaml:"name,omitempty"`
+	Needs         *Needs            `yaml:"needs,omitempty"`
+	Permissions   *PermissionsEvent `yaml:"permissions,omitempty"`
+	Secrets       interface{}       `yaml:"secrets,omitempty"`
+	Uses          string            `yaml:"uses"`
+	With          map[string]any
+	FileReference *models.FileReference
 }
 
 func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
-	var nodeAsMap map[string]any
-	if err := node.Decode(&nodeAsMap); err != nil {
-		return err
-	}
+	ciJobs := map[string]*Job{}
+	reusableWorkflowCallJobs := map[string]*ReusableWorkflowCallJob{}
 
-	normalJobs := make(map[string]*Job, 0)
-	reusableWorkflowCallJobs := make(map[string]*ReusableWorkflowCallJob, 0)
+	for i := 0; i < len(node.Content); i += 2 {
+		jobIDNode := node.Content[i]
+		jobNode := node.Content[i+1]
 
-	for jobId, jobObject := range nodeAsMap {
-		if isJobReusableWorkflowJob(jobObject) {
-			reusableJob := &ReusableWorkflowCallJob{ID: utils.GetPtr(jobId)}
-			if err := decodeWithHooks(jobObject, reusableJob); err != nil {
+		jobID := jobIDNode.Value
+
+		if isReusableWorkflowJob(jobNode) {
+			job, err := parseReusableWorkflowNode(jobIDNode, jobNode)
+			if err != nil {
 				return err
 			}
-			reusableWorkflowCallJobs[jobId] = reusableJob
+			reusableWorkflowCallJobs[jobID] = job
 		} else {
-			job := &Job{ID: utils.GetPtr(jobId)}
-			if err := decodeWithHooks(jobObject, job); err != nil {
+			job, err := parseJobNode(jobIDNode, jobNode)
+			if err != nil {
 				return err
 			}
-			normalJobs[jobId] = job
+			ciJobs[jobID] = job
 		}
 	}
+
 	*j = Jobs{
-		NormalJobs:               normalJobs,
+		CIJobs:                   ciJobs,
 		ReusableWorkflowCallJobs: reusableWorkflowCallJobs,
 	}
 	return nil
 }
 
-func isJobReusableWorkflowJob(job any) bool {
-	var jobAsMap map[string]any
-	if err := mapstructure.Decode(job, &jobAsMap); err != nil {
-		return false
+func parseJobNode(jobID, job *yaml.Node) (*Job, error) {
+	parsedJob := &Job{ID: utils.GetPtr(jobID.Value)}
+	if err := job.Decode(parsedJob); err != nil {
+		return nil, err
 	}
-	_, ok := jobAsMap["uses"]
-	return ok
+	parsedJob.FileReference = loadersUtils.GetMapKeyFileReference(jobID, job)
+	return parsedJob, nil
 }
 
-func decodeWithHooks[T any](data any, target T) error {
-	dc := &mapstructure.DecoderConfig{
-		DecodeHook: mapstructure.ComposeDecodeHookFunc(
-			mapstructure.TextUnmarshallerHookFunc(),
-			DecodeRunsOnHookFunc(),
-			DecodeNeedsHookFunc(),
-			DecodeTokenPermissionsHookFunc(),
-		),
-		Result: &target,
+func parseReusableWorkflowNode(jobID, job *yaml.Node) (*ReusableWorkflowCallJob, error) {
+	reusableJob := &ReusableWorkflowCallJob{ID: utils.GetPtr(jobID.Value)}
+	if err := job.Decode(reusableJob); err != nil {
+		return nil, err
 	}
-	decoder, err := mapstructure.NewDecoder(dc)
-	if err != nil {
-		return err
-	}
-	return decoder.Decode(data)
+	reusableJob.FileReference = loadersUtils.GetMapKeyFileReference(jobID, job)
+	return reusableJob, nil
 }
 
-func DecodeNeedsHookFunc() mapstructure.DecodeHookFunc {
-	return func(f, t reflect.Type, data any) (any, error) {
-		if t != reflect.TypeOf(Needs{}) {
-			return data, nil
+func isReusableWorkflowJob(job *yaml.Node) bool {
+	for _, node := range job.Content {
+		if node.Tag == consts.StringTag && node.Value == "uses" {
+			return true
 		}
-
-		var needs []string
-		if err := mapstructure.Decode(data, &needs); err == nil {
-			return needs, nil
-		}
-
-		var needsString string
-		if err := mapstructure.Decode(data, &needsString); err == nil {
-			return []string{needsString}, nil
-		}
-		return nil, errors.New("unable to decode needs")
 	}
-}
-
-func (c *Concurrency) UnmarshalText(text []byte) error {
-	c.Group = utils.GetPtr(string(text))
-	return nil
+	return false
 }

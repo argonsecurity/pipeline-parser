@@ -13,9 +13,7 @@ func (g *GitHubParser) Parse(workflow *githubModels.Workflow) (*models.Pipeline,
 		Name: &workflow.Name,
 	}
 
-	if pipeline.Triggers, err = parseWorkflowTriggers(workflow); err != nil {
-		return nil, err
-	}
+	pipeline.Triggers = parseWorkflowTriggers(workflow)
 
 	if workflow.Jobs != nil {
 		if pipeline.Jobs, err = parseWorkflowJobs(workflow); err != nil {
@@ -36,17 +34,12 @@ func parseWorkflowDefaults(workflow *githubModels.Workflow) (*models.Defaults, e
 	}
 
 	defaults := &models.Defaults{}
-	if workflow.Permissions != nil {
-		permissions, err := parseTokenPermissions(workflow.Permissions)
-		if err != nil {
-			return nil, err
-		}
-		defaults.TokenPermissions = permissions
+	permissions, err := parseTokenPermissions(workflow.Permissions)
+	if err != nil {
+		return nil, err
 	}
-
-	if workflow.Env != nil {
-		defaults.EnvironmentVariables = workflow.Env
-	}
+	defaults.TokenPermissions = permissions
+	defaults.EnvironmentVariables = parseEnvironmentVariablesRef(workflow.Env)
 
 	return defaults, nil
 }

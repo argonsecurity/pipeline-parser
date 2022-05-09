@@ -1,5 +1,10 @@
 package models
 
+type TokenPermissions struct {
+	Permissions   map[string]Permission
+	FileReference *FileReference
+}
+
 type Job struct {
 	ID                   *string
 	Name                 *string
@@ -7,14 +12,15 @@ type Job struct {
 	ContinueOnError      *bool
 	PreSteps             *[]Step
 	PostSteps            *[]Step
-	EnvironmentVariables *EnvironmentVariables
+	EnvironmentVariables *EnvironmentVariablesRef
 	Runner               *Runner
 	Conditions           *[]Condition
 	ConcurrencyGroup     *string
 	Inputs               *[]Parameter
 	TimeoutMS            *int
 	Tags                 *[]string
-	TokenPermissions     *map[string]Permission
+	TokenPermissions     *TokenPermissions
 	Dependencies         *[]string
 	Metadata             Metadata
+	FileReference        *FileReference
 }

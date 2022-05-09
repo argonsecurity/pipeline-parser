@@ -1,12 +1,14 @@
 package models
 
 import (
-	"reflect"
+	"errors"
 	"strings"
 
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
+	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/mitchellh/mapstructure"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -42,32 +44,29 @@ var (
 )
 
 type RunsOn struct {
-	OS         *string
-	Arch       *string
-	SelfHosted bool
-	Tags       []string
+	OS            *string
+	Arch          *string
+	SelfHosted    bool
+	Tags          []string
+	FileReference *models.FileReference
 }
 
-func DecodeRunsOnHookFunc() mapstructure.DecodeHookFuncType {
-	return func(
-		f reflect.Type,
-		t reflect.Type,
-		data any) (any, error) {
-		if t != reflect.TypeOf(RunsOn{}) {
-			return data, nil
+func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
+	var tags []string
+	var err error
+	if node.Tag == consts.StringTag {
+		tags = []string{node.Value}
+	} else if node.Tag == consts.SequenceTag {
+		if tags, err = loadersUtils.ParseYamlStringSequenceToSlice(node); err != nil {
+			return err
 		}
-
-		var tags []string
-		if f.Kind() == reflect.String {
-			tags = []string{data.(string)}
-		} else {
-			if err := mapstructure.Decode(data, &tags); err != nil {
-				return data, err
-			}
-		}
-
-		return generateRunsOnFromTags(tags), nil
+	} else {
+		return errors.New("invalid RunsOn tags")
 	}
+
+	*r = *generateRunsOnFromTags(tags)
+	r.FileReference = loadersUtils.GetFileReference(node)
+	return nil
 }
 
 func generateRunsOnFromTags(tags []string) *RunsOn {

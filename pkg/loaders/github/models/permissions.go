@@ -1,8 +1,9 @@
 package models
 
 import (
-	"reflect"
-
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
+	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
+	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
 )
@@ -26,6 +27,8 @@ type PermissionsEvent struct {
 	RepositoryProjects string `mapstructure:"repository-projects,omitempty" yaml:"repository-projects,omitempty"`
 	SecurityEvents     string `mapstructure:"security-events,omitempty" yaml:"security-events,omitempty"`
 	Statuses           string `mapstructure:"statuses,omitempty" yaml:"statuses,omitempty"`
+
+	FileReference *models.FileReference
 }
 
 func createFullPermissions(permission string) *PermissionsEvent {
@@ -47,11 +50,11 @@ func createFullPermissions(permission string) *PermissionsEvent {
 }
 
 func (p *PermissionsEvent) UnmarshalYAML(node *yaml.Node) error {
-	var summarizedPermissions string
-	if err := node.Decode(&summarizedPermissions); err == nil {
-		if summarizedPermissions == readAll {
+	if node.Tag == consts.StringTag {
+		switch node.Value {
+		case readAll:
 			*p = *createFullPermissions("read")
-		} else if summarizedPermissions == writeAll {
+		case writeAll:
 			*p = *createFullPermissions("write")
 		}
 		return nil
@@ -61,30 +64,12 @@ func (p *PermissionsEvent) UnmarshalYAML(node *yaml.Node) error {
 	if err := node.Decode(&tmpInterface); err != nil {
 		return err
 	}
-	return mapstructure.Decode(tmpInterface, &p)
-}
 
-func DecodeTokenPermissionsHookFunc() mapstructure.DecodeHookFuncType {
-	return func(f, t reflect.Type, data any) (any, error) {
-		if t != reflect.TypeOf(PermissionsEvent{}) {
-			return data, nil
-		}
-
-		if f.Kind() == reflect.String {
-			if data == readAll {
-				return createFullPermissions("read"), nil
-			} else if data == writeAll {
-				return createFullPermissions("write"), nil
-			}
-		}
-
-		if f.Kind() == reflect.Map {
-			permissions := PermissionsEvent{}
-			if err := mapstructure.Decode(data, &permissions); err != nil {
-				return nil, err
-			}
-			return permissions, nil
-		}
-		return data, nil
+	if err := mapstructure.Decode(tmpInterface, &p); err != nil {
+		return err
 	}
+
+	p.FileReference = loadersUtils.GetFileReference(node)
+	p.FileReference.StartRef.Line-- // The "permissions" node is not accessible, this is a patch
+	return nil
 }

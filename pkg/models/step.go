@@ -25,13 +25,14 @@ type Step struct {
 	Type                 StepType
 	FailsPipeline        *bool
 	Disabled             *bool
-	EnvironmentVariables *EnvironmentVariables
+	EnvironmentVariables *EnvironmentVariablesRef
 	WorkingDirectory     *string
 	Timeout              *int
 	Conditions           *[]Condition
 	Shell                *Shell
 	Task                 *Task
 	Metadata             Metadata
+	FileReference        *FileReference
 }
 
 type Task struct {

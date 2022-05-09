@@ -1,134 +1,149 @@
 package models
 
 import (
-	"github.com/mitchellh/mapstructure"
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
+	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
+	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
 )
 
 type Inputs map[string]struct {
-	Description string      `mapstructure:"description"`
-	Default     interface{} `mapstructure:"default"`
-	Required    bool        `mapstructure:"required"`
-	Type        string      `mapstructure:"type"`
-	Options     []string    `mapstructure:"options,omitempty"`
+	Description string
+	Default     interface{}
+	Required    bool
+	Type        string
+	Options     []string
 }
 
 type Outputs map[string]*struct {
-	Description string `mapstructure:"description"`
-	Value       string `mapstructure:"value"`
+	Description string
+	Value       string
 }
 
 type WorkflowDispatch struct {
-	Inputs Inputs `mapstructure:"inputs"`
+	Inputs        Inputs
+	FileReference *models.FileReference
 }
 
 type WorkflowCall struct {
-	Inputs  Inputs  `mapstructure:"inputs"`
-	Outputs Outputs `mapstructure:"outputs"`
+	Inputs  Inputs
+	Outputs Outputs
 	Secrets map[string]*struct {
-		Description string `mapstructure:"description"`
-		Required    bool   `mapstructure:"required"`
+		Description string
+		Required    bool
 	}
+	FileReference *models.FileReference
 }
 
 type WorkflowRun struct {
-	Types     []string `mapstructure:"types"`
-	Workflows []string `mapstructure:"workflows"`
-	Ref       `mapstructure:"ref,squash"`
+	Types     []string
+	Workflows []string
+	Ref
+	FileReference *models.FileReference
 }
 
 type Events map[string]Event
 
 type Event struct {
-	Types []string `mapstructure:"types"`
+	Types         []string
+	FileReference *models.FileReference
 }
 
 type Cron struct {
-	Cron string `mapstructure:"cron" yarn:"cron"`
+	Cron          string
+	FileReference *models.FileReference
+}
+
+type Schedule struct {
+	Crons         *[]Cron
+	FileReference *models.FileReference
 }
 
 type On struct {
-	Push              *Ref              `mapstructure:"push"`
-	PullRequest       *Ref              `mapstructure:"pull_request"`
-	PullRequestTarget *Ref              `mapstructure:"pull_request_target"`
-	WorkflowCall      *WorkflowCall     `mapstructure:"workflow_call"`
-	Schedule          *[]Cron           `mapstructure:"schedule"`
-	WorkflowRun       *WorkflowRun      `mapstructure:"workflow_run"`
-	WorkflowDispatch  *WorkflowDispatch `mapstructure:"workflow_dispatch"`
+	Push              *Ref
+	PullRequest       *Ref
+	PullRequestTarget *Ref
+	WorkflowCall      *WorkflowCall
+	Schedule          *Schedule
+	WorkflowRun       *WorkflowRun
+	WorkflowDispatch  *WorkflowDispatch
+	FileReference     *models.FileReference
 	Events
 }
 
 func (on *On) UnmarshalYAML(node *yaml.Node) error {
-	events := make([]string, 0)
-	if err := node.Decode(&events); err == nil {
-		for _, event := range events {
-			on.unmarshalKey(event, nil)
+	on.FileReference = loadersUtils.GetFileReference(node)
+	if node.Tag == consts.SequenceTag {
+		fileReference := loadersUtils.GetFileReference(node)
+		for _, event := range node.Content {
+			on.unmarshalString(event.Value, &yaml.Node{}, fileReference)
 		}
 		return nil
 	}
 
-	var triggersMap map[string]any
-	if err := node.Decode(&triggersMap); err != nil {
-		return err
-	}
-
-	for k, v := range triggersMap {
-		if err := on.unmarshalKey(k, v); err != nil {
+	for i := 0; i < len(node.Content); i += 2 {
+		if err := on.unmarshalNode(node.Content[i], node.Content[i+1]); err != nil {
 			return err
 		}
 	}
+	on.FileReference.StartRef.Line-- // The line of the "on" node is currently not accessible, this is a patch
 	return nil
 }
 
-func (on *On) unmarshalKey(key string, value any) error {
+func (on *On) unmarshalNode(key, val *yaml.Node) error {
+	fileReference := loadersUtils.GetMapKeyFileReference(key, val)
+	return on.unmarshalString(key.Value, val, fileReference)
+}
+
+func (on *On) unmarshalString(key string, val *yaml.Node, fileReference *models.FileReference) error {
+	var err error
 	switch key {
 	case "schedule":
-		mapstructure.Decode(value, &on.Schedule)
+		on.Schedule = &Schedule{
+			FileReference: fileReference,
+		}
+		err = val.Decode(&on.Schedule.Crons)
 	case "push":
-		if value == nil {
-			on.Push = &Ref{}
-		} else {
-			return mapstructure.Decode(value, &on.Push)
+		on.Push = &Ref{FileReference: fileReference}
+		if !val.IsZero() {
+			err = val.Decode(&on.Push)
 		}
 	case "pull_request":
-		if value == nil {
-			on.PullRequest = &Ref{}
-		} else {
-			return mapstructure.Decode(value, &on.PullRequest)
+		on.PullRequest = &Ref{FileReference: fileReference}
+		if !val.IsZero() {
+			err = val.Decode(&on.PullRequest)
 		}
 	case "pull_request_target":
-		if value == nil {
-			on.PullRequestTarget = &Ref{}
-		} else {
-			return mapstructure.Decode(value, &on.PullRequestTarget)
+		on.PullRequestTarget = &Ref{FileReference: fileReference}
+		if !val.IsZero() {
+			err = val.Decode(&on.PullRequestTarget)
 		}
 	case "workflow_call":
-		if value == nil {
-			on.WorkflowCall = &WorkflowCall{}
-		} else {
-			return mapstructure.Decode(value, &on.WorkflowCall)
+		on.WorkflowCall = &WorkflowCall{FileReference: fileReference}
+		if !val.IsZero() {
+			err = val.Decode(&on.WorkflowCall)
 		}
 	case "workflow_run":
-		if value == nil {
-			on.WorkflowRun = &WorkflowRun{}
-		} else {
-			return mapstructure.Decode(value, &on.WorkflowRun)
+		on.WorkflowRun = &WorkflowRun{FileReference: fileReference}
+		if !val.IsZero() {
+			if err = val.Decode(&on.WorkflowRun); err == nil {
+				err = val.Decode(&(on.WorkflowRun.Ref))
+			}
 		}
 	case "workflow_dispatch":
-		if value == nil {
-			on.WorkflowDispatch = &WorkflowDispatch{}
-		} else {
-			return mapstructure.Decode(value, &on.WorkflowDispatch)
+		on.WorkflowDispatch = &WorkflowDispatch{FileReference: fileReference}
+		if !val.IsZero() {
+			err = val.Decode(&on.WorkflowDispatch)
 		}
 	default:
 		if on.Events == nil {
 			on.Events = make(Events)
 		}
-		var event Event
-		if err := mapstructure.Decode(value, &event); err != nil {
+		event := Event{FileReference: fileReference}
+		if err := val.Decode(&event); err != nil {
 			return err
 		}
 		on.Events[key] = event
 	}
-	return nil
+	return err
 }

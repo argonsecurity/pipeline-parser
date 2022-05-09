@@ -18,24 +18,30 @@ var (
 	}
 )
 
-func parseTokenPermissions(permissions *githubModels.PermissionsEvent) (*map[string]models.Permission, error) {
+func parseTokenPermissions(permissions *githubModels.PermissionsEvent) (*models.TokenPermissions, error) {
 	if permissions == nil {
 		return nil, nil
 	}
 
-	tokenPermissions := make(map[string]models.Permission)
-	var permissionsMap map[string]string
+	var permissionsMap map[string]any
 	if err := mapstructure.Decode(permissions, &permissionsMap); err != nil {
 		return nil, err
 	}
 
+	tokenPermissions := make(map[string]models.Permission)
 	for permissionName, value := range permissionsMap {
-		if customPermissionsMap[permissionName] != "" {
-			permissionName = customPermissionsMap[permissionName]
+		if val, ok := value.(string); ok {
+			if customPermissionsMap[permissionName] != "" {
+				permissionName = customPermissionsMap[permissionName]
+			}
+			tokenPermissions[permissionName] = parsePermissionValue(val)
 		}
-		tokenPermissions[permissionName] = parsePermissionValue(value)
 	}
-	return &tokenPermissions, nil
+
+	return &models.TokenPermissions{
+		Permissions:   tokenPermissions,
+		FileReference: permissions.FileReference,
+	}, nil
 }
 
 func parsePermissionValue(permission string) models.Permission {
