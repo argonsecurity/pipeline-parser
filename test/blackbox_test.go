@@ -220,7 +220,7 @@ func Test_GitHubParser(t *testing.T) {
 						},
 						{
 							Event: models.ManualEvent,
-							Paramters: []models.Parameter{
+							Parameters: []models.Parameter{
 								{
 									Name:        utils.GetPtr("workflow-input"),
 									Description: utils.GetPtr("The workflow input"),
@@ -231,7 +231,7 @@ func Test_GitHubParser(t *testing.T) {
 						},
 						{
 							Event: models.PipelineTriggerEvent,
-							Paramters: []models.Parameter{
+							Parameters: []models.Parameter{
 								{
 									Name:        utils.GetPtr("workflow-input"),
 									Description: utils.GetPtr("The workflow input"),

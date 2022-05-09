@@ -15,7 +15,7 @@ type EventType string
 type Trigger struct {
 	Branches     *Filter
 	Paths        *Filter
-	Paramters    []Parameter
+	Parameters   []Parameter
 	Pipelines    []string
 	Filters      map[string]any
 	Event        EventType

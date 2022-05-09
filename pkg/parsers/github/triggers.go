@@ -112,7 +112,7 @@ func parseWorkflowRun(workflowRun *githubModels.WorkflowRun) models.Trigger {
 func parseWorkflowCall(workflowCall *githubModels.WorkflowCall) models.Trigger {
 	return models.Trigger{
 		Event:        models.PipelineTriggerEvent,
-		Paramters:    parseInputs(workflowCall.Inputs),
+		Parameters:   parseInputs(workflowCall.Inputs),
 		FileLocation: workflowCall.FileLocation,
 	}
 }
@@ -138,7 +138,7 @@ func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) mode
 	}
 
 	if workflowDispatch.Inputs != nil {
-		trigger.Paramters = parseInputs(workflowDispatch.Inputs)
+		trigger.Parameters = parseInputs(workflowDispatch.Inputs)
 	}
 	return trigger
 }

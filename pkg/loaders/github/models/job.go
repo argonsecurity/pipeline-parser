@@ -11,7 +11,7 @@ import (
 )
 
 type Jobs struct {
-	NormalJobs               map[string]*Job
+	CIJobs                   map[string]*Job
 	ReusableWorkflowCallJobs map[string]*ReusableWorkflowCallJob
 }
 
@@ -45,6 +45,7 @@ func (c *Concurrency) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
+// Job is a normal CI job
 type Job struct {
 	ID              *string                  `yaml:"id"`
 	Concurrency     *Concurrency             `yaml:"concurrency,omitempty"`
@@ -66,6 +67,7 @@ type Job struct {
 	FileLocation    *models.FileLocation
 }
 
+// ReusableWorkflowCallJob is a job that executes a workflow
 type ReusableWorkflowCallJob struct {
 	ID           *string           `yaml:"id"`
 	If           string            `yaml:"if,omitempty"`
@@ -79,7 +81,7 @@ type ReusableWorkflowCallJob struct {
 }
 
 func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
-	normalJobs := map[string]*Job{}
+	ciJobs := map[string]*Job{}
 	reusableWorkflowCallJobs := map[string]*ReusableWorkflowCallJob{}
 
 	for i := 0; i < len(node.Content); i += 2 {
@@ -99,12 +101,12 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 			if err != nil {
 				return err
 			}
-			normalJobs[jobID] = job
+			ciJobs[jobID] = job
 		}
 	}
 
 	*j = Jobs{
-		NormalJobs:               normalJobs,
+		CIJobs:                   ciJobs,
 		ReusableWorkflowCallJobs: reusableWorkflowCallJobs,
 	}
 	return nil
