@@ -29,7 +29,7 @@ type Default struct {
 	Cache         *common.Cache    `yaml:"cache"`
 	Image         *common.Image    `yaml:"image"`
 	Interruptible bool             `yaml:"interruptible"`
-	Retry         interface{}      `yaml:"retry"`
+	Retry         *common.Retry    `yaml:"retry"`
 	Services      []interface{}    `yaml:"services"`
 	Tags          []string         `yaml:"tags"`
 	Timeout       string           `yaml:"timeout"`

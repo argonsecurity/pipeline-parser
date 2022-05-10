@@ -23,7 +23,7 @@ type Job struct {
 	Parallel      *jobModels.Parallel     `yaml:"parallel"`
 	Release       *Release                `yaml:"release"`
 	ResourceGroup string                  `yaml:"resource_group"`
-	Retry         interface{}             `yaml:"retry"`
+	Retry         *common.Retry           `yaml:"retry"`
 	Rules         []*common.RulesItems    `yaml:"rules"`
 	Script        *common.Script          `yaml:"script"`
 	Secrets       *Secrets                `yaml:"secrets"`
