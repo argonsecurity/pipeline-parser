@@ -5,6 +5,7 @@ import (
 
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -41,16 +42,28 @@ func GetMapKeyFileReference(jobIDNode, jobNode *yaml.Node) *models.FileReference
 
 func ParseYamlStringSequenceToSlice(node *yaml.Node) ([]string, error) {
 	if node.Tag != consts.SequenceTag {
-		return nil, fmt.Errorf("expected sequence tag, got %s", node.Tag)
+		return nil, consts.NewErrInvalidYamlTag(node.Tag)
 	}
 
 	strings := make([]string, len(node.Content))
 	for i, n := range node.Content {
 		if n.Tag != consts.StringTag {
-			return nil, fmt.Errorf("expected string tag, got %s", n.Tag)
+			return nil, consts.NewErrInvalidYamlTag(node.Tag)
 		}
 
 		strings[i] = n.Value
 	}
 	return strings, nil
+}
+
+func MustParseYamlBooleanValue(node *yaml.Node) *bool {
+	if node.Value == "true" {
+		return utils.GetPtr(true)
+	}
+
+	if node.Value == "false" {
+		return utils.GetPtr(false)
+	}
+
+	panic(fmt.Sprintf("invalid boolean value: %s", node.Value))
 }

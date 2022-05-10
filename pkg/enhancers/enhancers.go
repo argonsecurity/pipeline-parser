@@ -15,7 +15,7 @@ var (
 func Enhance(pipeline *models.Pipeline, platform consts.Platform) (*models.Pipeline, error) {
 	platformConfig, ok := platformToEnhancerMapping[platform]
 	if !ok {
-		return pipeline, &consts.ErrInvalidPlatform{Platform: platform}
+		return pipeline, consts.NewErrInvalidPlatform(platform)
 	}
 
 	if pipeline.Jobs != nil {
