@@ -25,25 +25,19 @@ func (p *Parallel) UnmarshalYAML(node *yaml.Node) error {
 		return nil
 	}
 
-	if node.Tag == consts.MapTag {
-		var err error
-		for i := 0; i < len(node.Content); i += 2 {
-			key := node.Content[i].Value
-			value := node.Content[i+1]
-
-			switch key {
-			case "max":
-				v, _ := strconv.Atoi(value.Value)
-				p.Max = &v
-			case "matrix":
-				p.Matrix = &Matrix{}
-				err = p.Matrix.UnmarshalYAML(value)
+	return utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+		switch key {
+		case "max":
+			v, _ := strconv.Atoi(value.Value)
+			p.Max = &v
+		case "matrix":
+			p.Matrix = &Matrix{}
+			if err := p.Matrix.UnmarshalYAML(value); err != nil {
+				return err
 			}
 		}
-		return err
-	}
-
-	return consts.NewErrInvalidYamlTag(node.Tag)
+		return nil
+	})
 }
 
 func (m *Matrix) UnmarshalYAML(node *yaml.Node) error {
@@ -51,9 +45,7 @@ func (m *Matrix) UnmarshalYAML(node *yaml.Node) error {
 		return consts.NewErrInvalidYamlTag(node.Tag)
 	}
 
-	for i := 0; i < len(node.Content); i += 2 {
-		key := node.Content[i].Value
-		value := node.Content[i+1]
+	return utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		if value.Tag == consts.StringTag {
 			(*m)[key] = []string{value.Value}
 		}
@@ -65,6 +57,6 @@ func (m *Matrix) UnmarshalYAML(node *yaml.Node) error {
 			}
 			(*m)[key] = parsedStrings
 		}
-	}
-	return nil
+		return nil
+	})
 }

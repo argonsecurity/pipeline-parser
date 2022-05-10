@@ -67,3 +67,19 @@ func MustParseYamlBooleanValue(node *yaml.Node) *bool {
 
 	panic(fmt.Sprintf("invalid boolean value: %s", node.Value))
 }
+
+func IterateOnMap(node *yaml.Node, cb func(key string, value *yaml.Node) error) error {
+	if node.Tag != consts.MapTag {
+		return consts.NewErrInvalidYamlTag(node.Tag)
+	}
+
+	for i := 0; i < len(node.Content); i += 2 {
+		key := node.Content[i].Value
+		value := node.Content[i+1]
+		if err := cb(key, value); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

@@ -2,6 +2,7 @@ package job
 
 import (
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
+	"github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -22,21 +23,15 @@ func (t *Trigger) UnmarshalYAML(node *yaml.Node) error {
 		return nil
 	}
 
-	if node.Tag == consts.MapTag {
-		for i := 0; i < len(node.Content); i += 2 {
-			key := node.Content[i].Value
-			value := node.Content[i+1]
-			switch key {
-			case "include":
-				t.Include = value.Value
-			case "strategy":
-				t.Strategy = value.Value
-			case "forward":
-				value.Decode(&t.Forward)
-			}
+	return utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+		switch key {
+		case "include":
+			t.Include = value.Value
+		case "strategy":
+			t.Strategy = value.Value
+		case "forward":
+			value.Decode(&t.Forward)
 		}
 		return nil
-	}
-
-	return consts.NewErrInvalidYamlTag(node.Tag)
+	})
 }

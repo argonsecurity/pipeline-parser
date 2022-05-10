@@ -23,34 +23,29 @@ func (c *Conditions) UnmarshalYAML(node *yaml.Node) error {
 		return nil
 	}
 
-	if node.Tag == consts.MapTag {
-		for i := 0; i < len(node.Content); i += 2 {
-			key := node.Content[i].Value
-			value := node.Content[i+1]
-
-			switch key {
-			case "refs":
-				refs, err := utils.ParseYamlStringSequenceToSlice(value)
-				if err != nil {
-					return err
-				}
-				c.Refs = refs
-			case "variables":
-				variables, err := utils.ParseYamlStringSequenceToSlice(value)
-				if err != nil {
-					return err
-				}
-				c.Variables = variables
-			case "changes":
-				changes, err := utils.ParseYamlStringSequenceToSlice(value)
-				if err != nil {
-					return err
-				}
-				c.Changes = changes
-			case "kubernetes":
-				c.Kubernetes = value.Value
+	return utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+		switch key {
+		case "refs":
+			refs, err := utils.ParseYamlStringSequenceToSlice(value)
+			if err != nil {
+				return err
 			}
+			c.Refs = refs
+		case "variables":
+			variables, err := utils.ParseYamlStringSequenceToSlice(value)
+			if err != nil {
+				return err
+			}
+			c.Variables = variables
+		case "changes":
+			changes, err := utils.ParseYamlStringSequenceToSlice(value)
+			if err != nil {
+				return err
+			}
+			c.Changes = changes
+		case "kubernetes":
+			c.Kubernetes = value.Value
 		}
-	}
-	return consts.NewErrInvalidYamlTag(node.Tag)
+		return nil
+	})
 }

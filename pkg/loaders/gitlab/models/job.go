@@ -20,14 +20,14 @@ type Job struct {
 	Inherit       *jobModels.Inherit      `yaml:"inherit"`
 	Interruptible bool                    `yaml:"interruptible"`
 	Needs         []interface{}           `yaml:"needs"`
-	Parallel      interface{}             `yaml:"parallel"`
+	Parallel      *jobModels.Parallel     `yaml:"parallel"`
 	Release       *Release                `yaml:"release"`
 	ResourceGroup string                  `yaml:"resource_group"`
 	Retry         interface{}             `yaml:"retry"`
 	Rules         []*common.RulesItems    `yaml:"rules"`
 	Script        *common.Script          `yaml:"script"`
 	Secrets       *Secrets                `yaml:"secrets"`
-	Services      []interface{}           `yaml:"services"`
+	Services      []interface{}           `yaml:"services"` // TODO: implement
 	Stage         string                  `yaml:"stage"`
 	StartIn       string                  `yaml:"start_in"`
 	Tags          []string                `yaml:"tags"`
