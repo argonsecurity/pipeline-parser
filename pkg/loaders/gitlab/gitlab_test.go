@@ -100,6 +100,52 @@ func TestGitlabLoader(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name:     "Terraform",
+			Filename: "terraform.yaml",
+			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
+				Include: &models.Include{
+					{
+						Template:      "Terraform/Base.latest.gitlab-ci.yml",
+						FileReference: testutils.CreateFileReference(7, 5, 7, 15),
+					},
+					{
+						Template:      "Jobs/SAST-IaC.latest.gitlab-ci.yml",
+						FileReference: testutils.CreateFileReference(8, 5, 8, 15),
+					},
+				},
+				Stages: []string{
+					"validate",
+					"test",
+					"build",
+					"deploy",
+				},
+				Jobs: map[string]*models.Job{
+					"validate": {
+						Extends:       ".terraform:validate",
+						FileReference: testutils.CreateFileReference(20, 0, 22, 10),
+					},
+					"fmt": {
+						Extends:       ".terraform:fmt",
+						FileReference: testutils.CreateFileReference(16, 0, 18, 10),
+					},
+					"build": {
+						Extends:       ".terraform:build",
+						FileReference: testutils.CreateFileReference(24, 0, 25, 12),
+					},
+					"deploy": {
+						Extends: ".terraform:deploy",
+						Dependencies: []string{
+							"build",
+						},
+						Environment: map[string]string{
+							"name": "$TF_STATE_NAME",
+						},
+						FileReference: testutils.CreateFileReference(27, 0, 32, 10),
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {

@@ -85,3 +85,17 @@ func IterateOnMap(node *yaml.Node, cb func(key string, value *yaml.Node) error) 
 
 	return nil
 }
+
+func ParseSliceOrOne[T any](node *yaml.Node, v *[]T) error {
+	var t T
+	if node.Tag == consts.SequenceTag {
+		return node.Decode(&v)
+	}
+
+	if err := node.Decode(&t); err != nil {
+		return err
+	}
+
+	*v = []T{t}
+	return nil
+}
