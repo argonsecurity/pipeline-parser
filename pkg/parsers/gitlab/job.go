@@ -28,6 +28,7 @@ func parseJob(jobID string, job *gitlabModels.Job) (models.Job, error) {
 		TimeoutMS:            utils.GetPtr(parseTimeoutString(job.Timeout)),
 		EnvironmentVariables: parseEnvironmentVariables(*job.Variables),
 		Tags:                 &job.Tags,
+		Runner:               parseRunner(job.Image),
 		// Conditions:       job.Rules,
 	}
 	return parsedJob, nil

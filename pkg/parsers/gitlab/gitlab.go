@@ -32,6 +32,7 @@ func (g *GitLabParser) Parse(gitlabCIConfiguration *gitlabModels.GitlabCIConfigu
 func parseDefaults(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) (*models.Defaults, error) {
 	defaults := &models.Defaults{
 		EnvironmentVariables: parseEnvironmentVariables(*gitlabCIConfiguration.Variables),
+		Runner:               parseRunner(gitlabCIConfiguration.Image),
 	}
 	return defaults, nil
 }
