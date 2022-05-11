@@ -3,15 +3,21 @@ package common
 import (
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
+	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
 )
 
 type Image struct {
-	Name       string   `yaml:"name"`
-	Entrypoint []string `yaml:"entrypoint"`
+	Name          string   `yaml:"name"`
+	Entrypoint    []string `yaml:"entrypoint"`
+	FileReference *models.FileReference
 }
 
 func (im *Image) UnmarshalYAML(node *yaml.Node) error {
+
+	im.FileReference = utils.GetFileReference(node)
+	im.FileReference.StartRef.Line--
+
 	if node.Tag == consts.StringTag {
 		im.Name = node.Value
 		return nil

@@ -18,6 +18,7 @@ func parseRunner(image *gitlabModels.Image) *models.Runner {
 			Label:       &tag,
 			RegistryURL: &registry,
 		},
+		FileReference: image.FileReference,
 	}
 }
 
