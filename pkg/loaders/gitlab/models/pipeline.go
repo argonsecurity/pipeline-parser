@@ -16,10 +16,10 @@ type GitlabCIConfiguration struct {
 	Services []interface{} `yaml:"services"`
 
 	// Groups jobs into stages. All jobs in one stage must complete before next stage is executed. Defaults to ['build', 'test', 'deploy'].
-	Stages    []string          `yaml:"stages"`
-	Variables map[string]string `yaml:"variables"`
-	Workflow  *Workflow         `yaml:"workflow"`
-	Jobs      map[string]*Job   `yaml:",inline"`
+	Stages    []string                        `yaml:"stages"`
+	Variables *common.EnvironmentVariablesRef `yaml:"variables"`
+	Workflow  *Workflow                       `yaml:"workflow"`
+	Jobs      map[string]*Job                 `yaml:",inline"`
 }
 
 type Default struct {

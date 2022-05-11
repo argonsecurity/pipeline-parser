@@ -1,15 +1,13 @@
 package models
 
 type Pipeline struct {
-	Id           *string
-	Name         *string
-	Triggers     *Triggers
-	Jobs         *[]Job
-	Imports      *[]string
-	Parameters   *[]Parameter
-	Repository   *Repository
-	Organization *Entity
-	Defaults     *Defaults
+	Id         *string
+	Name       *string
+	Triggers   *Triggers
+	Jobs       *[]Job
+	Imports    *[]string
+	Parameters *[]Parameter
+	Defaults   *Defaults
 }
 
 type Defaults struct {
@@ -19,10 +17,4 @@ type Defaults struct {
 	TokenPermissions     *TokenPermissions
 	Settings             *map[string]any
 	FileReference        *FileReference
-}
-
-type Repository struct {
-	Entity
-	URL          *string
-	Organization *Entity
 }

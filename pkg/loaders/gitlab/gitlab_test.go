@@ -60,8 +60,11 @@ func TestGitlabLoader(t *testing.T) {
 				Image: &common.Image{
 					Name: "gradle:alpine",
 				},
-				Variables: map[string]string{
-					"GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+				Variables: &common.EnvironmentVariablesRef{
+					Variables: map[string]any{
+						"GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+					},
+					FileReference: testutils.CreateFileReference(16, 0, 17, 16),
 				},
 				BeforeScript: &common.Script{
 					Commands: []string{

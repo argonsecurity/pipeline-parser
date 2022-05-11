@@ -9,13 +9,9 @@ type Cache struct {
 }
 
 type RulesItems struct {
-	Changes   []string   `yaml:"changes,omitempty"`
-	Exists    []string   `yaml:"exists,omitempty"`
-	If        string     `yaml:"if,omitempty"`
-	Variables *Variables `yaml:"variables,omitempty"`
-	When      string     `yaml:"when,omitempty"`
-}
-
-type Variables struct {
-	AdditionalProperties map[string]interface{} `yaml:"-"`
+	Changes   []string                 `yaml:"changes,omitempty"`
+	Exists    []string                 `yaml:"exists,omitempty"`
+	If        string                   `yaml:"if,omitempty"`
+	Variables *EnvironmentVariablesRef `yaml:"variables,omitempty"`
+	When      string                   `yaml:"when,omitempty"`
 }
