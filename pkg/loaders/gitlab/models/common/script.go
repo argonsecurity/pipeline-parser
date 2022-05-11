@@ -21,6 +21,9 @@ func (s *Script) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	if node.Tag == consts.SequenceTag {
+		// We don't have access to the key in the YAML, this is a patch
+		s.FileReference.StartRef.Line--
+
 		commands, err := utils.ParseYamlStringSequenceToSlice(node)
 		if err != nil {
 			return err

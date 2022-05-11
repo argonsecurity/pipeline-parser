@@ -5,11 +5,11 @@ import (
 )
 
 type GitlabCIConfiguration struct {
-	AfterScript  []*common.Script `yaml:"after_script"`
-	BeforeScript []*common.Script `yaml:"before_script"`
-	Cache        *common.Cache    `yaml:"cache"`
-	Default      *Default         `yaml:"default"`
-	Image        *common.Image    `yaml:"image"`
+	AfterScript  *common.Script `yaml:"after_script"`
+	BeforeScript *common.Script `yaml:"before_script"`
+	Cache        *common.Cache  `yaml:"cache"`
+	Default      *Default       `yaml:"default"`
+	Image        *common.Image  `yaml:"image"`
 
 	Include interface{} `yaml:"include"`
 
@@ -17,10 +17,10 @@ type GitlabCIConfiguration struct {
 	Services []interface{} `yaml:"services"`
 
 	// Groups jobs into stages. All jobs in one stage must complete before next stage is executed. Defaults to ['build', 'test', 'deploy'].
-	Stages    []string         `yaml:"stages"`
-	Variables *GlobalVariables `yaml:"variables"`
-	Workflow  *Workflow        `yaml:"workflow"`
-	Jobs      map[string]*Job  `yaml:",inline"`
+	Stages    []string          `yaml:"stages"`
+	Variables map[string]string `yaml:"variables"`
+	Workflow  *Workflow         `yaml:"workflow"`
+	Jobs      map[string]*Job   `yaml:",inline"`
 }
 
 type Default struct {
@@ -38,8 +38,4 @@ type Default struct {
 
 type Workflow struct {
 	Rules []*common.RulesItems `yaml:"rules"`
-}
-
-type GlobalVariables struct {
-	AdditionalProperties map[string]interface{} `yaml:"-"`
 }
