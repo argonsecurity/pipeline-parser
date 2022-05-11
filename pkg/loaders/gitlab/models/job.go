@@ -9,8 +9,8 @@ import (
 )
 
 type Job struct {
-	AfterScript  []*common.Script `yaml:"after_script"`
-	BeforeScript []*common.Script `yaml:"before_script"`
+	AfterScript  *common.Script `yaml:"after_script"`
+	BeforeScript *common.Script `yaml:"before_script"`
 
 	AllowFailure  *jobModels.AllowFailure         `yaml:"allow_failure"`
 	Artifacts     *Artifacts                      `yaml:"artifacts"`
