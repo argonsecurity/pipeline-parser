@@ -74,9 +74,11 @@ func IterateOnMap(node *yaml.Node, cb func(key string, value *yaml.Node) error) 
 	}
 
 	for i := 0; i < len(node.Content); i += 2 {
-		key := node.Content[i].Value
+		key := node.Content[i]
 		value := node.Content[i+1]
-		if err := cb(key, value); err != nil {
+		value.Line = key.Line
+		value.Column = key.Column
+		if err := cb(key.Value, value); err != nil {
 			return err
 		}
 	}

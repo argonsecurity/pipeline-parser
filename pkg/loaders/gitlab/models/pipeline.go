@@ -1,25 +1,26 @@
 package models
 
-import "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
+import (
+	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
+)
 
 type GitlabCIConfiguration struct {
-	AdditionalProperties map[string]interface{} `yaml:"-"`
-	AfterScript          []*common.Script       `yaml:"after_script"`
-	BeforeScript         []*common.Script       `yaml:"before_script"`
-	Cache                *common.Cache          `yaml:"cache"`
-	Default              *Default               `yaml:"default"`
-	Image                *common.Image          `yaml:"image"`
+	AfterScript  []*common.Script `yaml:"after_script"`
+	BeforeScript []*common.Script `yaml:"before_script"`
+	Cache        *common.Cache    `yaml:"cache"`
+	Default      *Default         `yaml:"default"`
+	Image        *common.Image    `yaml:"image"`
 
 	Include interface{} `yaml:"include"`
 
 	Pages    interface{}   `yaml:"pages"`
-	Schema   string        `yaml:"$schema"`
 	Services []interface{} `yaml:"services"`
 
 	// Groups jobs into stages. All jobs in one stage must complete before next stage is executed. Defaults to ['build', 'test', 'deploy'].
 	Stages    []string         `yaml:"stages"`
 	Variables *GlobalVariables `yaml:"variables"`
 	Workflow  *Workflow        `yaml:"workflow"`
+	Jobs      map[string]*Job  `yaml:",inline"`
 }
 
 type Default struct {

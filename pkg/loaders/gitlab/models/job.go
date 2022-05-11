@@ -3,6 +3,9 @@ package models
 import (
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
 	jobModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/job"
+	"github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
+	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"gopkg.in/yaml.v3"
 )
 
 type Job struct {
@@ -38,6 +41,8 @@ type Job struct {
 
 	Except *jobModels.Conditions `yaml:"except"`
 	Only   *jobModels.Conditions `yaml:"only"`
+
+	FileReference *models.FileReference
 }
 
 type Release struct {
@@ -67,4 +72,81 @@ type Secrets struct {
 
 type SecretsItem struct {
 	Vault interface{} `yaml:"vault"`
+}
+
+// There's a bug in go-yaml and this is the only way we can currently have the jobs inside the ci configuration
+// while keeping the job's file reference.
+func (j *Job) UnmarshalYAML(node *yaml.Node) error {
+	j.FileReference = &models.FileReference{
+		StartRef: &models.FileLocation{
+			Line:   node.Line - 1,
+			Column: 0,
+		},
+		EndRef: utils.GetEndFileLocation(node),
+	}
+	return utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+		switch key {
+		case "after_script":
+			return value.Decode(&j.AfterScript)
+		case "before_script":
+			return value.Decode(&j.BeforeScript)
+		case "allow_failure":
+			return value.Decode(&j.AllowFailure)
+		case "artifacts":
+			return value.Decode(&j.Artifacts)
+		case "cache":
+			return value.Decode(&j.Cache)
+		case "coverage":
+			return value.Decode(&j.Coverage)
+		case "dependencies":
+			return value.Decode(&j.Dependencies)
+		case "environment":
+			return value.Decode(&j.Environment)
+		case "extends":
+			return value.Decode(&j.Extends)
+		case "image":
+			return value.Decode(&j.Image)
+		case "inherit":
+			return value.Decode(&j.Inherit)
+		case "interruptible":
+			return value.Decode(&j.Interruptible)
+		case "needs":
+			return value.Decode(&j.Needs)
+		case "parallel":
+			return value.Decode(&j.Parallel)
+		case "release":
+			return value.Decode(&j.Release)
+		case "resource_group":
+			return value.Decode(&j.ResourceGroup)
+		case "retry":
+			return value.Decode(&j.Retry)
+		case "rules":
+			return value.Decode(&j.Rules)
+		case "script":
+			return value.Decode(&j.Script)
+		case "secrets":
+			return value.Decode(&j.Secrets)
+		case "services":
+			return value.Decode(&j.Services)
+		case "stage":
+			return value.Decode(&j.Stage)
+		case "start_in":
+			return value.Decode(&j.StartIn)
+		case "tags":
+			return value.Decode(&j.Tags)
+		case "timeout":
+			return value.Decode(&j.Timeout)
+		case "trigger":
+			return value.Decode(&j.Trigger)
+		case "variables":
+			return value.Decode(&j.Variables)
+		case "when":
+			return value.Decode(&j.When)
+		case "except":
+			return value.Decode(&j.Except)
+		case "only":
+			return value.Decode(&j.Only)
+		}
+		return nil
+	})
 }

@@ -1,0 +1,11 @@
+stages:
+  - build
+
+python-build:
+  stage: build
+  script:
+    - cd requests
+    - python3 setup.py sdist
+
+before_script:
+  - echo "before_script"
