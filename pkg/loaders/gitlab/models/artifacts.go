@@ -14,24 +14,24 @@ type Artifacts struct {
 type Reports struct {
 	CoverageReport *CoverageReport `yaml:"coverage_report,omitempty"`
 
-	Codequality        interface{} `yaml:"codequality,omitempty"`
-	ContainerScanning  interface{} `yaml:"container_scanning,omitempty"`
-	Dast               interface{} `yaml:"dast,omitempty"`
-	DependencyScanning interface{} `yaml:"dependency_scanning,omitempty"`
-	Dotenv             interface{} `yaml:"dotenv,omitempty"`
-	Junit              interface{} `yaml:"junit,omitempty"`
-	LicenseManagement  interface{} `yaml:"license_management,omitempty"`
-	LicenseScanning    interface{} `yaml:"license_scanning,omitempty"`
-	Lsif               interface{} `yaml:"lsif,omitempty"`
-	Metrics            interface{} `yaml:"metrics,omitempty"`
-	Performance        interface{} `yaml:"performance,omitempty"`
-	Requirements       interface{} `yaml:"requirements,omitempty"`
-	Sast               interface{} `yaml:"sast,omitempty"`
-	SecretDetection    interface{} `yaml:"secret_detection,omitempty"`
-	Terraform          interface{} `yaml:"terraform,omitempty"`
+	Codequality        any `yaml:"codequality,omitempty"`
+	ContainerScanning  any `yaml:"container_scanning,omitempty"`
+	Dast               any `yaml:"dast,omitempty"`
+	DependencyScanning any `yaml:"dependency_scanning,omitempty"`
+	Dotenv             any `yaml:"dotenv,omitempty"`
+	Junit              any `yaml:"junit,omitempty"`
+	LicenseManagement  any `yaml:"license_management,omitempty"`
+	LicenseScanning    any `yaml:"license_scanning,omitempty"`
+	Lsif               any `yaml:"lsif,omitempty"`
+	Metrics            any `yaml:"metrics,omitempty"`
+	Performance        any `yaml:"performance,omitempty"`
+	Requirements       any `yaml:"requirements,omitempty"`
+	Sast               any `yaml:"sast,omitempty"`
+	SecretDetection    any `yaml:"secret_detection,omitempty"`
+	Terraform          any `yaml:"terraform,omitempty"`
 }
 
 type CoverageReport struct {
-	CoverageFormat interface{} `yaml:"coverage_format,omitempty"`
-	Path           string      `yaml:"path,omitempty"`
+	CoverageFormat any    `yaml:"coverage_format,omitempty"`
+	Path           string `yaml:"path,omitempty"`
 }

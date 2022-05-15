@@ -12,8 +12,8 @@ type GitlabCIConfiguration struct {
 	Image        *common.Image  `yaml:"image"`
 	Include      *Include       `yaml:"include"`
 
-	Pages    interface{}   `yaml:"pages"`
-	Services []interface{} `yaml:"services"`
+	Pages    any   `yaml:"pages"`
+	Services []any `yaml:"services"`
 
 	// Groups jobs into stages. All jobs in one stage must complete before next stage is executed. Defaults to ['build', 'test', 'deploy'].
 	Stages    []string                        `yaml:"stages"`
@@ -30,11 +30,11 @@ type Default struct {
 	Image         *common.Image    `yaml:"image"`
 	Interruptible bool             `yaml:"interruptible"`
 	Retry         *common.Retry    `yaml:"retry"`
-	Services      []interface{}    `yaml:"services"`
+	Services      []any            `yaml:"services"`
 	Tags          []string         `yaml:"tags"`
 	Timeout       string           `yaml:"timeout"`
 }
 
 type Workflow struct {
-	Rules []*common.RulesItems `yaml:"rules"`
+	Rules *common.Rules `yaml:"rules"`
 }

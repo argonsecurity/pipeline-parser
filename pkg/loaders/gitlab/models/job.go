@@ -17,20 +17,20 @@ type Job struct {
 	Cache         *common.Cache                   `yaml:"cache"`
 	Coverage      string                          `yaml:"coverage"`
 	Dependencies  []string                        `yaml:"dependencies"`
-	Environment   interface{}                     `yaml:"environment"` // TODO: implement
-	Extends       interface{}                     `yaml:"extends"`
+	Environment   any                             `yaml:"environment"` // TODO: implement
+	Extends       any                             `yaml:"extends"`
 	Image         *common.Image                   `yaml:"image"`
 	Inherit       *jobModels.Inherit              `yaml:"inherit"`
 	Interruptible bool                            `yaml:"interruptible"`
-	Needs         []interface{}                   `yaml:"needs"`
+	Needs         []any                           `yaml:"needs"`
 	Parallel      *jobModels.Parallel             `yaml:"parallel"`
 	Release       *Release                        `yaml:"release"`
 	ResourceGroup string                          `yaml:"resource_group"`
 	Retry         *common.Retry                   `yaml:"retry"`
-	Rules         []*common.RulesItems            `yaml:"rules"`
+	Rules         *common.Rules                   `yaml:"rules"`
 	Script        *common.Script                  `yaml:"script"`
 	Secrets       *Secrets                        `yaml:"secrets"`
-	Services      []interface{}                   `yaml:"services"` // TODO: implement
+	Services      []any                           `yaml:"services"` // TODO: implement
 	Stage         string                          `yaml:"stage"`
 	StartIn       string                          `yaml:"start_in"`
 	Tags          []string                        `yaml:"tags"`
@@ -71,7 +71,7 @@ type Secrets struct {
 }
 
 type SecretsItem struct {
-	Vault interface{} `yaml:"vault"`
+	Vault any `yaml:"vault"`
 }
 
 // There's a bug in go-yaml and this is the only way we can currently have the jobs inside the ci configuration
