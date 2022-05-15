@@ -8,7 +8,10 @@ type EnvironmentVariablesRef struct {
 
 type Condition struct {
 	Statement string
-	Triggers  []*Triggers
+	Allow     *bool
+	Paths     *Filter
+	Exists    *Filter
+	Variables map[string]string
 }
 
 type Filter struct {

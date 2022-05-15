@@ -15,6 +15,7 @@ type EventType string
 type Trigger struct {
 	Branches      *Filter
 	Paths         *Filter
+	Exists        *Filter
 	Parameters    []Parameter
 	Pipelines     []string
 	Filters       map[string]any
@@ -25,6 +26,6 @@ type Trigger struct {
 }
 
 type Triggers struct {
-	Triggers      *[]Trigger
+	Triggers      []*Trigger
 	FileReference *FileReference
 }

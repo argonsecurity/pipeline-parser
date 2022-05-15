@@ -172,7 +172,7 @@ func Test_GitHubParser(t *testing.T) {
 				Name: utils.GetPtr("all-triggers"),
 				Triggers: &models.Triggers{
 					FileReference: testutils.CreateFileReference(2, 3, 30, 13),
-					Triggers: SortTriggers(&[]models.Trigger{
+					Triggers: SortTriggers([]*models.Trigger{
 						{
 							Event:         models.ScheduledEvent,
 							Schedules:     &[]string{"30 2 * * *"},
@@ -434,9 +434,9 @@ func SortJobs(jobs *[]models.Job) *[]models.Job {
 	return jobs
 }
 
-func SortTriggers(triggers *[]models.Trigger) *[]models.Trigger {
-	sort.Slice(*triggers, func(i, j int) bool {
-		return (*triggers)[i].Event < (*triggers)[j].Event
+func SortTriggers(triggers []*models.Trigger) []*models.Trigger {
+	sort.Slice(triggers, func(i, j int) bool {
+		return triggers[i].Event < triggers[j].Event
 	})
 	return triggers
 }

@@ -31,14 +31,14 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) *models.Triggers {
 	// Handle workflow.on if it is a list of event names
 	if events, isEventListFormat := utils.ToSlice[string](workflow.On); isEventListFormat {
 		return &models.Triggers{
-			Triggers:      utils.GetPtr(generateTriggersFromEvents(events)),
+			Triggers:      generateTriggersFromEvents(events),
 			FileReference: workflow.On.FileReference,
 		}
 	}
 
 	// Handle workflow.on if each event has a specific configuration
 	on := workflow.On
-	triggerSlice := []models.Trigger{}
+	triggerSlice := []*models.Trigger{}
 
 	if on.Push != nil {
 		triggerSlice = append(triggerSlice, parseRef(on.Push, models.PushEvent))
@@ -73,14 +73,14 @@ func parseWorkflowTriggers(workflow *githubModels.Workflow) *models.Triggers {
 	}
 
 	return &models.Triggers{
-		Triggers:      &triggerSlice,
+		Triggers:      triggerSlice,
 		FileReference: workflow.On.FileReference,
 	}
 }
 
-func parseEvents(events githubModels.Events) []models.Trigger {
-	return utils.MapToSlice(events, func(eventName string, event githubModels.Event) models.Trigger {
-		trigger := models.Trigger{
+func parseEvents(events githubModels.Events) []*models.Trigger {
+	return utils.MapToSlice(events, func(eventName string, event githubModels.Event) *models.Trigger {
+		trigger := &models.Trigger{
 			Event: models.EventType(eventName),
 			Filters: map[string]any{
 				"types": event.Types,
@@ -91,8 +91,8 @@ func parseEvents(events githubModels.Events) []models.Trigger {
 	})
 }
 
-func parseWorkflowRun(workflowRun *githubModels.WorkflowRun) models.Trigger {
-	trigger := models.Trigger{
+func parseWorkflowRun(workflowRun *githubModels.WorkflowRun) *models.Trigger {
+	trigger := &models.Trigger{
 		FileReference: workflowRun.FileReference,
 		Event:         models.PipelineRunEvent,
 		Pipelines:     workflowRun.Workflows,
@@ -109,8 +109,8 @@ func parseWorkflowRun(workflowRun *githubModels.WorkflowRun) models.Trigger {
 	return trigger
 }
 
-func parseWorkflowCall(workflowCall *githubModels.WorkflowCall) models.Trigger {
-	return models.Trigger{
+func parseWorkflowCall(workflowCall *githubModels.WorkflowCall) *models.Trigger {
+	return &models.Trigger{
 		Event:         models.PipelineTriggerEvent,
 		Parameters:    parseInputs(workflowCall.Inputs),
 		FileReference: workflowCall.FileReference,
@@ -131,8 +131,8 @@ func parseInputs(inputs githubModels.Inputs) []models.Parameter {
 	return parameters
 }
 
-func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) models.Trigger {
-	trigger := models.Trigger{
+func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) *models.Trigger {
+	trigger := &models.Trigger{
 		Event:         models.ManualEvent,
 		FileReference: workflowDispatch.FileReference,
 	}
@@ -143,8 +143,8 @@ func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) mode
 	return trigger
 }
 
-func parseRef(ref *githubModels.Ref, event models.EventType) models.Trigger {
-	trigger := models.Trigger{
+func parseRef(ref *githubModels.Ref, event models.EventType) *models.Trigger {
+	trigger := &models.Trigger{
 		Event:         event,
 		FileReference: ref.FileReference,
 	}
@@ -173,8 +173,8 @@ func parseRef(ref *githubModels.Ref, event models.EventType) models.Trigger {
 	return trigger
 }
 
-func parseSchedule(schedule *githubModels.Schedule) models.Trigger {
-	return models.Trigger{
+func parseSchedule(schedule *githubModels.Schedule) *models.Trigger {
+	return &models.Trigger{
 		Event: models.ScheduledEvent,
 		Schedules: utils.GetPtr(utils.Map(*schedule.Crons, func(cron githubModels.Cron) string {
 			return cron.Cron
@@ -184,16 +184,16 @@ func parseSchedule(schedule *githubModels.Schedule) models.Trigger {
 
 }
 
-func generateTriggersFromEvents(events []string) []models.Trigger {
+func generateTriggersFromEvents(events []string) []*models.Trigger {
 	return utils.Map(events, generateTriggerFromEvent)
 }
 
-func generateTriggerFromEvent(event string) models.Trigger {
+func generateTriggerFromEvent(event string) *models.Trigger {
 	modelEvent, ok := githubEventToModelEvent[event]
 	if !ok {
 		modelEvent = models.EventType(event)
 	}
-	return models.Trigger{
+	return &models.Trigger{
 		Event: modelEvent,
 	}
 }
