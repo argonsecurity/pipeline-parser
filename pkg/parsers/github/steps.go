@@ -41,7 +41,7 @@ func parseJobStep(step githubModels.Step) models.Step {
 	}
 
 	if step.If != "" {
-		parsedStep.Conditions = &[]models.Condition{models.Condition(step.If)}
+		parsedStep.Conditions = &[]models.Condition{{Statement: step.If}}
 	}
 
 	if step.TimeoutMinutes != 0 {
