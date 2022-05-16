@@ -22,13 +22,13 @@ func Enhance(pipeline *models.Pipeline, platform consts.Platform) (*models.Pipel
 		jobs := make([]models.Job, len(*pipeline.Jobs))
 		for i, job := range *pipeline.Jobs {
 			if job.Steps != nil {
-				steps := make([]models.Step, len(*job.Steps))
-				for i, step := range *job.Steps {
+				steps := make([]*models.Step, len(job.Steps))
+				for i, step := range job.Steps {
 					step = enhanceStep(step, config.CommonConfiguration)
 					step = enhanceStep(step, platformConfig)
 					steps[i] = step
 				}
-				job.Steps = &steps
+				job.Steps = steps
 			}
 			job = enhanceJob(job, config.CommonConfiguration)
 			job = enhanceJob(job, platformConfig)

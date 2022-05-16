@@ -20,7 +20,7 @@ func enhanceJob(job models.Job, config config.EnhancementConfiguration) models.J
 	}
 
 	if job.Steps != nil {
-		for _, step := range *job.Steps {
+		for _, step := range job.Steps {
 			if step.Metadata.Build {
 				job.Metadata.Build = true
 			}

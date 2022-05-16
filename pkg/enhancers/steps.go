@@ -6,7 +6,7 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
-func enhanceStep(step models.Step, config config.EnhancementConfiguration) models.Step {
+func enhanceStep(step *models.Step, config config.EnhancementConfiguration) *models.Step {
 	if step.Type == models.ShellStepType {
 		if utils.AnyMatch(config.Build.ShellRegexes, *step.Shell.Script) {
 			step.Metadata.Build = true
