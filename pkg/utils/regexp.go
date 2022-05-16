@@ -2,9 +2,13 @@ package utils
 
 import "regexp"
 
-func AnyMatch(regexes []*regexp.Regexp, s string) bool {
+func AnyMatch(regexes []*regexp.Regexp, s *string) bool {
+	if s == nil {
+		return false
+	}
+
 	for _, regexp := range regexes {
-		if regexp.MatchString(s) {
+		if regexp.MatchString(*s) {
 			return true
 		}
 	}

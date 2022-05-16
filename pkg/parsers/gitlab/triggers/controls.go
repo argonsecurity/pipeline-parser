@@ -7,6 +7,10 @@ import (
 )
 
 func ParseControls(controls *job.Controls, isDeny bool) *models.Condition {
+	if controls == nil {
+		return nil
+	}
+
 	return &models.Condition{
 		Allow:     utils.GetPtr(!isDeny),
 		Branches:  generateFilter(controls.Refs, isDeny),

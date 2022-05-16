@@ -6,16 +6,16 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
-func enhanceStep(step *models.Step, config config.EnhancementConfiguration) *models.Step {
+func enhanceStep(step *models.Step, config *config.EnhancementConfiguration) *models.Step {
 	if step.Type == models.ShellStepType {
-		if utils.AnyMatch(config.Build.ShellRegexes, *step.Shell.Script) {
+		if utils.AnyMatch(config.Build.ShellRegexes, step.Shell.Script) {
 			step.Metadata.Build = true
 		}
-		if utils.AnyMatch(config.Test.ShellRegexes, *step.Shell.Script) {
+		if utils.AnyMatch(config.Test.ShellRegexes, step.Shell.Script) {
 			step.Metadata.Test = true
 		}
 
-		if utils.AnyMatch(config.Deploy.ShellRegexes, *step.Shell.Script) {
+		if utils.AnyMatch(config.Deploy.ShellRegexes, step.Shell.Script) {
 			step.Metadata.Deploy = true
 		}
 	}
@@ -25,24 +25,24 @@ func enhanceStep(step *models.Step, config config.EnhancementConfiguration) *mod
 			step.Metadata.Build = true
 		}
 
-		if utils.AnyMatch(config.Test.Names, *step.Name) {
+		if utils.AnyMatch(config.Test.Names, step.Name) {
 			step.Metadata.Test = true
 		}
 
-		if utils.AnyMatch(config.Deploy.Names, *step.Name) {
+		if utils.AnyMatch(config.Deploy.Names, step.Name) {
 			step.Metadata.Deploy = true
 		}
 	}
 
-	if utils.AnyMatch(config.Build.Names, *step.Name) {
+	if utils.AnyMatch(config.Build.Names, step.Name) {
 		step.Metadata.Build = true
 	}
 
-	if utils.AnyMatch(config.Test.Names, *step.Name) {
+	if utils.AnyMatch(config.Test.Names, step.Name) {
 		step.Metadata.Test = true
 	}
 
-	if utils.AnyMatch(config.Deploy.Names, *step.Name) {
+	if utils.AnyMatch(config.Deploy.Names, step.Name) {
 		step.Metadata.Deploy = true
 	}
 

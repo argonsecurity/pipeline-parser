@@ -8,30 +8,35 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
-func parseJobs(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) (*[]models.Job, error) {
+func parseJobs(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) ([]*models.Job, error) {
 	jobs, err := utils.MapToSliceErr(gitlabCIConfiguration.Jobs, parseJob)
 	if err != nil {
 		return nil, err
 	}
 
-	return &jobs, nil
+	return jobs, nil
 }
 
-func parseJob(jobID string, job *gitlabModels.Job) (models.Job, error) {
+func parseJob(jobID string, job *gitlabModels.Job) (*models.Job, error) {
 	conditions := triggers.ParseRulesConditions(job.Rules)
 	conditions = append(conditions, triggers.ParseControls(job.Except, true))
 	conditions = append(conditions, triggers.ParseControls(job.Only, false))
 
-	parsedJob := models.Job{
+	var continueOnError *bool
+	if job.AllowFailure != nil {
+		continueOnError = job.AllowFailure.Enabled
+	}
+
+	parsedJob := &models.Job{
 		ID:                   &jobID,
 		Name:                 &jobID,
-		ContinueOnError:      job.AllowFailure.Enabled,
+		ContinueOnError:      continueOnError,
 		ConcurrencyGroup:     &job.Stage,
 		PreSteps:             parseScript(job.BeforeScript),
 		PostSteps:            parseScript(job.AfterScript),
 		Steps:                parseScript(job.Script),
 		TimeoutMS:            utils.GetPtr(parseTimeoutString(job.Timeout)),
-		EnvironmentVariables: parseEnvironmentVariables(*job.Variables),
+		EnvironmentVariables: parseEnvironmentVariables(job.Variables),
 		Tags:                 job.Tags,
 		Runner:               parseRunner(job.Image),
 		Conditions:           conditions,
@@ -40,6 +45,10 @@ func parseJob(jobID string, job *gitlabModels.Job) (models.Job, error) {
 }
 
 func parseScript(script *common.Script) []*models.Step {
+	if script == nil {
+		return nil
+	}
+
 	return utils.MapWithIndex(script.Commands, func(command string, index int) *models.Step {
 		return &models.Step{
 			Type: models.ShellStepType,

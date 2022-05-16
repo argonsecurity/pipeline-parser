@@ -3,6 +3,7 @@ package blackbox
 import (
 	"testing"
 
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -35,7 +36,7 @@ func TestGitHub(t *testing.T) {
 			Filename: "steps.yaml",
 			Expected: &models.Pipeline{
 				Name: utils.GetPtr("steps"),
-				Jobs: SortJobs(&[]models.Job{
+				Jobs: SortJobs([]*models.Job{
 					{
 						ID:   utils.GetPtr("job1"),
 						Name: utils.GetPtr("Job 1"),
@@ -125,7 +126,7 @@ func TestGitHub(t *testing.T) {
 			Filename: "dependant-jobs.yaml",
 			Expected: &models.Pipeline{
 				Name: utils.GetPtr("dependable jobs"),
-				Jobs: SortJobs(&[]models.Job{
+				Jobs: SortJobs([]*models.Job{
 					{
 						ID:              utils.GetPtr("dependable-job"),
 						Name:            utils.GetPtr("Dependable Job"),
@@ -221,7 +222,7 @@ func TestGitHub(t *testing.T) {
 			Filename: "token-permissions.yaml",
 			Expected: &models.Pipeline{
 				Name: utils.GetPtr("permissions"),
-				Jobs: SortJobs(&[]models.Job{
+				Jobs: SortJobs([]*models.Job{
 					{
 						FileReference:    testutils.CreateFileReference(8, 3, 10, 18),
 						ID:               utils.GetPtr("job1"),
@@ -253,7 +254,7 @@ func TestGitHub(t *testing.T) {
 			Filename: "runners.yaml",
 			Expected: &models.Pipeline{
 				Name: utils.GetPtr("runners"),
-				Jobs: SortJobs(&[]models.Job{
+				Jobs: SortJobs([]*models.Job{
 					{
 						ID:              utils.GetPtr("job1"),
 						Name:            utils.GetPtr("Job 1"),
@@ -301,7 +302,7 @@ func TestGitHub(t *testing.T) {
 			Filename: "environment-variables.yaml",
 			Expected: &models.Pipeline{
 				Name: utils.GetPtr("environment-variables"),
-				Jobs: SortJobs(&[]models.Job{
+				Jobs: SortJobs([]*models.Job{
 					{
 						ID:   utils.GetPtr("job1"),
 						Name: utils.GetPtr("Job 1"),
@@ -349,7 +350,7 @@ func TestGitHub(t *testing.T) {
 			Filename: "concurrent-jobs.yaml",
 			Expected: &models.Pipeline{
 				Name: utils.GetPtr("concurrent-jobs"),
-				Jobs: SortJobs(&[]models.Job{
+				Jobs: SortJobs([]*models.Job{
 					{
 						ID:               utils.GetPtr("job1"),
 						Name:             utils.GetPtr("Job 1"),
@@ -370,5 +371,5 @@ func TestGitHub(t *testing.T) {
 			},
 		},
 	}
-	executeTestCases(t, testCases, "github")
+	executeTestCases(t, testCases, "github", consts.GitHubPlatform)
 }

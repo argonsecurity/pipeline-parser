@@ -28,7 +28,7 @@ var (
 		regexp.MustCompile(`tests?`),
 	}
 
-	CommonConfiguration = EnhancementConfiguration{
+	CommonConfiguration = &EnhancementConfiguration{
 		Build: ObjectiveConfiguration{
 			Names:        commonBuildNameRegexes,
 			ShellRegexes: commonBuildShellRegexes,

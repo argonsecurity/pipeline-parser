@@ -16,13 +16,14 @@ type Image struct {
 func (im *Image) UnmarshalYAML(node *yaml.Node) error {
 
 	im.FileReference = utils.GetFileReference(node)
-	im.FileReference.StartRef.Line--
 
 	if node.Tag == consts.StringTag {
 		im.Name = node.Value
+		im.FileReference.StartRef.Column -= len("image: ")
 		return nil
 	}
 
+	im.FileReference.StartRef.Line--
 	return utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		switch key {
 		case "name":

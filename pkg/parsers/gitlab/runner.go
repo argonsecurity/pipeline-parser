@@ -5,18 +5,23 @@ import (
 
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
 func parseRunner(image *gitlabModels.Image) *models.Runner {
+	if image == nil {
+		return nil
+	}
 	registry, namespace, imageName, tag := parseImageName(image.Name)
 	if namespace != "" {
 		imageName = namespace + "/" + imageName
 	}
+
 	return &models.Runner{
 		DockerMetadata: &models.DockerMetadata{
-			Image:       &imageName,
-			Label:       &tag,
-			RegistryURL: &registry,
+			Image:       utils.GetPtrOrNil(imageName),
+			Label:       utils.GetPtrOrNil(tag),
+			RegistryURL: utils.GetPtrOrNil(registry),
 		},
 		FileReference: image.FileReference,
 	}

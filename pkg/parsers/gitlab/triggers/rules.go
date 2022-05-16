@@ -43,6 +43,9 @@ func ParseRules(rules *common.Rules) (*models.Triggers, []*models.Condition) {
 }
 
 func ParseRulesConditions(rules *common.Rules) []*models.Condition {
+	if rules == nil {
+		return nil
+	}
 	return utils.Map(rules.RulesList, parseConditionRule)
 }
 

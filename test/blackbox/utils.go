@@ -17,10 +17,10 @@ func readFile(filename string) []byte {
 	return b
 }
 
-func executeTestCases(t *testing.T, testCases []TestCase, folder string) {
+func executeTestCases(t *testing.T, testCases []TestCase, folder string, platform consts.Platform) {
 	for _, testCase := range testCases {
 		buf := readFile(filepath.Join("../fixtures", folder, testCase.Filename))
-		pipeline, err := handler.Handle(buf, consts.GitHubPlatform)
+		pipeline, err := handler.Handle(buf, platform)
 		if err != nil {
 			if !testCase.ShouldFail {
 				t.Errorf("%s: %s", testCase.Filename, err)
@@ -52,9 +52,9 @@ func executeTestCases(t *testing.T, testCases []TestCase, folder string) {
 	}
 }
 
-func SortJobs(jobs *[]models.Job) *[]models.Job {
-	sort.Slice(*jobs, func(i, j int) bool {
-		return *(*jobs)[i].ID < *(*jobs)[j].ID
+func SortJobs(jobs []*models.Job) []*models.Job {
+	sort.Slice(jobs, func(i, j int) bool {
+		return *jobs[i].ID < *jobs[j].ID
 	})
 	return jobs
 }

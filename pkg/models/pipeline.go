@@ -4,9 +4,9 @@ type Pipeline struct {
 	Id         *string
 	Name       *string
 	Triggers   *Triggers
-	Jobs       *[]Job
-	Imports    *[]string
-	Parameters *[]Parameter
+	Jobs       []*Job
+	Imports    []*string
+	Parameters []*Parameter
 	Defaults   *Defaults
 }
 

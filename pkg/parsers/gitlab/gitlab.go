@@ -10,14 +10,13 @@ type GitLabParser struct{}
 
 func (g *GitLabParser) Parse(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) (*models.Pipeline, error) {
 	var err error
-	var pipeline *models.Pipeline
+	pipeline := &models.Pipeline{}
 
-	pipeline.Defaults, err = parseDefaults(gitlabCIConfiguration)
-	if err != nil {
-		return nil, err
+	pipeline.Defaults = parseDefaults(gitlabCIConfiguration)
+
+	if gitlabCIConfiguration.Workflow != nil {
+		pipeline.Triggers, pipeline.Defaults.Conditions = triggers.ParseRules(gitlabCIConfiguration.Workflow.Rules)
 	}
-
-	pipeline.Triggers, pipeline.Defaults.Conditions = triggers.ParseRules(gitlabCIConfiguration.Workflow.Rules)
 	pipeline.Jobs, err = parseJobs(gitlabCIConfiguration)
 	if err != nil {
 		return nil, err
@@ -26,10 +25,10 @@ func (g *GitLabParser) Parse(gitlabCIConfiguration *gitlabModels.GitlabCIConfigu
 	return pipeline, nil
 }
 
-func parseDefaults(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) (*models.Defaults, error) {
+func parseDefaults(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) *models.Defaults {
 	defaults := &models.Defaults{
-		EnvironmentVariables: parseEnvironmentVariables(*gitlabCIConfiguration.Variables),
+		EnvironmentVariables: parseEnvironmentVariables(gitlabCIConfiguration.Variables),
 		Runner:               parseRunner(gitlabCIConfiguration.Image),
 	}
-	return defaults, nil
+	return defaults
 }
