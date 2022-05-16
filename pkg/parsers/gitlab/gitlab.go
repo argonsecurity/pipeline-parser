@@ -29,6 +29,8 @@ func parseDefaults(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) *m
 	defaults := &models.Defaults{
 		EnvironmentVariables: parseEnvironmentVariables(gitlabCIConfiguration.Variables),
 		Runner:               parseRunner(gitlabCIConfiguration.Image),
+		PostSteps:            parseScript(gitlabCIConfiguration.AfterScript),
+		PreSteps:             parseScript(gitlabCIConfiguration.BeforeScript),
 	}
 	return defaults
 }

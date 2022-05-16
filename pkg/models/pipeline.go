@@ -17,4 +17,6 @@ type Defaults struct {
 	TokenPermissions     *TokenPermissions
 	Settings             *map[string]any
 	FileReference        *FileReference
+	PostSteps            []*Step
+	PreSteps             []*Step
 }

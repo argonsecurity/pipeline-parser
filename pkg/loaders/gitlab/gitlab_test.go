@@ -41,7 +41,7 @@ func TestGitlabLoader(t *testing.T) {
 				},
 				Jobs: map[string]*models.Job{
 					"python-build": {
-						FileReference: testutils.CreateFileReference(4, 0, 8, 7),
+						FileReference: testutils.CreateFileReference(4, 1, 8, 7),
 						Stage:         "build",
 						Script: &common.Script{
 							Commands: []string{"cd requests",
@@ -59,7 +59,7 @@ func TestGitlabLoader(t *testing.T) {
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
 				Image: &common.Image{
 					Name:          "gradle:alpine",
-					FileReference: testutils.CreateFileReference(9, 8, 10, 8),
+					FileReference: testutils.CreateFileReference(10, 1, 10, 8),
 				},
 				Variables: &common.EnvironmentVariablesRef{
 					Variables: map[string]any{
@@ -91,7 +91,7 @@ func TestGitlabLoader(t *testing.T) {
 								".gradle",
 							},
 						},
-						FileReference: testutils.CreateFileReference(23, 0, 31, 9),
+						FileReference: testutils.CreateFileReference(23, 1, 31, 9),
 					},
 					"test": {
 						Stage: "test",
@@ -99,7 +99,7 @@ func TestGitlabLoader(t *testing.T) {
 							Commands:      []string{`gradle check`},
 							FileReference: testutils.CreateFileReference(35, 3, 35, 3),
 						},
-						FileReference: testutils.CreateFileReference(33, 0, 35, 11),
+						FileReference: testutils.CreateFileReference(33, 1, 35, 11),
 					},
 				},
 			},
@@ -127,15 +127,15 @@ func TestGitlabLoader(t *testing.T) {
 				Jobs: map[string]*models.Job{
 					"validate": {
 						Extends:       ".terraform:validate",
-						FileReference: testutils.CreateFileReference(20, 0, 22, 10),
+						FileReference: testutils.CreateFileReference(20, 1, 22, 10),
 					},
 					"fmt": {
 						Extends:       ".terraform:fmt",
-						FileReference: testutils.CreateFileReference(16, 0, 18, 10),
+						FileReference: testutils.CreateFileReference(16, 1, 18, 10),
 					},
 					"build": {
 						Extends:       ".terraform:build",
-						FileReference: testutils.CreateFileReference(24, 0, 25, 12),
+						FileReference: testutils.CreateFileReference(24, 1, 25, 12),
 					},
 					"deploy": {
 						Extends: ".terraform:deploy",
@@ -145,7 +145,7 @@ func TestGitlabLoader(t *testing.T) {
 						Environment: map[string]string{
 							"name": "$TF_STATE_NAME",
 						},
-						FileReference: testutils.CreateFileReference(27, 0, 32, 10),
+						FileReference: testutils.CreateFileReference(27, 1, 32, 10),
 					},
 				},
 			},

@@ -80,7 +80,7 @@ func (j *Job) UnmarshalYAML(node *yaml.Node) error {
 	j.FileReference = &models.FileReference{
 		StartRef: &models.FileLocation{
 			Line:   node.Line - 1,
-			Column: 0,
+			Column: 1,
 		},
 		EndRef: utils.GetEndFileLocation(node),
 	}
