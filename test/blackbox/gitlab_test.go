@@ -25,7 +25,7 @@ func TestGitLab(t *testing.T) {
 								Shell: &models.Shell{
 									Script: utils.GetPtr("gradle check"),
 								},
-								FileReference: testutils.CreateFileReference(35, 3, 35, 15),
+								FileReference: testutils.CreateFileReference(35, 3, 35, 23),
 							},
 						},
 						Metadata: models.Metadata{
@@ -42,7 +42,7 @@ func TestGitLab(t *testing.T) {
 								Shell: &models.Shell{
 									Script: utils.GetPtr("gradle --build-cache assemble"),
 								},
-								FileReference: testutils.CreateFileReference(25, 3, 25, 32),
+								FileReference: testutils.CreateFileReference(25, 3, 25, 40),
 							},
 						},
 						Metadata: models.Metadata{

@@ -81,7 +81,7 @@ func TestGitlabLoader(t *testing.T) {
 							Commands: []string{
 								`gradle --build-cache assemble`,
 							},
-							FileReference: testutils.CreateFileReference(25, 3, 25, 3),
+							FileReference: testutils.CreateFileReference(25, 3, 25, 40),
 						},
 						Cache: &common.Cache{
 							Key:    "$CI_COMMIT_REF_NAME",
@@ -97,7 +97,7 @@ func TestGitlabLoader(t *testing.T) {
 						Stage: "test",
 						Script: &common.Script{
 							Commands:      []string{`gradle check`},
-							FileReference: testutils.CreateFileReference(35, 3, 35, 3),
+							FileReference: testutils.CreateFileReference(35, 3, 35, 23),
 						},
 						FileReference: testutils.CreateFileReference(33, 1, 35, 11),
 					},
