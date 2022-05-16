@@ -58,7 +58,8 @@ func TestGitlabLoader(t *testing.T) {
 			Filename: "gradle.yaml",
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
 				Image: &common.Image{
-					Name: "gradle:alpine",
+					Name:          "gradle:alpine",
+					FileReference: testutils.CreateFileReference(9, 8, 10, 8),
 				},
 				Variables: &common.EnvironmentVariablesRef{
 					Variables: map[string]any{
