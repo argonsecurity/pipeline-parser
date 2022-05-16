@@ -13,7 +13,7 @@ type Pipeline struct {
 type Defaults struct {
 	EnvironmentVariables *EnvironmentVariablesRef
 	Runner               *Runner
-	Conditions           *[]Condition
+	Conditions           []*Condition
 	TokenPermissions     *TokenPermissions
 	Settings             *map[string]any
 	FileReference        *FileReference

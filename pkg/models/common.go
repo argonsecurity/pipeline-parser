@@ -11,6 +11,7 @@ type Condition struct {
 	Allow     *bool
 	Paths     *Filter
 	Exists    *Filter
+	Branches  *Filter
 	Variables map[string]string
 }
 

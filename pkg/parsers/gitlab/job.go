@@ -4,6 +4,7 @@ import (
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/parsers/gitlab/triggers"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
@@ -17,6 +18,10 @@ func parseJobs(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) (*[]mo
 }
 
 func parseJob(jobID string, job *gitlabModels.Job) (models.Job, error) {
+	conditions := triggers.ParseRulesConditions(job.Rules)
+	conditions = append(conditions, triggers.ParseControls(job.Except, true))
+	conditions = append(conditions, triggers.ParseControls(job.Only, false))
+
 	parsedJob := models.Job{
 		ID:                   &jobID,
 		Name:                 &jobID,
@@ -27,25 +32,24 @@ func parseJob(jobID string, job *gitlabModels.Job) (models.Job, error) {
 		Steps:                parseScript(job.Script),
 		TimeoutMS:            utils.GetPtr(parseTimeoutString(job.Timeout)),
 		EnvironmentVariables: parseEnvironmentVariables(*job.Variables),
-		Tags:                 &job.Tags,
+		Tags:                 job.Tags,
 		Runner:               parseRunner(job.Image),
-		// Conditions:       job.Rules,
+		Conditions:           conditions,
 	}
 	return parsedJob, nil
 }
 
-func parseScript(script *common.Script) *[]models.Step {
-	return utils.GetPtr(
-		utils.MapWithIndex(script.Commands, func(command string, index int) models.Step {
-			return models.Step{
-				Type: models.ShellStepType,
-				Shell: &models.Shell{
-					Script: &command,
-				},
-				FileReference: parseCommandFileReference(script, index),
-			}
-		}),
-	)
+func parseScript(script *common.Script) []*models.Step {
+	return utils.MapWithIndex(script.Commands, func(command string, index int) *models.Step {
+		return &models.Step{
+			Type: models.ShellStepType,
+			Shell: &models.Shell{
+				Script: &command,
+			},
+			FileReference: parseCommandFileReference(script, index),
+		}
+	})
+
 }
 
 func parseCommandFileReference(script *common.Script, commandIndex int) *models.FileReference {

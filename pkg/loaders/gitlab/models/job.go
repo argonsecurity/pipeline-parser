@@ -39,8 +39,8 @@ type Job struct {
 	Variables     *common.EnvironmentVariablesRef `yaml:"variables"`
 	When          string                          `yaml:"when"`
 
-	Except *jobModels.Conditions `yaml:"except"`
-	Only   *jobModels.Conditions `yaml:"only"`
+	Except *jobModels.Controls `yaml:"except"`
+	Only   *jobModels.Controls `yaml:"only"`
 
 	FileReference *models.FileReference
 }

@@ -6,14 +6,14 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Conditions struct {
+type Controls struct {
 	Refs       []string
 	Variables  []string
 	Changes    []string
 	Kubernetes string
 }
 
-func (c *Conditions) UnmarshalYAML(node *yaml.Node) error {
+func (c *Controls) UnmarshalYAML(node *yaml.Node) error {
 	if node.Tag == consts.SequenceTag {
 		refs, err := utils.ParseYamlStringSequenceToSlice(node)
 		if err != nil {

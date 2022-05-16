@@ -14,7 +14,7 @@ type Cache struct {
 	Untracked bool     `yaml:"untracked,omitempty"`
 }
 
-type RulesItems struct {
+type Rule struct {
 	Changes       []string                 `yaml:"changes,omitempty"`
 	Exists        []string                 `yaml:"exists,omitempty"`
 	If            string                   `yaml:"if,omitempty"`
@@ -23,16 +23,25 @@ type RulesItems struct {
 	FileReference *models.FileReference
 }
 
-type Rules []*RulesItems
+type Rules struct {
+	RulesList     []*Rule
+	FileReference *models.FileReference
+}
 
 func (r *Rules) UnmarshalYAML(node *yaml.Node) error {
+	rules := make([]*Rule, 0)
 	for _, item := range node.Content {
-		rule := &RulesItems{}
+		rule := &Rule{}
 		if err := item.Decode(&rule); err != nil {
 			return err
 		}
 		rule.FileReference = utils.GetFileReference(item)
-		*r = append(*r, rule)
+		rules = append(rules, rule)
+	}
+
+	*r = Rules{
+		RulesList:     rules,
+		FileReference: utils.GetFileReference(node),
 	}
 	return nil
 }

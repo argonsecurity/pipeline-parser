@@ -3,25 +3,22 @@ package gitlab
 import (
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/parsers/gitlab/triggers"
 )
 
 type GitLabParser struct{}
 
 func (g *GitLabParser) Parse(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) (*models.Pipeline, error) {
-	pipeline := &models.Pipeline{}
 	var err error
-
-	pipeline.Triggers, err = parseTriggers(gitlabCIConfiguration)
-	if err != nil {
-		return nil, err
-	}
-
-	pipeline.Jobs, err = parseJobs(gitlabCIConfiguration)
-	if err != nil {
-		return nil, err
-	}
+	var pipeline *models.Pipeline
 
 	pipeline.Defaults, err = parseDefaults(gitlabCIConfiguration)
+	if err != nil {
+		return nil, err
+	}
+
+	pipeline.Triggers, pipeline.Defaults.Conditions = triggers.ParseRules(gitlabCIConfiguration.Workflow.Rules)
+	pipeline.Jobs, err = parseJobs(gitlabCIConfiguration)
 	if err != nil {
 		return nil, err
 	}
