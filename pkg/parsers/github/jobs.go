@@ -39,7 +39,7 @@ func parseJob(jobName string, job *githubModels.Job) (models.Job, error) {
 	}
 
 	if job.If != "" {
-		parsedJob.Conditions = &[]models.Condition{{Statement: job.If}}
+		parsedJob.Conditions = []*models.Condition{{Statement: job.If}}
 	}
 
 	if job.Concurrency != nil {
@@ -55,7 +55,7 @@ func parseJob(jobName string, job *githubModels.Job) (models.Job, error) {
 	}
 
 	if job.Needs != nil {
-		parsedJob.Dependencies = (*[]string)(job.Needs)
+		parsedJob.Dependencies = ([]string)(*job.Needs)
 	}
 
 	if job.Permissions != nil {

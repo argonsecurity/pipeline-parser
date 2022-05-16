@@ -61,7 +61,7 @@ func Test_GitHubParser(t *testing.T) {
 					{
 						ID:   utils.GetPtr("job1"),
 						Name: utils.GetPtr("Job 1"),
-						Steps: &[]models.Step{
+						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("task without params"),
 								Type: "task",
@@ -160,7 +160,7 @@ func Test_GitHubParser(t *testing.T) {
 						Name:            utils.GetPtr("Dependant Job"),
 						ContinueOnError: utils.GetPtr(false),
 						TimeoutMS:       utils.GetPtr(21600000),
-						Dependencies:    &[]string{"dependable-job"},
+						Dependencies:    []string{"dependable-job"},
 						FileReference:   testutils.CreateFileReference(7, 3, 9, 13),
 					},
 				}),
@@ -337,7 +337,7 @@ func Test_GitHubParser(t *testing.T) {
 						FileReference:   testutils.CreateFileReference(8, 3, 18, 19),
 						ContinueOnError: utils.GetPtr(false),
 						TimeoutMS:       utils.GetPtr(21600000),
-						Steps: &[]models.Step{
+						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("Step 1"),
 								Type: "shell",

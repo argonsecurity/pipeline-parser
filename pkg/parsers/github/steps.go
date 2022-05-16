@@ -20,17 +20,16 @@ var (
 	}
 )
 
-func parseJobSteps(steps *githubModels.Steps) *[]models.Step {
+func parseJobSteps(steps *githubModels.Steps) []*models.Step {
 	if steps == nil {
 		return nil
 	}
-
 	parsedSteps := utils.Map(*steps, parseJobStep)
-	return utils.GetPtr(parsedSteps)
+	return parsedSteps
 }
 
-func parseJobStep(step githubModels.Step) models.Step {
-	parsedStep := models.Step{
+func parseJobStep(step githubModels.Step) *models.Step {
+	parsedStep := &models.Step{
 		Name:                 &step.Name,
 		EnvironmentVariables: parseEnvironmentVariablesRef(step.Env),
 		FileReference:        step.FileReference,

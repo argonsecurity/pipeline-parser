@@ -8,19 +8,19 @@ type TokenPermissions struct {
 type Job struct {
 	ID                   *string
 	Name                 *string
-	Steps                *[]Step
+	Steps                []*Step
 	ContinueOnError      *bool
-	PreSteps             *[]Step
-	PostSteps            *[]Step
+	PreSteps             []*Step
+	PostSteps            []*Step
 	EnvironmentVariables *EnvironmentVariablesRef
 	Runner               *Runner
-	Conditions           *[]Condition
+	Conditions           []*Condition
 	ConcurrencyGroup     *string
-	Inputs               *[]Parameter
+	Inputs               []*Parameter
 	TimeoutMS            *int
-	Tags                 *[]string
+	Tags                 []string
 	TokenPermissions     *TokenPermissions
-	Dependencies         *[]string
+	Dependencies         []string
 	Metadata             Metadata
 	FileReference        *FileReference
 }
