@@ -5,6 +5,8 @@ type TokenPermissions struct {
 	FileReference *FileReference
 }
 
+type ConcurrencyGroup string
+
 type Job struct {
 	ID                   *string
 	Name                 *string
@@ -15,12 +17,18 @@ type Job struct {
 	EnvironmentVariables *EnvironmentVariablesRef
 	Runner               *Runner
 	Conditions           []*Condition
-	ConcurrencyGroup     *string
+	ConcurrencyGroup     *ConcurrencyGroup
 	Inputs               []*Parameter
 	TimeoutMS            *int
 	Tags                 []string
 	TokenPermissions     *TokenPermissions
-	Dependencies         []string
+	Dependencies         []*JobDependency
 	Metadata             Metadata
 	FileReference        *FileReference
+}
+
+type JobDependency struct {
+	JobID            *string
+	ConcurrencyGroup *ConcurrencyGroup
+	Pipeline         *string
 }

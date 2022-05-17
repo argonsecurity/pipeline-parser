@@ -5,7 +5,7 @@ type Pipeline struct {
 	Name       *string
 	Triggers   *Triggers
 	Jobs       []*Job
-	Imports    []*string
+	Imports    []string
 	Parameters []*Parameter
 	Defaults   *Defaults
 }

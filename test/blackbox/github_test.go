@@ -139,8 +139,12 @@ func TestGitHub(t *testing.T) {
 						Name:            utils.GetPtr("Dependant Job"),
 						ContinueOnError: utils.GetPtr(false),
 						TimeoutMS:       utils.GetPtr(21600000),
-						Dependencies:    []string{"dependable-job"},
-						FileReference:   testutils.CreateFileReference(7, 3, 9, 13),
+						Dependencies: []*models.JobDependency{
+							{
+								JobID: utils.GetPtr("dependable-job"),
+							},
+						},
+						FileReference: testutils.CreateFileReference(7, 3, 9, 13),
 					},
 				}),
 			},
@@ -356,7 +360,7 @@ func TestGitHub(t *testing.T) {
 						Name:             utils.GetPtr("Job 1"),
 						ContinueOnError:  utils.GetPtr(false),
 						TimeoutMS:        utils.GetPtr(21600000),
-						ConcurrencyGroup: utils.GetPtr("ci"),
+						ConcurrencyGroup: utils.GetPtr(models.ConcurrencyGroup("ci")),
 						FileReference:    testutils.CreateFileReference(3, 3, 5, 18),
 					},
 					{
@@ -364,7 +368,7 @@ func TestGitHub(t *testing.T) {
 						Name:             utils.GetPtr("Job 2"),
 						ContinueOnError:  utils.GetPtr(false),
 						TimeoutMS:        utils.GetPtr(21600000),
-						ConcurrencyGroup: utils.GetPtr("ci"),
+						ConcurrencyGroup: utils.GetPtr(models.ConcurrencyGroup("ci")),
 						FileReference:    testutils.CreateFileReference(7, 3, 9, 18),
 					},
 				}),

@@ -43,7 +43,7 @@ func parseJob(jobName string, job *githubModels.Job) (*models.Job, error) {
 	}
 
 	if job.Concurrency != nil {
-		parsedJob.ConcurrencyGroup = job.Concurrency.Group
+		parsedJob.ConcurrencyGroup = (*models.ConcurrencyGroup)(job.Concurrency.Group)
 	}
 
 	if job.Steps != nil {
@@ -55,7 +55,7 @@ func parseJob(jobName string, job *githubModels.Job) (*models.Job, error) {
 	}
 
 	if job.Needs != nil {
-		parsedJob.Dependencies = ([]string)(*job.Needs)
+		parsedJob.Dependencies = parseDependencies(job.Needs)
 	}
 
 	if job.Permissions != nil {
@@ -67,4 +67,12 @@ func parseJob(jobName string, job *githubModels.Job) (*models.Job, error) {
 	}
 
 	return parsedJob, nil
+}
+
+func parseDependencies(needs *githubModels.Needs) []*models.JobDependency {
+	return utils.Map(([]string)(*needs), func(dependency string) *models.JobDependency {
+		return &models.JobDependency{
+			JobID: &dependency,
+		}
+	})
 }
