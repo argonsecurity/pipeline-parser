@@ -38,7 +38,7 @@ func TestGitlabLoader(t *testing.T) {
 				Stages: []string{"build"},
 				BeforeScript: &common.Script{
 					Commands:      []string{`echo "before_script"`},
-					FileReference: testutils.CreateFileReference(18, 1, 19, 5),
+					FileReference: testutils.CreateFileReference(18, 1, 19, 25),
 				},
 				Jobs: map[string]*models.Job{
 					"python-build": {
@@ -46,19 +46,19 @@ func TestGitlabLoader(t *testing.T) {
 							RulesList: []*common.Rule{
 								{
 									If:            "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/",
-									FileReference: testutils.CreateFileReference(13, 7, 13, 11),
+									FileReference: testutils.CreateFileReference(13, 7, 13, 61),
 								},
 							},
-							FileReference: testutils.CreateFileReference(12, 3, 13, 11),
+							FileReference: testutils.CreateFileReference(12, 3, 13, 61),
 						},
-						FileReference: testutils.CreateFileReference(4, 1, 16, 7),
+						FileReference: testutils.CreateFileReference(4, 1, 16, 29),
 						Stage:         "build",
 						Script: &common.Script{
 							Commands: []string{
 								"cd requests",
 								"python3 setup.py sdist",
 							},
-							FileReference: testutils.CreateFileReference(14, 3, 16, 7),
+							FileReference: testutils.CreateFileReference(14, 3, 16, 29),
 						},
 						Only: &job.Controls{
 							Refs: []string{
@@ -67,7 +67,7 @@ func TestGitlabLoader(t *testing.T) {
 								"main",
 								"api",
 							},
-							FileReference: testutils.CreateFileReference(5, 3, 10, 9),
+							FileReference: testutils.CreateFileReference(5, 3, 10, 12),
 						},
 					},
 				},
@@ -79,20 +79,20 @@ func TestGitlabLoader(t *testing.T) {
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
 				Image: &common.Image{
 					Name:          "gradle:alpine",
-					FileReference: testutils.CreateFileReference(10, 1, 10, 8),
+					FileReference: testutils.CreateFileReference(10, 1, 10, 21),
 				},
 				Variables: &common.EnvironmentVariablesRef{
 					Variables: map[string]any{
 						"GRADLE_OPTS": "-Dorg.gradle.daemon=false",
 					},
-					FileReference: testutils.CreateFileReference(16, 0, 17, 16),
+					FileReference: testutils.CreateFileReference(16, 1, 17, 43),
 				},
 				BeforeScript: &common.Script{
 					Commands: []string{
 						`GRADLE_USER_HOME="$(pwd)/.gradle"`,
 						`export GRADLE_USER_HOME`,
 					},
-					FileReference: testutils.CreateFileReference(19, 1, 21, 5),
+					FileReference: testutils.CreateFileReference(19, 1, 21, 28),
 				},
 				Jobs: map[string]*models.Job{
 					"build": {
@@ -111,7 +111,7 @@ func TestGitlabLoader(t *testing.T) {
 								".gradle",
 							},
 						},
-						FileReference: testutils.CreateFileReference(23, 1, 31, 9),
+						FileReference: testutils.CreateFileReference(23, 1, 31, 16),
 					},
 					"test": {
 						Stage: "test",
@@ -119,7 +119,7 @@ func TestGitlabLoader(t *testing.T) {
 							Commands:      []string{`gradle check`},
 							FileReference: testutils.CreateFileReference(35, 3, 35, 23),
 						},
-						FileReference: testutils.CreateFileReference(33, 1, 35, 11),
+						FileReference: testutils.CreateFileReference(33, 1, 35, 23),
 					},
 				},
 			},
@@ -131,11 +131,11 @@ func TestGitlabLoader(t *testing.T) {
 				Include: &models.Include{
 					{
 						Template:      "Terraform/Base.latest.gitlab-ci.yml",
-						FileReference: testutils.CreateFileReference(7, 5, 7, 15),
+						FileReference: testutils.CreateFileReference(7, 5, 7, 50),
 					},
 					{
 						Template:      "Jobs/SAST-IaC.latest.gitlab-ci.yml",
-						FileReference: testutils.CreateFileReference(8, 5, 8, 15),
+						FileReference: testutils.CreateFileReference(8, 5, 8, 49),
 					},
 				},
 				Stages: []string{
@@ -157,7 +157,7 @@ func TestGitlabLoader(t *testing.T) {
 					},
 					"build": {
 						Extends:       ".terraform:build",
-						FileReference: testutils.CreateFileReference(24, 1, 25, 12),
+						FileReference: testutils.CreateFileReference(24, 1, 25, 28),
 					},
 					"deploy": {
 						Extends: ".terraform:deploy",

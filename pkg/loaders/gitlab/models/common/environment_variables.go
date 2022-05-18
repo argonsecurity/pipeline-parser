@@ -15,6 +15,7 @@ func (e *EnvironmentVariablesRef) UnmarshalYAML(node *yaml.Node) error {
 	e.FileReference = utils.GetFileReference(node)
 
 	e.FileReference.StartRef.Line--
-	e.FileReference.StartRef.Column = 0
+	e.FileReference.StartRef.Column = 1
+	e.FileReference.EndRef.Column += 2 // +2 for the ": " after the key
 	return node.Decode(&e.Variables)
 }

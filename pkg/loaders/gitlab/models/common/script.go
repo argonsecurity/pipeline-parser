@@ -17,7 +17,7 @@ func (s *Script) UnmarshalYAML(node *yaml.Node) error {
 
 	if node.Tag == consts.StringTag {
 		s.Commands = []string{node.Value}
-		s.FileReference.EndRef.Column += len(node.Value) + len("script: ")
+		s.FileReference.EndRef.Column += len("script: ")
 		return nil
 	}
 
