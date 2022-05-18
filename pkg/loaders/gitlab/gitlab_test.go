@@ -8,6 +8,7 @@ import (
 
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
+	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/job"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/r3labs/diff/v3"
 )
@@ -128,10 +129,12 @@ func TestGitlabLoader(t *testing.T) {
 					"validate": {
 						Extends:       ".terraform:validate",
 						FileReference: testutils.CreateFileReference(20, 1, 22, 10),
+						Needs:         &job.Needs{},
 					},
 					"fmt": {
 						Extends:       ".terraform:fmt",
 						FileReference: testutils.CreateFileReference(16, 1, 18, 10),
+						Needs:         &job.Needs{},
 					},
 					"build": {
 						Extends:       ".terraform:build",
