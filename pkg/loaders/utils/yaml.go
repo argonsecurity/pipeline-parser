@@ -18,9 +18,9 @@ func GetFileReference(node *yaml.Node) *models.FileReference {
 		EndRef: GetEndFileLocation(node),
 	}
 
-	// Sometimes, a sequence node's line and column are equal to the line of the first variable
+	// Sometimes, a sequence node's line and column are equal to the line of the first variable (probably a bug in yaml.v3).
 	if node.Tag == consts.SequenceTag && len(node.Content) > 0 && node.Content[0].Line == fr.StartRef.Line {
-		if node.Content[0].Column == node.Column+2 {
+		if node.Content[0].Column == node.Column+2 { // Making sure that the sequence node's format is not "name: [val1, val2, ...]"
 			fr.StartRef.Line--
 			fr.StartRef.Column -= 2
 		}
@@ -32,7 +32,7 @@ func GetEndFileLocation(node *yaml.Node) *models.FileLocation {
 	if node.Content == nil {
 		return &models.FileLocation{
 			Line:   node.Line,
-			Column: node.Column,
+			Column: node.Column + len(node.Value),
 		}
 	}
 
