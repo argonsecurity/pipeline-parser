@@ -13,8 +13,9 @@ const (
 	always = "always"
 	manual = "manual"
 
-	eventVariable  = "$CI_PIPELINE_SOURCE"
-	branchVariable = "$CI_COMMIT_REF_NAME"
+	eventVariable                    = "$CI_PIPELINE_SOURCE"
+	branchVariable                   = "$CI_COMMIT_REF_NAME"
+	mergeRequestSourceBranchVariable = "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
 )
 
 var (
@@ -22,6 +23,11 @@ var (
 		models.PullRequestEvent: "merge_request_event",
 		models.PushEvent:        "push",
 		models.ScheduledEvent:   "schedule",
+	}
+
+	branchVariables = []string{
+		branchVariable,
+		mergeRequestSourceBranchVariable,
 	}
 )
 
@@ -87,7 +93,7 @@ func generateRuleBranchFilters(rule *common.Rule) *models.Filter {
 	denyList := []string{}
 	allowList := []string{}
 	for _, comparison := range getComparisons(rule.If) {
-		if comparison.Variable == branchVariable {
+		if utils.SliceContains(branchVariables, comparison.Variable) {
 			if comparison.IsPositive() == (rule.When != never) {
 				allowList = append(allowList, comparison.Value)
 				continue

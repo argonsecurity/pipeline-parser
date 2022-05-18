@@ -10,13 +10,22 @@ import (
 )
 
 func GetFileReference(node *yaml.Node) *models.FileReference {
-	return &models.FileReference{
+	fr := &models.FileReference{
 		StartRef: &models.FileLocation{
 			Line:   node.Line,
 			Column: node.Column,
 		},
 		EndRef: GetEndFileLocation(node),
 	}
+
+	// Sometimes, a sequence node's line and column are equal to the line of the first variable
+	if node.Tag == consts.SequenceTag && len(node.Content) > 0 && node.Content[0].Line == fr.StartRef.Line {
+		if node.Content[0].Column == node.Column+2 {
+			fr.StartRef.Line--
+			fr.StartRef.Column -= 2
+		}
+	}
+	return fr
 }
 
 func GetEndFileLocation(node *yaml.Node) *models.FileLocation {

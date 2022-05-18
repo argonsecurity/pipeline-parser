@@ -2,7 +2,15 @@ stages:
   - build
 
 python-build:
+  only:
+    refs:
+      - merge_requests
+      - /^feature-.*/
+      - main
+      - api
   stage: build
+  rules:
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/
   script:
     - cd requests
     - python3 setup.py sdist

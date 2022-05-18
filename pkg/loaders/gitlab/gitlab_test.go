@@ -38,17 +38,36 @@ func TestGitlabLoader(t *testing.T) {
 				Stages: []string{"build"},
 				BeforeScript: &common.Script{
 					Commands:      []string{`echo "before_script"`},
-					FileReference: testutils.CreateFileReference(10, 3, 11, 5),
+					FileReference: testutils.CreateFileReference(18, 1, 19, 5),
 				},
 				Jobs: map[string]*models.Job{
 					"python-build": {
-						FileReference: testutils.CreateFileReference(4, 1, 8, 7),
+						Rules: &common.Rules{
+							RulesList: []*common.Rule{
+								{
+									If:            "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/",
+									FileReference: testutils.CreateFileReference(13, 7, 13, 11),
+								},
+							},
+							FileReference: testutils.CreateFileReference(12, 3, 13, 11),
+						},
+						FileReference: testutils.CreateFileReference(4, 1, 16, 7),
 						Stage:         "build",
 						Script: &common.Script{
-							Commands: []string{"cd requests",
+							Commands: []string{
+								"cd requests",
 								"python3 setup.py sdist",
 							},
-							FileReference: testutils.CreateFileReference(5, 3, 8, 7),
+							FileReference: testutils.CreateFileReference(14, 3, 16, 7),
+						},
+						Only: &job.Controls{
+							Refs: []string{
+								"merge_requests",
+								"/^feature-.*/",
+								"main",
+								"api",
+							},
+							FileReference: testutils.CreateFileReference(5, 3, 10, 9),
 						},
 					},
 				},
@@ -73,7 +92,7 @@ func TestGitlabLoader(t *testing.T) {
 						`GRADLE_USER_HOME="$(pwd)/.gradle"`,
 						`export GRADLE_USER_HOME`,
 					},
-					FileReference: testutils.CreateFileReference(19, 3, 21, 5),
+					FileReference: testutils.CreateFileReference(19, 1, 21, 5),
 				},
 				Jobs: map[string]*models.Job{
 					"build": {

@@ -3,6 +3,7 @@ package job
 import (
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
+	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
 )
 
@@ -11,9 +12,12 @@ type Controls struct {
 	Variables  []string
 	Changes    []string
 	Kubernetes string
+
+	FileReference *models.FileReference
 }
 
 func (c *Controls) UnmarshalYAML(node *yaml.Node) error {
+	c.FileReference = utils.GetFileReference(node)
 	if node.Tag == consts.SequenceTag {
 		refs, err := utils.ParseYamlStringSequenceToSlice(node)
 		if err != nil {

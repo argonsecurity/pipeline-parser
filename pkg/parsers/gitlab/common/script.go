@@ -37,8 +37,8 @@ func ParseScript(script *common.Script) []*models.Step {
 func parseCommandFileReference(script *common.Script, commandIndex int) *models.FileReference {
 	return &models.FileReference{
 		StartRef: &models.FileLocation{
-			Line:   script.FileReference.StartRef.Line + commandIndex + 1,
-			Column: script.FileReference.StartRef.Column,
+			Line:   script.FileReference.StartRef.Line + commandIndex + 1, // +1 for the script header
+			Column: script.FileReference.StartRef.Column + 2,              // +2 for the "- " section
 		},
 		EndRef: &models.FileLocation{
 			Line:   script.FileReference.StartRef.Line + commandIndex + 1,
