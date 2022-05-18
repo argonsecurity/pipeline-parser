@@ -23,6 +23,8 @@ func GetFileReference(node *yaml.Node) *models.FileReference {
 		if node.Content[0].Column == node.Column+2 { // Making sure that the sequence node's format is not "name: [val1, val2, ...]"
 			fr.StartRef.Line--
 			fr.StartRef.Column -= 2
+		} else {
+			fr.EndRef.Column++ // +1 for the "]" after the last value
 		}
 	}
 	return fr
