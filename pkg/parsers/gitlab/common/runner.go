@@ -1,4 +1,4 @@
-package gitlab
+package common
 
 import (
 	"strings"
@@ -8,7 +8,7 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
-func parseRunner(image *gitlabModels.Image) *models.Runner {
+func ParseRunner(image *gitlabModels.Image) *models.Runner {
 	if image == nil {
 		return nil
 	}

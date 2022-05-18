@@ -18,7 +18,7 @@ func TestGitLab(t *testing.T) {
 					{
 						ID:               utils.GetPtr("test"),
 						Name:             utils.GetPtr("test"),
-						ConcurrencyGroup: utils.GetPtr("test"),
+						ConcurrencyGroup: utils.GetPtr(models.ConcurrencyGroup("test")),
 						Steps: []*models.Step{
 							{
 								Type: models.ShellStepType,
@@ -31,11 +31,12 @@ func TestGitLab(t *testing.T) {
 						Metadata: models.Metadata{
 							Test: true,
 						},
+						FileReference: testutils.CreateFileReference(33, 1, 35, 11),
 					},
 					{
 						ID:               utils.GetPtr("build"),
 						Name:             utils.GetPtr("build"),
-						ConcurrencyGroup: utils.GetPtr("build"),
+						ConcurrencyGroup: utils.GetPtr(models.ConcurrencyGroup("build")),
 						Steps: []*models.Step{
 							{
 								Type: models.ShellStepType,
@@ -48,6 +49,7 @@ func TestGitLab(t *testing.T) {
 						Metadata: models.Metadata{
 							Build: true,
 						},
+						FileReference: testutils.CreateFileReference(23, 1, 31, 9),
 					},
 				}),
 				Defaults: &models.Defaults{
@@ -81,6 +83,46 @@ func TestGitLab(t *testing.T) {
 						},
 					},
 				},
+			},
+		},
+		{
+			Filename: "terraform.yaml",
+			Expected: &models.Pipeline{
+				Imports: []string{
+					"Terraform/Base.latest.gitlab-ci.yml",
+					"Jobs/SAST-IaC.latest.gitlab-ci.yml",
+				},
+				Jobs: SortJobs([]*models.Job{
+					{
+						ID:            utils.GetPtr("fmt"),
+						Name:          utils.GetPtr("fmt"),
+						FileReference: testutils.CreateFileReference(16, 1, 18, 10),
+					},
+					{
+						ID:            utils.GetPtr("validate"),
+						Name:          utils.GetPtr("validate"),
+						FileReference: testutils.CreateFileReference(20, 1, 22, 10),
+					},
+					{
+						ID:            utils.GetPtr("build"),
+						Name:          utils.GetPtr("build"),
+						FileReference: testutils.CreateFileReference(24, 1, 25, 12),
+						Metadata: models.Metadata{
+							Build: true,
+						},
+					},
+					{
+						ID:   utils.GetPtr("deploy"),
+						Name: utils.GetPtr("deploy"),
+						Dependencies: []*models.JobDependency{
+							{
+								JobID: utils.GetPtr("build"),
+							},
+						},
+						FileReference: testutils.CreateFileReference(27, 1, 32, 11),
+					},
+				}),
+				Defaults: &models.Defaults{},
 			},
 		},
 	}

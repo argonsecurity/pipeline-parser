@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
+	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/job"
 	jobModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/job"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
@@ -22,7 +23,7 @@ type Job struct {
 	Image         *common.Image                   `yaml:"image"`
 	Inherit       *jobModels.Inherit              `yaml:"inherit"`
 	Interruptible bool                            `yaml:"interruptible"`
-	Needs         []any                           `yaml:"needs"`
+	Needs         *job.Needs                      `yaml:"needs"`
 	Parallel      *jobModels.Parallel             `yaml:"parallel"`
 	Release       *Release                        `yaml:"release"`
 	ResourceGroup string                          `yaml:"resource_group"`
