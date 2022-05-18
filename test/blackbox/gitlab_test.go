@@ -31,7 +31,7 @@ func TestGitLab(t *testing.T) {
 						Metadata: models.Metadata{
 							Test: true,
 						},
-						FileReference: testutils.CreateFileReference(33, 1, 35, 11),
+						FileReference: testutils.CreateFileReference(33, 1, 35, 23),
 					},
 					{
 						ID:               utils.GetPtr("build"),
@@ -49,7 +49,7 @@ func TestGitLab(t *testing.T) {
 						Metadata: models.Metadata{
 							Build: true,
 						},
-						FileReference: testutils.CreateFileReference(23, 1, 31, 9),
+						FileReference: testutils.CreateFileReference(23, 1, 31, 16),
 					},
 				}),
 				Defaults: &models.Defaults{
@@ -58,13 +58,13 @@ func TestGitLab(t *testing.T) {
 							Image: utils.GetPtr("gradle"),
 							Label: utils.GetPtr("alpine"),
 						},
-						FileReference: testutils.CreateFileReference(10, 1, 10, 8),
+						FileReference: testutils.CreateFileReference(10, 1, 10, 21),
 					},
 					EnvironmentVariables: &models.EnvironmentVariablesRef{
 						EnvironmentVariables: models.EnvironmentVariables{
 							"GRADLE_OPTS": "-Dorg.gradle.daemon=false",
 						},
-						FileReference: testutils.CreateFileReference(16, 0, 17, 16),
+						FileReference: testutils.CreateFileReference(16, 1, 17, 43),
 					},
 					PreSteps: []*models.Step{
 						{
@@ -72,14 +72,14 @@ func TestGitLab(t *testing.T) {
 							Shell: &models.Shell{
 								Script: utils.GetPtr(`GRADLE_USER_HOME="$(pwd)/.gradle"`),
 							},
-							FileReference: testutils.CreateFileReference(20, 3, 20, 38),
+							FileReference: testutils.CreateFileReference(20, 3, 20, 61),
 						},
 						{
 							Type: models.ShellStepType,
 							Shell: &models.Shell{
 								Script: utils.GetPtr(`export GRADLE_USER_HOME`),
 							},
-							FileReference: testutils.CreateFileReference(21, 3, 21, 28),
+							FileReference: testutils.CreateFileReference(21, 3, 21, 51),
 						},
 					},
 				},
@@ -106,7 +106,7 @@ func TestGitLab(t *testing.T) {
 					{
 						ID:            utils.GetPtr("build"),
 						Name:          utils.GetPtr("build"),
-						FileReference: testutils.CreateFileReference(24, 1, 25, 12),
+						FileReference: testutils.CreateFileReference(24, 1, 25, 28),
 						Metadata: models.Metadata{
 							Build: true,
 						},
@@ -119,7 +119,7 @@ func TestGitLab(t *testing.T) {
 								JobID: utils.GetPtr("build"),
 							},
 						},
-						FileReference: testutils.CreateFileReference(27, 1, 32, 11),
+						FileReference: testutils.CreateFileReference(27, 1, 32, 25),
 					},
 				}),
 				Defaults: &models.Defaults{},
