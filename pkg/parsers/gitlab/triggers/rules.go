@@ -150,7 +150,7 @@ func generateRuleVariables(rule *common.Rule) map[string]string {
 	}
 
 	variables := make(map[string]string)
-	for key, value := range rule.Variables.Variables {
+	for key, value := range *rule.Variables.Variables {
 		variables[key] = fmt.Sprint(value)
 	}
 	return variables

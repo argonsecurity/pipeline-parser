@@ -12,6 +12,6 @@ func ParseEnvironmentVariables(environmentVariables *gitlabModels.EnvironmentVar
 
 	return &models.EnvironmentVariablesRef{
 		FileReference:        environmentVariables.FileReference,
-		EnvironmentVariables: environmentVariables.Variables,
+		EnvironmentVariables: (map[string]any)(*environmentVariables.Variables),
 	}
 }

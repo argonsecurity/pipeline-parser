@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
@@ -9,6 +10,11 @@ import (
 type Include []IncludeItem
 
 func (i *Include) UnmarshalYAML(node *yaml.Node) error {
+	if node.Tag == consts.StringTag {
+		*i = Include{IncludeItem{Local: node.Value}}
+		return nil
+	}
+
 	var items []IncludeItem
 	if err := utils.ParseSliceOrOne(node, &items); err != nil {
 		return err
