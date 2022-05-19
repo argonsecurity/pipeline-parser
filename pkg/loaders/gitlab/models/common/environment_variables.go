@@ -21,16 +21,14 @@ type Variable struct {
 func (v *Variables) UnmarshalYAML(node *yaml.Node) error {
 	variables := map[string]any{}
 	if err := utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
-		if value.Tag == consts.StringTag {
-			variables[key] = value.Value
-		} else if value.Tag == consts.MapTag {
+		if value.Tag == consts.MapTag {
 			variable := Variable{}
 			if err := value.Decode(&variable); err != nil {
 				return err
 			}
 			variables[key] = variable.Value
 		} else {
-			return consts.NewErrInvalidYamlTag(value.Tag)
+			variables[key] = value.Value
 		}
 		return nil
 	}); err != nil {

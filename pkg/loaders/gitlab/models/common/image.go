@@ -19,7 +19,7 @@ func (im *Image) UnmarshalYAML(node *yaml.Node) error {
 
 	if node.Tag == consts.StringTag {
 		im.Name = node.Value
-		im.FileReference.StartRef.Column -= len("image: ")
+		im.FileReference.EndRef.Column += len("image: ")
 		return nil
 	}
 

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
@@ -32,13 +33,18 @@ func GetFileReference(node *yaml.Node) *models.FileReference {
 
 func GetEndFileLocation(node *yaml.Node) *models.FileLocation {
 	if node.Content == nil {
-		return &models.FileLocation{
-			Line:   node.Line,
-			Column: node.Column + len(node.Value),
-		}
+		return calculateValueNodeEndFileLocation(node)
 	}
 
 	return GetEndFileLocation(node.Content[len(node.Content)-1])
+}
+
+func calculateValueNodeEndFileLocation(node *yaml.Node) *models.FileLocation {
+	split := strings.Split(node.Value, "\n")
+	return &models.FileLocation{
+		Line:   node.Line + len(split) - 1,
+		Column: node.Column + len(split[len(split)-1]),
+	}
 }
 
 func GetMapKeyFileReference(jobIDNode, jobNode *yaml.Node) *models.FileReference {
