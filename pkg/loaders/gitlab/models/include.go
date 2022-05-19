@@ -16,7 +16,7 @@ func (i *Include) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	var items []IncludeItem
-	if err := utils.ParseSliceOrOne(node, &items); err != nil {
+	if err := utils.ParseSequenceOrOne(node, &items); err != nil {
 		return err
 	}
 	*i = items
@@ -44,7 +44,7 @@ func (it *IncludeItem) UnmarshalYAML(node *yaml.Node) error {
 		case "ref":
 			it.Ref = value.Value
 		case "file":
-			return utils.ParseSliceOrOne(value, &it.File)
+			return utils.ParseSequenceOrOne(value, &it.File)
 		case "template":
 			it.Template = value.Value
 		case "local":

@@ -85,6 +85,8 @@ func MustParseYamlBooleanValue(node *yaml.Node) *bool {
 	panic(fmt.Sprintf("invalid boolean value: %s", node.Value))
 }
 
+// A Map YAML node is very messy to iterate on
+// This function wraps the messy part for cleaner code
 func IterateOnMap(node *yaml.Node, cb func(key string, value *yaml.Node) error) error {
 	if node.Tag != consts.MapTag {
 		return consts.NewErrInvalidYamlTag(node.Tag)
@@ -103,7 +105,7 @@ func IterateOnMap(node *yaml.Node, cb func(key string, value *yaml.Node) error) 
 	return nil
 }
 
-func ParseSliceOrOne[T any](node *yaml.Node, v *[]T) error {
+func ParseSequenceOrOne[T any](node *yaml.Node, v *[]T) error {
 	var t T
 	if node.Tag == consts.SequenceTag {
 		return node.Decode(&v)
