@@ -31,16 +31,16 @@ func parseImageName(imageName string) (string, string, string, string) {
 	var registry, namespace, tag string
 	image := imageName
 
-	if split := strings.Split(imageName, "/"); len(split) == 3 {
+	if split := strings.Split(imageName, "/"); len(split) == 3 { // imageName contains registry/repository/image
 		registry = split[0]
 		namespace = split[1]
 		image = split[2]
-	} else if len(split) == 2 {
+	} else if len(split) == 2 { // imageName contains repository/image
 		namespace = split[0]
 		image = split[1]
 	}
 
-	if split := strings.Split(image, ":"); len(split) == 2 {
+	if split := strings.Split(image, ":"); len(split) == 2 { // image contains image:tag
 		image = split[0]
 		tag = split[1]
 	}
