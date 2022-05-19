@@ -13,6 +13,7 @@ type EnvironmentVariablesRef struct {
 }
 
 type Variables map[string]any
+
 type Variable struct {
 	Value       string `yaml:"value"`
 	Description string `yaml:"description"`
@@ -27,7 +28,7 @@ func (v *Variables) UnmarshalYAML(node *yaml.Node) error {
 				return err
 			}
 			variables[key] = variable.Value
-		} else {
+		} else { // format - "VARIABLE: VALUE"
 			variables[key] = value.Value
 		}
 		return nil

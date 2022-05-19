@@ -14,7 +14,7 @@ type Retry struct {
 }
 
 func (r *Retry) UnmarshalYAML(node *yaml.Node) error {
-	if node.Tag == consts.IntTag {
+	if node.Tag == consts.IntTag { // format: "retry: 3"
 		parsedInt, _ := strconv.Atoi(node.Value)
 		r.Max = &parsedInt
 		return nil

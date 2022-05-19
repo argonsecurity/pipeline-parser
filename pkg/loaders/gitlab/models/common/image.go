@@ -17,13 +17,14 @@ func (im *Image) UnmarshalYAML(node *yaml.Node) error {
 
 	im.FileReference = utils.GetFileReference(node)
 
-	if node.Tag == consts.StringTag {
+	if node.Tag == consts.StringTag { // format - "image: image:tag"
 		im.Name = node.Value
 		im.FileReference.EndRef.Column += len("image: ")
 		return nil
 	}
 
 	im.FileReference.StartRef.Line--
+
 	return utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		switch key {
 		case "name":
