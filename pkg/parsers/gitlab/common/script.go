@@ -11,7 +11,7 @@ func ParseScript(script *common.Script) []*models.Step {
 		return nil
 	}
 
-	if len(script.Commands) == 1 {
+	if len(script.Commands) == 1 { // format: script: command
 		return []*models.Step{
 			{
 				Type: models.ShellStepType,
@@ -23,6 +23,10 @@ func ParseScript(script *common.Script) []*models.Step {
 		}
 	}
 
+	// format
+	// script:
+	//   - command1
+	//   - command2
 	return utils.MapWithIndex(script.Commands, func(command string, index int) *models.Step {
 		return &models.Step{
 			Type: models.ShellStepType,
@@ -35,14 +39,15 @@ func ParseScript(script *common.Script) []*models.Step {
 }
 
 func parseCommandFileReference(script *common.Script, commandIndex int) *models.FileReference {
+	scriptLine := script.FileReference.StartRef.Line + commandIndex + 1
 	return &models.FileReference{
 		StartRef: &models.FileLocation{
-			Line:   script.FileReference.StartRef.Line + commandIndex + 1, // +1 for the script header
-			Column: script.FileReference.StartRef.Column + 2,              // +2 for the "- " section
+			Line:   scriptLine,                               // +1 for the script header
+			Column: script.FileReference.StartRef.Column + 2, // +2 for the "- " section
 		},
 		EndRef: &models.FileLocation{
-			Line:   script.FileReference.StartRef.Line + commandIndex + 1,
-			Column: script.FileReference.EndRef.Column + len(script.Commands[commandIndex]),
+			Line:   scriptLine,
+			Column: script.FileReference.EndRef.Column + len(script.Commands[commandIndex]), // start column + the length of the last command
 		},
 	}
 
