@@ -77,11 +77,12 @@ type SecretsItem struct {
 
 // There's a bug in go-yaml and this is the only way we can currently have the jobs inside the ci configuration
 // while keeping the job's file reference.
+// Without overcomplicating, the bug won't allow us to both implement UnmarshalYAML and parse Job inline (as in, without a separate internal field)
 func (j *Job) UnmarshalYAML(node *yaml.Node) error {
 	j.FileReference = &models.FileReference{
 		StartRef: &models.FileLocation{
-			Line:   node.Line - 1,
-			Column: 1,
+			Line:   node.Line - 1, // We don't have access to the key node, and therefor we assume it's one line higher
+			Column: 1,             // All jobs start from column 1
 		},
 		EndRef: utils.GetEndFileLocation(node),
 	}

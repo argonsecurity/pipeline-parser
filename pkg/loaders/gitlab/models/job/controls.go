@@ -7,6 +7,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Control represents "job:except/only"
 type Controls struct {
 	Refs       []string
 	Variables  []string
