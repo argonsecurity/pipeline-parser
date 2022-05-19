@@ -35,7 +35,7 @@ func ParseRules(rules *common.Rules) (*models.Triggers, []*models.Condition) {
 	triggers := []*models.Trigger{}
 	conditions := []*models.Condition{}
 	for _, rule := range rules.RulesList {
-		if ruleTriggers := parseRuleTriggers(rule); ruleTriggers != nil {
+		if ruleTriggers := parseRuleTriggers(rule); ruleTriggers != nil && len(ruleTriggers) > 0 {
 			triggers = append(triggers, ruleTriggers...)
 		} else {
 			conditions = append(conditions, parseConditionRule(rule))
@@ -68,8 +68,8 @@ func parseConditionRule(rule *common.Rule) *models.Condition {
 func parseRuleTriggers(rule *common.Rule) []*models.Trigger {
 	comparisons := getComparisons(rule.If)
 	triggers := []*models.Trigger{}
-	for event, eventValue := range eventMapping {
-		for _, comparison := range comparisons {
+	for _, comparison := range comparisons {
+		for event, eventValue := range eventMapping {
 			if (comparison.IsPositive() == (rule.When != never)) &&
 				comparison.Variable == eventVariable &&
 				comparison.Value == fmt.Sprintf(`"%s"`, eventValue) {

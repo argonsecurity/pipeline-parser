@@ -12,7 +12,7 @@ type Condition struct {
 	Paths     *Filter
 	Exists    *Filter
 	Branches  *Filter
-	Event     *EventType
+	Events    []EventType
 	Variables map[string]string
 }
 

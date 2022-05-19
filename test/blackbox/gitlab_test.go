@@ -58,7 +58,7 @@ func TestGitLab(t *testing.T) {
 							Image: utils.GetPtr("gradle"),
 							Label: utils.GetPtr("alpine"),
 						},
-						FileReference: testutils.CreateFileReference(10, 1, 10, 21),
+						FileReference: testutils.CreateFileReference(10, 8, 10, 28),
 					},
 					EnvironmentVariables: &models.EnvironmentVariablesRef{
 						EnvironmentVariables: models.EnvironmentVariables{
@@ -123,6 +123,75 @@ func TestGitLab(t *testing.T) {
 					},
 				}),
 				Defaults: &models.Defaults{},
+			},
+		},
+		{
+			Filename: "build-job.yaml",
+			Expected: &models.Pipeline{
+				Triggers: &models.Triggers{
+					FileReference: testutils.CreateFileReference(22, 3, 25, 18),
+					Triggers: []*models.Trigger{
+						{
+							Event:         models.PullRequestEvent,
+							FileReference: testutils.CreateFileReference(23, 7, 23, 55),
+						},
+					},
+				},
+				Jobs: SortJobs([]*models.Job{
+					{
+						ID:   utils.GetPtr("python-build"),
+						Name: utils.GetPtr("python-build"),
+						Conditions: []*models.Condition{
+							{
+								Statement: "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/",
+								Allow:     utils.GetPtr(true),
+							},
+							{
+								Branches: &models.Filter{
+									AllowList: []string{"/^feature-.*/", "main"},
+								},
+								Allow:  utils.GetPtr(true),
+								Events: []models.EventType{models.PullRequestEvent, models.EventType("api")},
+							},
+						},
+						Steps: []*models.Step{
+							{
+								Type: models.ShellStepType,
+								Shell: &models.Shell{
+									Script: utils.GetPtr("cd requests"),
+								},
+								FileReference: testutils.CreateFileReference(15, 5, 15, 40),
+							},
+							{
+								Type: models.ShellStepType,
+								Shell: &models.Shell{
+									Script: utils.GetPtr("python3 setup.py sdist"),
+								},
+								FileReference: testutils.CreateFileReference(16, 5, 16, 51),
+							},
+						},
+						ConcurrencyGroup: utils.GetPtr(models.ConcurrencyGroup("build")),
+						Metadata:         models.Metadata{Build: true},
+						FileReference:    testutils.CreateFileReference(4, 1, 16, 29),
+					},
+				}),
+				Defaults: &models.Defaults{
+					PreSteps: []*models.Step{
+						{
+							Type: models.ShellStepType,
+							Shell: &models.Shell{
+								Script: utils.GetPtr(`echo "before_script"`),
+							},
+							FileReference: testutils.CreateFileReference(18, 1, 19, 25),
+						},
+					},
+					Conditions: []*models.Condition{
+						{
+							Statement: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH",
+							Allow:     utils.GetPtr(false),
+						},
+					},
+				},
 			},
 		},
 	}

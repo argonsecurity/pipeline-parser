@@ -6,15 +6,44 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
+var (
+	refKeywords = []string{
+		"api",
+		"branches",
+		"chat",
+		"external",
+		"external_pull_requests",
+		"merge_requests",
+		"pipelines",
+		"pushes",
+		"schedules",
+		"tags",
+		"triggers",
+		"web",
+	}
+
+	refToEventMapping = map[string]models.EventType{
+		"pushes":                 models.PushEvent,
+		"merge_requests":         models.PullRequestEvent,
+		"external_pull_requests": models.PullRequestEvent,
+		"pipelines":              models.PipelineRunEvent,
+		"trigger":                models.PipelineTriggerEvent,
+		"schedules":              models.ScheduledEvent,
+	}
+)
+
 func ParseControls(controls *job.Controls, isDeny bool) *models.Condition {
 	if controls == nil {
 		return nil
 	}
 
+	branches, events := getBranchesAndEvents(controls.Refs)
+
 	return &models.Condition{
 		Allow:     utils.GetPtr(!isDeny),
-		Branches:  generateFilter(controls.Refs, isDeny),
+		Branches:  generateFilter(branches, isDeny),
 		Paths:     generateFilter(controls.Changes, isDeny),
+		Events:    events,
 		Variables: parseVariables(controls.Variables),
 	}
 }
@@ -33,6 +62,23 @@ func parseVariables(expressions []string) map[string]string {
 		}
 	}
 	return variables
+}
+
+func getBranchesAndEvents(refs []string) ([]string, []models.EventType) {
+	branches := []string{}
+	events := []models.EventType{}
+
+	for _, ref := range refs {
+		if event, ok := refToEventMapping[ref]; ok {
+			events = append(events, event)
+		} else if utils.SliceContains(refKeywords, ref) {
+			events = append(events, models.EventType(ref))
+		} else {
+			branches = append(branches, ref)
+		}
+	}
+
+	return branches, events
 }
 
 func generateFilter(list []string, isDeny bool) *models.Filter {
