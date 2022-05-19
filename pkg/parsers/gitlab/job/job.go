@@ -18,7 +18,7 @@ func ParseJobs(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) ([]*mo
 }
 
 func getJobConditions(job *gitlabModels.Job) []*models.Condition {
-	conditions := triggers.ParseRulesConditions(job.Rules)
+	conditions := triggers.ParseConditionRules(job.Rules)
 	if parsedExcept := triggers.ParseControls(job.Except, true); parsedExcept != nil {
 		conditions = append(conditions, parsedExcept)
 	}

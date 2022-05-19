@@ -35,7 +35,7 @@ func ParseRules(rules *common.Rules) (*models.Triggers, []*models.Condition) {
 	triggers := []*models.Trigger{}
 	conditions := []*models.Condition{}
 	for _, rule := range rules.RulesList {
-		if ruleTriggers := parseRuleTriggers(rule); ruleTriggers != nil && len(ruleTriggers) > 0 {
+		if ruleTriggers := parseTriggerRules(rule); ruleTriggers != nil && len(ruleTriggers) > 0 {
 			triggers = append(triggers, ruleTriggers...)
 		} else {
 			conditions = append(conditions, parseConditionRule(rule))
@@ -48,7 +48,7 @@ func ParseRules(rules *common.Rules) (*models.Triggers, []*models.Condition) {
 	}, conditions
 }
 
-func ParseRulesConditions(rules *common.Rules) []*models.Condition {
+func ParseConditionRules(rules *common.Rules) []*models.Condition {
 	if rules == nil {
 		return nil
 	}
@@ -65,7 +65,7 @@ func parseConditionRule(rule *common.Rule) *models.Condition {
 	}
 }
 
-func parseRuleTriggers(rule *common.Rule) []*models.Trigger {
+func parseTriggerRules(rule *common.Rule) []*models.Trigger {
 	comparisons := getComparisons(rule.If)
 	triggers := []*models.Trigger{}
 	for _, comparison := range comparisons {
