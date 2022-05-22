@@ -16,10 +16,12 @@ type Scans struct {
 	Pipelines    *bool
 	SAST         *bool
 	Dependencies *bool
+	License      *bool
 }
 
 type Defaults struct {
 	EnvironmentVariables *EnvironmentVariablesRef
+	Scans                *Scans
 	Runner               *Runner
 	Conditions           []*Condition
 	TokenPermissions     *TokenPermissions

@@ -23,3 +23,12 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: never
+
+default:
+  artifacts:
+    reports:
+      secret_detection: secrets.json
+      sast: sast.json
+      terraform: terraform.json
+      license_scanning: license.json
+      dependency_scanning: dependency.json

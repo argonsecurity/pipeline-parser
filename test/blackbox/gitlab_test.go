@@ -176,6 +176,13 @@ func TestGitLab(t *testing.T) {
 					},
 				}),
 				Defaults: &models.Defaults{
+					Scans: &models.Scans{
+						Secrets:      utils.GetPtr(true),
+						SAST:         utils.GetPtr(true),
+						Iac:          utils.GetPtr(true),
+						Dependencies: utils.GetPtr(true),
+						License:      utils.GetPtr(true),
+					},
 					PreSteps: []*models.Step{
 						{
 							Type: models.ShellStepType,

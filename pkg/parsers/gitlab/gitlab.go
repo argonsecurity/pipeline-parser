@@ -41,6 +41,7 @@ func parseScans(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) *mode
 		SAST:         utils.GetPtr(reports.Sast != nil),
 		Dependencies: utils.GetPtr(reports.DependencyScanning != nil),
 		Iac:          utils.GetPtr(reports.Terraform != nil),
+		License:      utils.GetPtr(reports.LicenseScanning != nil),
 	}
 }
 
@@ -50,6 +51,7 @@ func parseDefaults(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) *m
 		Runner:               common.ParseRunner(gitlabCIConfiguration.Image),
 		PostSteps:            common.ParseScript(gitlabCIConfiguration.AfterScript),
 		PreSteps:             common.ParseScript(gitlabCIConfiguration.BeforeScript),
+		Scans:                parseScans(gitlabCIConfiguration),
 	}
 	return defaults
 }

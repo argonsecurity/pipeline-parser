@@ -87,6 +87,17 @@ func TestGitlabLoader(t *testing.T) {
 						},
 					},
 				},
+				Default: &models.Default{
+					Artifacts: &models.Artifacts{
+						Reports: &models.Reports{
+							SecretDetection:    "secrets.json",
+							Sast:               "sast.json",
+							Terraform:          "terraform.json",
+							DependencyScanning: "dependency.json",
+							LicenseScanning:    "license.json",
+						},
+					},
+				},
 			},
 		},
 		{
