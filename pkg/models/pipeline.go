@@ -10,6 +10,14 @@ type Pipeline struct {
 	Defaults   *Defaults
 }
 
+type Scans struct {
+	Secrets      *bool
+	Iac          *bool
+	Pipelines    *bool
+	SAST         *bool
+	Dependencies *bool
+}
+
 type Defaults struct {
 	EnvironmentVariables *EnvironmentVariablesRef
 	Runner               *Runner
