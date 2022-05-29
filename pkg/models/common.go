@@ -6,7 +6,15 @@ type EnvironmentVariablesRef struct {
 	FileReference *FileReference
 }
 
-type Condition string
+type Condition struct {
+	Statement string
+	Allow     *bool
+	Paths     *Filter
+	Exists    *Filter
+	Branches  *Filter
+	Events    []EventType
+	Variables map[string]string
+}
 
 type Filter struct {
 	AllowList []string

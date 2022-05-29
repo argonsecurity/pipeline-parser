@@ -10,16 +10,16 @@ var (
 	defaultTimeoutMS int = 360 * 60 * 1000
 )
 
-func parseWorkflowJobs(workflow *githubModels.Workflow) (*[]models.Job, error) {
+func parseWorkflowJobs(workflow *githubModels.Workflow) ([]*models.Job, error) {
 	jobs, err := utils.MapToSliceErr(workflow.Jobs.CIJobs, parseJob)
 	if err != nil {
 		return nil, err
 	}
-	return &jobs, nil
+	return jobs, nil
 }
 
-func parseJob(jobName string, job *githubModels.Job) (models.Job, error) {
-	parsedJob := models.Job{
+func parseJob(jobName string, job *githubModels.Job) (*models.Job, error) {
+	parsedJob := &models.Job{
 		ID:                   job.ID,
 		Name:                 &job.Name,
 		ContinueOnError:      &job.ContinueOnError,
@@ -39,11 +39,11 @@ func parseJob(jobName string, job *githubModels.Job) (models.Job, error) {
 	}
 
 	if job.If != "" {
-		parsedJob.Conditions = &[]models.Condition{models.Condition(job.If)}
+		parsedJob.Conditions = []*models.Condition{{Statement: job.If}}
 	}
 
 	if job.Concurrency != nil {
-		parsedJob.ConcurrencyGroup = job.Concurrency.Group
+		parsedJob.ConcurrencyGroup = (*models.ConcurrencyGroup)(job.Concurrency.Group)
 	}
 
 	if job.Steps != nil {
@@ -55,16 +55,24 @@ func parseJob(jobName string, job *githubModels.Job) (models.Job, error) {
 	}
 
 	if job.Needs != nil {
-		parsedJob.Dependencies = (*[]string)(job.Needs)
+		parsedJob.Dependencies = parseDependencies(job.Needs)
 	}
 
 	if job.Permissions != nil {
 		permissions, err := parseTokenPermissions(job.Permissions)
 		if err != nil {
-			return models.Job{}, err
+			return nil, err
 		}
 		parsedJob.TokenPermissions = permissions
 	}
 
 	return parsedJob, nil
+}
+
+func parseDependencies(needs *githubModels.Needs) []*models.JobDependency {
+	return utils.Map(([]string)(*needs), func(dependency string) *models.JobDependency {
+		return &models.JobDependency{
+			JobID: &dependency,
+		}
+	})
 }

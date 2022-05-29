@@ -5,6 +5,7 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
+	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/parsers"
 )
@@ -21,6 +22,8 @@ func Handle(data []byte, platform consts.Platform) (*models.Pipeline, error) {
 	switch platform {
 	case consts.GitHubPlatform:
 		pipeline, err = handle[githubModels.Workflow](data, &GitHubHandler{})
+	case consts.GitLabPlatform:
+		pipeline, err = handle[gitlabModels.GitlabCIConfiguration](data, &GitLabHandler{})
 	}
 
 	if err != nil {
@@ -31,15 +34,15 @@ func Handle(data []byte, platform consts.Platform) (*models.Pipeline, error) {
 }
 
 func handle[T any](data []byte, handler Handler[T]) (*models.Pipeline, error) {
-	workflow, err := handler.GetLoader().Load(data)
+	pipeline, err := handler.GetLoader().Load(data)
 	if err != nil {
 		return nil, err
 	}
 
-	pipeline, err := handler.GetParser().Parse(workflow)
+	parsedPipeline, err := handler.GetParser().Parse(pipeline)
 	if err != nil {
 		return nil, err
 	}
 
-	return pipeline, nil
+	return parsedPipeline, nil
 }

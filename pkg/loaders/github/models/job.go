@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
@@ -28,7 +26,7 @@ func (n *Needs) UnmarshalYAML(node *yaml.Node) error {
 	} else if node.Tag == consts.StringTag {
 		tags = []string{node.Value}
 	} else {
-		return fmt.Errorf("unexpected tag %s", node.Tag)
+		return consts.NewErrInvalidYamlTag(node.Tag)
 	}
 
 	*n = tags

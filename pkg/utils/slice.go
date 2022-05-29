@@ -24,6 +24,14 @@ func Map[T any, U any](s []T, cb func(v T) U) []U {
 	return result
 }
 
+func MapWithIndex[T any, U any](s []T, cb func(v T, i int) U) []U {
+	result := make([]U, len(s))
+	for i, item := range s {
+		result[i] = cb(item, i)
+	}
+	return result
+}
+
 func Filter[T any](s []T, cb func(v T) bool) []T {
 	result := make([]T, 0)
 	for _, item := range s {

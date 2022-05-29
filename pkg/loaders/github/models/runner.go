@@ -1,7 +1,6 @@
 package models
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
@@ -61,7 +60,7 @@ func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 	} else {
-		return errors.New("invalid RunsOn tags")
+		return consts.NewErrInvalidYamlTag(node.Tag)
 	}
 
 	*r = *generateRunsOnFromTags(tags)
