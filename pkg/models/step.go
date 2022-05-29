@@ -15,30 +15,30 @@ type VersionType string
 type StepType string
 
 type Shell struct {
-	Type   *string
-	Script *string
+	Type   *string `json:"type,omitempty"`
+	Script *string `json:"script,omitempty"`
 }
 
 type Step struct {
-	ID                   *string
-	Name                 *string
-	Type                 StepType
-	FailsPipeline        *bool
-	Disabled             *bool
-	EnvironmentVariables *EnvironmentVariablesRef
-	WorkingDirectory     *string
-	Timeout              *int
-	Conditions           *[]Condition
-	Shell                *Shell
-	Task                 *Task
-	Metadata             Metadata
-	FileReference        *FileReference
+	ID                   *string                  `json:"id,omitempty"`
+	Name                 *string                  `json:"name,omitempty"`
+	Type                 StepType                 `json:"type,omitempty"`
+	FailsPipeline        *bool                    `json:"fails_pipeline,omitempty"`
+	Disabled             *bool                    `json:"disabled,omitempty"`
+	EnvironmentVariables *EnvironmentVariablesRef `json:"environment_variables,omitempty"`
+	WorkingDirectory     *string                  `json:"working_directory,omitempty"`
+	Timeout              *int                     `json:"timeout,omitempty"`
+	Conditions           *[]Condition             `json:"conditions,omitempty"`
+	Shell                *Shell                   `json:"shell,omitempty"`
+	Task                 *Task                    `json:"task,omitempty"`
+	Metadata             Metadata                 `json:"metadata,omitempty"`
+	FileReference        *FileReference           `json:"file_reference,omitempty"`
 }
 
 type Task struct {
-	ID          *string
-	Name        *string
-	Inputs      *[]Parameter
-	Version     *string
-	VersionType VersionType
+	ID          *string      `json:"id,omitempty"`
+	Name        *string      `json:"name,omitempty"`
+	Inputs      *[]Parameter `json:"inputs,omitempty"`
+	Version     *string      `json:"version,omitempty"`
+	VersionType VersionType  `json:"version_type,omitempty"`
 }

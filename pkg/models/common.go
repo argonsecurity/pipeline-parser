@@ -2,52 +2,52 @@ package models
 
 type EnvironmentVariables map[string]any
 type EnvironmentVariablesRef struct {
-	EnvironmentVariables
-	FileReference *FileReference
+	EnvironmentVariables `json:"environment_variables,omitempty"`
+	FileReference        *FileReference `json:"file_reference,omitempty"`
 }
 
 type Condition struct {
-	Statement string
-	Allow     *bool
-	Paths     *Filter
-	Exists    *Filter
-	Branches  *Filter
-	Events    []EventType
-	Variables map[string]string
+	Statement string            `json:"statement,omitempty"`
+	Allow     *bool             `json:"allow,omitempty"`
+	Paths     *Filter           `json:"paths,omitempty"`
+	Exists    *Filter           `json:"exists,omitempty"`
+	Branches  *Filter           `json:"branches,omitempty"`
+	Events    []EventType       `json:"events,omitempty"`
+	Variables map[string]string `json:"variables,omitempty"`
 }
 
 type Filter struct {
-	AllowList []string
-	DenyList  []string
+	AllowList []string `json:"allow_list,omitempty"`
+	DenyList  []string `json:"deny_list,omitempty"`
 }
 
 type Variable struct {
-	Context   *string
-	Name      *string
-	Value     *string
-	Parent    *Entity
-	Masked    *bool
-	Protected *bool
+	Context   *string `json:"context,omitempty"`
+	Name      *string `json:"name,omitempty"`
+	Value     *string `json:"value,omitempty"`
+	Parent    *Entity `json:"parent,omitempty"`
+	Masked    *bool   `json:"masked,omitempty"`
+	Protected *bool   `json:"protected,omitempty"`
 }
 
 type Parameter struct {
-	Name        *string
-	Value       any
-	Description *string
-	Default     any
+	Name        *string `json:"name,omitempty"`
+	Value       any     `json:"value,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Default     any     `json:"default,omitempty"`
 }
 
 type Entity struct {
-	ID   *string
-	Name *string
+	ID   *string `json:"id,omitempty"`
+	Name *string `json:"name,omitempty"`
 }
 
 type FileLocation struct {
-	Line   int
-	Column int
+	Line   int `json:"line,omitempty"`
+	Column int `json:"column,omitempty"`
 }
 
 type FileReference struct {
-	StartRef *FileLocation
-	EndRef   *FileLocation
+	StartRef *FileLocation `json:"start_ref,omitempty"`
+	EndRef   *FileLocation `json:"end_ref,omitempty"`
 }
