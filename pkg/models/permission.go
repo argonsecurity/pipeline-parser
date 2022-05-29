@@ -7,7 +7,7 @@ const (
 )
 
 type Permission struct {
-	Read  bool
-	Write bool
-	Admin bool
+	Read  bool `json:"read,omitempty"`
+	Write bool `json:"write,omitempty"`
+	Admin bool `json:"admin,omitempty"`
 }

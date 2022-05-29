@@ -1,7 +1,7 @@
 package models
 
 type Metadata struct {
-	Build  bool
-	Test   bool
-	Deploy bool
+	Build  bool `json:"build,omitempty"`
+	Test   bool `json:"test,omitempty"`
+	Deploy bool `json:"deploy,omitempty"`
 }

@@ -8,27 +8,27 @@ type TokenPermissions struct {
 type ConcurrencyGroup string
 
 type Job struct {
-	ID                   *string
-	Name                 *string
-	Steps                []*Step
-	ContinueOnError      *bool
-	PreSteps             []*Step
-	PostSteps            []*Step
-	EnvironmentVariables *EnvironmentVariablesRef
-	Runner               *Runner
-	Conditions           []*Condition
-	ConcurrencyGroup     *ConcurrencyGroup
-	Inputs               []*Parameter
-	TimeoutMS            *int
-	Tags                 []string
-	TokenPermissions     *TokenPermissions
-	Dependencies         []*JobDependency
-	Metadata             Metadata
-	FileReference        *FileReference
+	ID                   *string                  `json:"id,omitempty"`
+	Name                 *string                  `json:"name,omitempty"`
+	Steps                []*Step                  `json:"steps,omitempty"`
+	ContinueOnError      *bool                    `json:"continue_on_error,omitempty"`
+	PreSteps             []*Step                  `json:"pre_steps,omitempty"`
+	PostSteps            []*Step                  `json:"post_steps,omitempty"`
+	EnvironmentVariables *EnvironmentVariablesRef `json:"environment_variables,omitempty"`
+	Runner               *Runner                  `json:"runner,omitempty"`
+	Conditions           []*Condition             `json:"conditions,omitempty"`
+	ConcurrencyGroup     *ConcurrencyGroup        `json:"concurrency_group,omitempty"`
+	Inputs               []*Parameter             `json:"inputs,omitempty"`
+	TimeoutMS            *int                     `json:"timeout_ms,omitempty"`
+	Tags                 []string                 `json:"tags,omitempty"`
+	TokenPermissions     *TokenPermissions        `json:"token_permissions,omitempty"`
+	Dependencies         []*JobDependency         `json:"dependencies,omitempty"`
+	Metadata             Metadata                 `json:"metadata,omitempty"`
+	FileReference        *FileReference           `json:"file_reference,omitempty"`
 }
 
 type JobDependency struct {
-	JobID            *string
-	ConcurrencyGroup *ConcurrencyGroup
-	Pipeline         *string
+	JobID            *string           `json:"job_id,omitempty"`
+	ConcurrencyGroup *ConcurrencyGroup `json:"concurrency_group,omitempty"`
+	Pipeline         *string           `json:"pipeline,omitempty"`
 }

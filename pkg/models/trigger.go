@@ -13,19 +13,19 @@ const (
 type EventType string
 
 type Trigger struct {
-	Branches      *Filter
-	Paths         *Filter
-	Exists        *Filter
-	Parameters    []Parameter
-	Pipelines     []string
-	Filters       map[string]any
-	Event         EventType
-	Disabled      *bool
-	Schedules     *[]string
-	FileReference *FileReference
+	Branches      *Filter        `json:"branches,omitempty"`
+	Paths         *Filter        `json:"paths,omitempty"`
+	Exists        *Filter        `json:"exists,omitempty"`
+	Parameters    []Parameter    `json:"parameters,omitempty"`
+	Pipelines     []string       `json:"pipelines,omitempty"`
+	Filters       map[string]any `json:"filters,omitempty"`
+	Event         EventType      `json:"event,omitempty"`
+	Disabled      *bool          `json:"disabled,omitempty"`
+	Schedules     *[]string      `json:"schedules,omitempty"`
+	FileReference *FileReference `json:"file_reference,omitempty"`
 }
 
 type Triggers struct {
-	Triggers      []*Trigger
-	FileReference *FileReference
+	Triggers      []*Trigger     `json:"triggers,omitempty"`
+	FileReference *FileReference `json:"file_reference,omitempty"`
 }
