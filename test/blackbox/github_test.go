@@ -32,96 +32,96 @@ func getAllGitHubPermissions(permission models.Permission) *models.TokenPermissi
 
 func TestGitHub(t *testing.T) {
 	testCases := []TestCase{
-		// {
-		// 	Filename: "steps.yaml",
-		// 	Expected: &models.Pipeline{
-		// 		Name: utils.GetPtr("steps"),
-		// 		Jobs: SortJobs([]*models.Job{
-		// 			{
-		// 				ID:   utils.GetPtr("job1"),
-		// 				Name: utils.GetPtr("Job 1"),
-		// 				Steps: []*models.Step{
-		// 					{
-		// 						Name: utils.GetPtr("task without params"),
-		// 						Type: "task",
-		// 						Task: &models.Task{
-		// 							Name:        utils.GetPtr("actions/checkout"),
-		// 							Version:     utils.GetPtr("v1"),
-		// 							VersionType: "tag",
-		// 						},
-		// 						FileReference: testutils.CreateFileReference(7, 9, 8, 34),
-		// 					},
-		// 					{
-		// 						Name: utils.GetPtr("task with params"),
-		// 						Type: "task",
-		// 						Task: &models.Task{
-		// 							Name:        utils.GetPtr("actions/checkout"),
-		// 							Version:     utils.GetPtr("v1"),
-		// 							VersionType: "tag",
-		// 							Inputs: &[]models.Parameter{
-		// 								{
-		// 									Name:  utils.GetPtr("repo"),
-		// 									Value: "repository",
-		// 								},
-		// 							},
-		// 						},
-		// 						FileReference: testutils.CreateFileReference(10, 9, 13, 27),
-		// 					},
-		// 					{
-		// 						Name: utils.GetPtr("task with commit ID version"),
-		// 						Type: "task",
-		// 						Task: &models.Task{
-		// 							Name:        utils.GetPtr("actions/checkout"),
-		// 							Version:     utils.GetPtr("c44948622e1b6bb0eb0cec5b813c1ac561158e1e"),
-		// 							VersionType: "commit",
-		// 						},
-		// 						FileReference: testutils.CreateFileReference(15, 9, 16, 72),
-		// 					},
-		// 					{
-		// 						Name: utils.GetPtr("task with branch version"),
-		// 						Type: "task",
-		// 						Task: &models.Task{
-		// 							Name:        utils.GetPtr("actions/checkout"),
-		// 							Version:     utils.GetPtr("master"),
-		// 							VersionType: "branch",
-		// 						},
-		// 						FileReference: testutils.CreateFileReference(18, 9, 19, 38),
-		// 					},
-		// 					{
-		// 						Name: utils.GetPtr("task with tag version"),
-		// 						Type: "task",
-		// 						Task: &models.Task{
-		// 							Name:        utils.GetPtr("actions/checkout"),
-		// 							Version:     utils.GetPtr("v1.1.1"),
-		// 							VersionType: "tag",
-		// 						},
-		// 						FileReference: testutils.CreateFileReference(21, 9, 22, 38),
-		// 					},
-		// 					{
-		// 						Name: utils.GetPtr("shell"),
-		// 						Type: "shell",
-		// 						Shell: &models.Shell{
-		// 							Script: utils.GetPtr("command line"),
-		// 						},
-		// 						FileReference: testutils.CreateFileReference(24, 9, 25, 26),
-		// 					},
-		// 					{
-		// 						Name: utils.GetPtr("custom shell"),
-		// 						Type: "shell",
-		// 						Shell: &models.Shell{
-		// 							Script: utils.GetPtr("command line"),
-		// 							Type:   utils.GetPtr("cmd"),
-		// 						},
-		// 						FileReference: testutils.CreateFileReference(27, 9, 29, 26),
-		// 					},
-		// 				},
-		// 				TimeoutMS:       utils.GetPtr(21600000),
-		// 				ContinueOnError: utils.GetPtr(false),
-		// 				FileReference:   testutils.CreateFileReference(4, 3, 29, 26),
-		// 			},
-		// 		}),
-		// 	},
-		// },
+		{
+			Filename: "steps.yaml",
+			Expected: &models.Pipeline{
+				Name: utils.GetPtr("steps"),
+				Jobs: SortJobs([]*models.Job{
+					{
+						ID:   utils.GetPtr("job1"),
+						Name: utils.GetPtr("Job 1"),
+						Steps: []*models.Step{
+							{
+								Name: utils.GetPtr("task without params"),
+								Type: "task",
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("v1"),
+									VersionType: "tag",
+								},
+								FileReference: testutils.CreateFileReference(7, 9, 8, 34),
+							},
+							{
+								Name: utils.GetPtr("task with params"),
+								Type: "task",
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("v1"),
+									VersionType: "tag",
+									Inputs: &[]models.Parameter{
+										{
+											Name:  utils.GetPtr("repo"),
+											Value: "repository",
+										},
+									},
+								},
+								FileReference: testutils.CreateFileReference(10, 9, 13, 27),
+							},
+							{
+								Name: utils.GetPtr("task with commit ID version"),
+								Type: "task",
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("c44948622e1b6bb0eb0cec5b813c1ac561158e1e"),
+									VersionType: "commit",
+								},
+								FileReference: testutils.CreateFileReference(15, 9, 16, 72),
+							},
+							{
+								Name: utils.GetPtr("task with branch version"),
+								Type: "task",
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("master"),
+									VersionType: "branch",
+								},
+								FileReference: testutils.CreateFileReference(18, 9, 19, 38),
+							},
+							{
+								Name: utils.GetPtr("task with tag version"),
+								Type: "task",
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("v1.1.1"),
+									VersionType: "tag",
+								},
+								FileReference: testutils.CreateFileReference(21, 9, 22, 38),
+							},
+							{
+								Name: utils.GetPtr("shell"),
+								Type: "shell",
+								Shell: &models.Shell{
+									Script: utils.GetPtr("command line"),
+								},
+								FileReference: testutils.CreateFileReference(24, 9, 25, 26),
+							},
+							{
+								Name: utils.GetPtr("custom shell"),
+								Type: "shell",
+								Shell: &models.Shell{
+									Script: utils.GetPtr("command line"),
+									Type:   utils.GetPtr("cmd"),
+								},
+								FileReference: testutils.CreateFileReference(27, 9, 29, 26),
+							},
+						},
+						TimeoutMS:       utils.GetPtr(21600000),
+						ContinueOnError: utils.GetPtr(false),
+						FileReference:   testutils.CreateFileReference(4, 3, 29, 26),
+					},
+				}),
+			},
+		},
 		{
 			Filename: "dependant-jobs.yaml",
 			Expected: &models.Pipeline{
