@@ -12,6 +12,7 @@ Pipeline Parser is Argon's solution for parsing and analyzing pipeline files of 
 | Platform
 | :---:
 | Github Workflows
+| Gitlab CI
 
 ## Local Development
 
