@@ -15,12 +15,6 @@ jobs:
         with:
           go-version: 1.18
 
-      - name: Configure Git URL
-        run: |
-          git config --global url.https://$GH_ACCESS_TOKEN@github.com/.insteadOf https://github.com/
-        env:
-          GH_ACCESS_TOKEN: ${{ secrets.GH_TOKEN }}
-
       - name: Execute Tests
         run: |
           go test -v ./...
@@ -32,20 +26,10 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - name: Set Repo Envs
-        run: |
-          echo "git_repo_name=pipeline-parser" | tee -a $GITHUB_ENV
-          echo "status=failed" | tee -a $GITHUB_ENV
-
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
-      - name: Argon Integrity
-        run: |
-          curl -L "https://app-shield.argon.io/api/download/sh" -H "Authorization: Bearer ${{ secrets.ARGON_TOKEN }}" | sh -s ${{ secrets.ARGON_TOKEN }}
-          argon integrity --token ${{ secrets.ARGON_TOKEN }} --path . &
 
       - name: Install Go
         uses: actions/setup-go@v2
@@ -58,7 +42,7 @@ jobs:
           versionSpec: "5.8.3"
 
       - name: Bump Version
-        if: "${{ github.ref  != 'refs/heads/main' && github.ref  != 'refs/heads/master' }}"
+        if: "${{ github.ref  != 'refs/heads/main'}}"
         run: |
           echo "Increasing version"
           git config user.name "GitHub Actions Bot"
@@ -88,34 +72,3 @@ jobs:
           git config user.email "<>"
           git tag "v${TAG}" || true
           git push --tags  || true
-
-      - name: Configure Git URL
-        run: |
-          git config --global url.https://$GH_ACCESS_TOKEN@github.com/.insteadOf https://github.com/
-        env:
-          GH_ACCESS_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      - name: Argon Security Manifest
-        uses: argonsecurity/actions/generate-manifest@ed8d7940ab9a9140ff04f777945500f72a4c2836
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-          argon-token: "${{ secrets.ARGON_TOKEN }}"
-          argon-url: "${{ secrets.ARGON_MANIFEST_URL }}"
-          artifact-path: "."
-
-      - name: Argon Integrity
-        run: |
-          argon integrity --token ${{ secrets.ARGON_TOKEN }} --finish
-
-      - name: Set Success status
-        run: |
-          echo "status=success" | tee -a $GITHUB_ENV
-
-      - name: Send custom JSON data to Slack workflow
-        id: slack
-        if: always()
-        uses: slackapi/slack-github-action@v1.14.0
-        with:
-          payload: '{"repository": "${{ github.repository }}", "package":"pipeline-parser", "version": "${{ env.gitversion }}", "status": "${{ env.status }}", "link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"}'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
