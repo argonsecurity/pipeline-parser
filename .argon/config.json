@@ -1,5 +1,0 @@
-{
-  "general": {
-    "files_ignore_list": ["test/fixtures/*"]
-  }
-}
