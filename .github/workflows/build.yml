@@ -1,5 +1,5 @@
 name: Build Pipeline Parser
-on: [push, pull_request, workflow_dispatch]
+on: [push, pull_request]
 
 jobs:
   test:
@@ -16,13 +16,10 @@ jobs:
           go-version: 1.18
 
       - name: Execute Tests
-        run: |
-          go test -v ./...
-        env:
-          GOPRIVATE: github.com/argonsecurity/*
+        run: go test -v ./...
 
   build:
-    if: ${{ ( github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '#build') || (github.ref  == 'refs/heads/main') || (github.ref  == 'refs/heads/master')) && !contains(github.event.head_commit.message, '#skip-build') }}
+    if: ${{ github.ref  == 'refs/heads/main' }}
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -54,7 +51,7 @@ jobs:
 
       - name: Set Version
         run: |
-          if [[ "${{ github.event.inputs.increaseVersion}}" != "yes" || ! ${{ github.ref }} =~ refs/heads/(main|master)$ ]]; then
+          if [[ !${{ github.ref }} =~ refs/heads/main$ ]]; then
             echo "Set GITVERSION by steps.gitversion.outputs.fullSemVer"
             GITVERSION=${{ steps.gitversion.outputs.fullSemVer }}
           else
@@ -66,9 +63,6 @@ jobs:
       - name: Commit Tag Build
         env:
           TAG: ${{ env.gitversion }}
-          DOCKER_REPO: ${{ env.docker_repo_name }}
         run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
           git tag "v${TAG}" || true
           git push --tags  || true
