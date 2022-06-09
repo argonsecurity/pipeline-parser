@@ -1,6 +1,6 @@
 # Pipeline Parser
 
-[![Build Pipeline Parser](https://github.com/argonsecurity/pipeline-parser/actions/workflows/build.yml/badge.svg)](https://github.com/argonsecurity/pipeline-parser/actions/workflows/build.yml)
+[![Test Pipeline Parser](https://github.com/argonsecurity/pipeline-parser/actions/workflows/test.yml/badge.svg)](https://github.com/argonsecurity/pipeline-parser/actions/workflows/test.yml)
 
 ## Description
 
