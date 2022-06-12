@@ -15,8 +15,9 @@ type VersionType string
 type StepType string
 
 type Shell struct {
-	Type   *string `json:"type,omitempty"`
-	Script *string `json:"script,omitempty"`
+	Type          *string        `json:"type,omitempty"`
+	Script        *string        `json:"script,omitempty"`
+	FileReference *FileReference `json:"file_reference,omitempty"`
 }
 
 type Step struct {
