@@ -101,7 +101,8 @@ func TestGitHub(t *testing.T) {
 								Name: utils.GetPtr("shell"),
 								Type: "shell",
 								Shell: &models.Shell{
-									Script: utils.GetPtr("command line"),
+									Script:        utils.GetPtr("command line"),
+									FileReference: testutils.CreateFileReference(25, 14, 25, 26),
 								},
 								FileReference: testutils.CreateFileReference(24, 9, 25, 26),
 							},
@@ -109,15 +110,24 @@ func TestGitHub(t *testing.T) {
 								Name: utils.GetPtr("custom shell"),
 								Type: "shell",
 								Shell: &models.Shell{
-									Script: utils.GetPtr("command line"),
-									Type:   utils.GetPtr("cmd"),
+									Script:        utils.GetPtr("command line"),
+									FileReference: testutils.CreateFileReference(29, 14, 29, 26),
+									Type:          utils.GetPtr("cmd"),
 								},
 								FileReference: testutils.CreateFileReference(27, 9, 29, 26),
+							}, {
+								Name: utils.GetPtr("shell with break rows"),
+								Type: "shell",
+								Shell: &models.Shell{
+									Script:        utils.GetPtr("echo 1\necho 2\necho 3\n"),
+									FileReference: testutils.CreateFileReference(32, 14, 35, 14),
+								},
+								FileReference: testutils.CreateFileReference(31, 9, 35, 14),
 							},
 						},
 						TimeoutMS:       utils.GetPtr(21600000),
 						ContinueOnError: utils.GetPtr(false),
-						FileReference:   testutils.CreateFileReference(4, 3, 29, 26),
+						FileReference:   testutils.CreateFileReference(4, 3, 35, 14),
 					},
 				}),
 			},
@@ -325,7 +335,8 @@ func TestGitHub(t *testing.T) {
 								Name: utils.GetPtr("Step 1"),
 								Type: "shell",
 								Shell: &models.Shell{
-									Script: utils.GetPtr("command line"),
+									Script:        utils.GetPtr("command line"),
+									FileReference: testutils.CreateFileReference(15, 14, 15, 26),
 								},
 								FileReference: testutils.CreateFileReference(14, 9, 18, 20),
 								EnvironmentVariables: &models.EnvironmentVariablesRef{

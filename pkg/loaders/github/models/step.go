@@ -8,13 +8,18 @@ import (
 
 type Steps []Step
 
+type ShellCommand struct {
+	Script        string
+	FileReference *models.FileReference
+}
+
 type Step struct {
 	ContinueOnError  *bool                    `yaml:"continue-on-error,omitempty"`
 	Env              *EnvironmentVariablesRef `yaml:"env,omitempty"`
 	Id               string                   `yaml:"id,omitempty"`
 	If               string                   `yaml:"if,omitempty"`
 	Name             string                   `yaml:"name,omitempty"`
-	Run              string                   `yaml:"run,omitempty"`
+	Run              *ShellCommand            `yaml:"run,omitempty"`
 	Shell            string                   `yaml:"shell,omitempty"`
 	TimeoutMinutes   int                      `yaml:"timeout-minutes,omitempty"`
 	Uses             string                   `yaml:"uses,omitempty"`
@@ -34,5 +39,11 @@ func (s *Steps) UnmarshalYAML(node *yaml.Node) error {
 		steps = append(steps, step)
 	}
 	*s = steps
+	return nil
+}
+
+func (s *ShellCommand) UnmarshalYAML(node *yaml.Node) error {
+	s.FileReference = loadersUtils.GetFileReference(node)
+	s.Script = node.Value
 	return nil
 }

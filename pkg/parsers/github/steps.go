@@ -55,9 +55,10 @@ func parseJobStep(step githubModels.Step) *models.Step {
 		parsedStep.ID = &step.Id
 	}
 
-	if step.Run != "" {
+	if step.Run != nil {
 		parsedStep.Shell = &models.Shell{
-			Script: &step.Run,
+			Script:        &step.Run.Script,
+			FileReference: step.Run.FileReference,
 		}
 
 		if step.Shell != "" {
