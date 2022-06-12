@@ -27,3 +27,9 @@ jobs:
       - name: custom shell
         shell: cmd
         run: command line
+
+      - name: shell with break rows
+        run: |
+          echo 1
+          echo 2
+          echo 3
