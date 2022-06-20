@@ -15,6 +15,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
+	golang.org/x/exp v0.0.0-20220613132600-b0d781184e0d
 	golang.org/x/net v0.0.0-20190603091049-60506f45cf65 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 )

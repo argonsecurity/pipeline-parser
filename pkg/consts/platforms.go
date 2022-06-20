@@ -6,3 +6,8 @@ const (
 	GitHubPlatform Platform = "github"
 	GitLabPlatform Platform = "gitlab"
 )
+
+var Platforms = []Platform{
+	GitHubPlatform,
+	GitLabPlatform,
+}

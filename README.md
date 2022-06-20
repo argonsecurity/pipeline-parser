@@ -14,8 +14,45 @@ Pipeline Parser is Argon's solution for parsing and analyzing pipeline files of 
 
 | Platform
 | :---:
-| Github Workflows
-| Gitlab CI
+| GitHub Workflows
+| GitLab CI
+
+## Usage
+
+### Package Usage
+
+```golang
+import "github/argonsecurity/pipeline-parser/pkg/handler"
+
+// Read the pipeline data as bytes array
+buf, err := ioutil.ReadFile("/path/to/workflow.yml")
+if err != nil {
+    return nil
+}
+
+// Parse the pipeline from the specific platform to the common pipeline object
+pipeline, err := handler.Handle(buf, consts.GitHubPlatform)
+```
+
+### CLI Usage
+
+#### Parse GitHub Workflow yaml
+
+```bash
+pipeline-parser -p github workflow.yml
+```
+
+#### Parse GitLab CI yaml
+
+```bash
+pipeline-parser -p gitlab .gitlab-ci.yml
+```
+
+#### Parse multiple files in one execution
+
+```bash
+pipeline-parser -p github workflow-1.yml workflow-2.yml workflow-3.yml
+```
 
 ## Local Development
 
