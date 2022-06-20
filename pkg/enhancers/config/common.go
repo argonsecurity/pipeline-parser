@@ -8,20 +8,19 @@ var (
 	commonBuildShellRegexes = []*regexp.Regexp{
 		regexp.MustCompile(`docker build`),
 		regexp.MustCompile(`docker-compose build`),
-		regexp.MustCompile(`npm build`),
-		regexp.MustCompile(`yarn build`),
+		regexp.MustCompile(`npm run build`),
+		regexp.MustCompile(`yarn( run)? build`),
 		regexp.MustCompile(`go build`),
 	}
 
 	commonTestShellRegexes = []*regexp.Regexp{
 		regexp.MustCompile(`go test`),
-		regexp.MustCompile(`npm test`),
-		regexp.MustCompile(`yarn test`),
+		regexp.MustCompile(`npm run test`),
+		regexp.MustCompile(`yarn( run)? test`),
 	}
 
 	commonBuildNameRegexes = []*regexp.Regexp{
-		regexp.MustCompile(`build`),
-		regexp.MustCompile(`build-*`),
+		regexp.MustCompile(`[Bb]uild.*`),
 	}
 
 	commonTestNameRegexes = []*regexp.Regexp{
