@@ -61,11 +61,11 @@ func GetCommand(version string) *cobra.Command {
 
 func preRun(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
-		return fmt.Errorf("Invalid arguments length")
+		return consts.NewErrInvalidArgumentsCount(len(args))
 	}
 
 	if !slices.Contains(consts.Platforms, consts.Platform(platform)) {
-		return fmt.Errorf("Invalid platform: %s. Supported platforms: %v", platform, consts.Platforms)
+		return consts.NewErrInvalidPlatform(consts.Platform(platform))
 	}
 
 	return nil
