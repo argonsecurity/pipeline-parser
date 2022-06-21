@@ -46,11 +46,11 @@ func TestEnhanceStep(t *testing.T) {
 		{
 			name: "Step name doesn't contain build",
 			step: &models.Step{
-				Name: utils.GetPtr("some stage"),
+				Name: utils.GetPtr("some step"),
 			},
 			config: config.CommonConfiguration,
 			expectedStep: &models.Step{
-				Name: utils.GetPtr("some stage"),
+				Name: utils.GetPtr("some step"),
 				Metadata: models.Metadata{
 					Build: false,
 				},
