@@ -20,11 +20,11 @@ var (
 	}
 
 	commonBuildNameRegexes = []*regexp.Regexp{
-		regexp.MustCompile(`[Bb]uild.*`),
+		regexp.MustCompile(`(?i)build.*`),
 	}
 
 	commonTestNameRegexes = []*regexp.Regexp{
-		regexp.MustCompile(`[Tt]ests?`),
+		regexp.MustCompile(`(?i)tests?`),
 	}
 
 	CommonConfiguration = &EnhancementConfiguration{
