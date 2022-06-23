@@ -6,6 +6,7 @@ import (
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
+	"github.com/r3labs/diff/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -67,8 +68,11 @@ func TestParseRunsOnToRunner(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			runner := parseRunsOnToRunner(testCase.runsOn)
-			assert.Equal(t, testCase.expectedRunner, runner, testCase.name)
+			got := parseRunsOnToRunner(testCase.runsOn)
+
+			changelog, err := diff.Diff(testCase.expectedRunner, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }

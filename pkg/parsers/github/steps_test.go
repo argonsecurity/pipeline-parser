@@ -7,6 +7,7 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
+	"github.com/r3labs/diff/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -280,7 +281,10 @@ func TestParseJobStep(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseJobStep(testCase.step)
-			assert.Equal(t, testCase.expectedStep, got, testCase.name)
+
+			changelog, err := diff.Diff(testCase.expectedStep, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }
@@ -378,7 +382,10 @@ func TestParseActionInput(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseActionInput(testCase.with)
-			assert.Equal(t, testCase.expectedParameter, got, testCase.name)
+
+			changelog, err := diff.Diff(testCase.expectedParameter, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }
@@ -422,7 +429,10 @@ func TestParseActionInputItem(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseActionInputItem(testCase.k, testCase.val)
-			assert.Equal(t, testCase.expectedParameter, got, testCase.name)
+
+			changelog, err := diff.Diff(testCase.expectedParameter, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }

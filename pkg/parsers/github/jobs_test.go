@@ -7,6 +7,7 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
+	"github.com/r3labs/diff/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -336,7 +337,10 @@ func TestParseWorkflowJobs(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got, err := parseWorkflowJobs(testCase.workflow)
 			assert.NoError(t, err, testCase.name)
-			assert.Equal(t, testCase.expectedJobs, got, testCase.name)
+
+			changelog, err := diff.Diff(testCase.expectedJobs, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }
@@ -513,10 +517,14 @@ func TestParseJob(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			job, err := parseJob("", testCase.job)
+			got, err := parseJob("", testCase.job)
 
 			assert.NoError(t, err)
-			assert.Equal(t, testCase.expectedJob, job, testCase.name)
+
+			changelog, err := diff.Diff(testCase.expectedJob, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
+
 		})
 	}
 }
@@ -567,7 +575,10 @@ func TestParseDependencies(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseDependencies(testCase.needs)
-			assert.Equal(t, testCase.expectedDependencies, got, testCase.name)
+
+			changelog, err := diff.Diff(testCase.expectedDependencies, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }

@@ -5,6 +5,7 @@ import (
 
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/r3labs/diff/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -56,10 +57,13 @@ func TestParseEnvironmentVariablesRef(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			actual := parseEnvironmentVariablesRef(tc.envRef)
-			assert.Equal(t, tc.expectedEnv, actual, tc.name)
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := parseEnvironmentVariablesRef(testCase.envRef)
+
+			changelog, err := diff.Diff(testCase.expectedEnv, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }

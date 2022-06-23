@@ -7,6 +7,7 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
+	"github.com/r3labs/diff/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -74,154 +75,157 @@ func TestParseWorkflowTriggers(t *testing.T) {
 			workflow:         &githubModels.Workflow{},
 			expectedTriggers: nil,
 		},
-		// {
-		// 	name: "Workflow with workflow.on with full data",
-		// 	workflow: &githubModels.Workflow{
-		// 		On: &githubModels.On{
-		// 			Push: &githubModels.Ref{
-		// 				Branches:       []string{"branch1", "branch2"},
-		// 				BranchesIgnore: []string{"branch3", "branch4"},
-		// 				Paths:          []string{"path1", "path2"},
-		// 				PathsIgnore:    []string{"path3", "path4"},
-		// 				FileReference:  testutils.CreateFileReference(1, 2, 3, 4),
-		// 			},
-		// 			PullRequest: &githubModels.Ref{
-		// 				Branches:       []string{"branch1", "branch2"},
-		// 				BranchesIgnore: []string{"branch3", "branch4"},
-		// 				Paths:          []string{"path1", "path2"},
-		// 				PathsIgnore:    []string{"path3", "path4"},
-		// 				FileReference:  testutils.CreateFileReference(11, 21, 31, 41),
-		// 			},
-		// 			PullRequestTarget: &githubModels.Ref{
-		// 				Branches:       []string{"branch1", "branch2"},
-		// 				BranchesIgnore: []string{"branch3", "branch4"},
-		// 				Paths:          []string{"path1", "path2"},
-		// 				PathsIgnore:    []string{"path3", "path4"},
-		// 				FileReference:  testutils.CreateFileReference(5, 6, 7, 8),
-		// 			},
-		// 			WorkflowDispatch: &githubModels.WorkflowDispatch{
-		// 				Inputs:        mockInputs,
-		// 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
-		// 			},
-		// 			WorkflowCall: &githubModels.WorkflowCall{
-		// 				Inputs:        mockInputs,
-		// 				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-		// 			},
-		// 			WorkflowRun: &githubModels.WorkflowRun{
-		// 				Workflows:     []string{"workflow1", "workflow2"},
-		// 				FileReference: testutils.CreateFileReference(9, 10, 11, 12),
-		// 				Ref: githubModels.Ref{
-		// 					Branches:       []string{"branch1", "branch2"},
-		// 					BranchesIgnore: []string{"branch3", "branch4"},
-		// 				},
-		// 			},
-		// 			Schedule: &githubModels.Schedule{
-		// 				Crons: &[]githubModels.Cron{
-		// 					{
-		// 						Cron: "1 * * *",
-		// 					},
-		// 				},
-		// 				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-		// 			},
-		// 			Events: githubModels.Events{
-		// 				"event1": githubModels.Event{
-		// 					Types:         []string{"type1", "type2"},
-		// 					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
-		// 				},
-		// 				"event2": githubModels.Event{
-		// 					Types:         []string{"type3", "type4"},
-		// 					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-		// 				},
-		// 			},
-		// 			FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-		// 		},
-		// 	},
-		// 	expectedTriggers: &models.Triggers{
-		// 		Triggers: []*models.Trigger{
-		// 			{
-		// 				Event: models.PushEvent,
-		// 				Branches: &models.Filter{
-		// 					AllowList: []string{"branch1", "branch2"},
-		// 					DenyList:  []string{"branch3", "branch4"},
-		// 				},
-		// 				Paths: &models.Filter{
-		// 					AllowList: []string{"path1", "path2"},
-		// 					DenyList:  []string{"path3", "path4"},
-		// 				},
-		// 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
-		// 			},
-		// 			{
-		// 				Event: models.PullRequestEvent,
-		// 				Branches: &models.Filter{
-		// 					AllowList: []string{"branch1", "branch2"},
-		// 					DenyList:  []string{"branch3", "branch4"},
-		// 				},
-		// 				Paths: &models.Filter{
-		// 					AllowList: []string{"path1", "path2"},
-		// 					DenyList:  []string{"path3", "path4"},
-		// 				},
-		// 				FileReference: testutils.CreateFileReference(11, 21, 31, 41),
-		// 			},
-		// 			{
-		// 				Event: models.EventType(pullRequestTargetEvent),
-		// 				Branches: &models.Filter{
-		// 					AllowList: []string{"branch1", "branch2"},
-		// 					DenyList:  []string{"branch3", "branch4"},
-		// 				},
-		// 				Paths: &models.Filter{
-		// 					AllowList: []string{"path1", "path2"},
-		// 					DenyList:  []string{"path3", "path4"},
-		// 				},
-		// 				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-		// 			},
-		// 			{
-		// 				Event:         models.ManualEvent,
-		// 				Parameters:    mockExpectedParameters,
-		// 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
-		// 			},
-		// 			{
-		// 				Event:         models.PipelineTriggerEvent,
-		// 				Parameters:    mockExpectedParameters,
-		// 				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-		// 			},
-		// 			{
-		// 				Event:         models.PipelineRunEvent,
-		// 				Pipelines:     []string{"workflow1", "workflow2"},
-		// 				FileReference: testutils.CreateFileReference(9, 10, 11, 12),
-		// 				Branches: &models.Filter{
-		// 					AllowList: []string{"branch1", "branch2"},
-		// 					DenyList:  []string{"branch3", "branch4"},
-		// 				},
-		// 			},
-		// 			{
-		// 				Event:         models.ScheduledEvent,
-		// 				Schedules:     &[]string{"1 * * *"},
-		// 				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-		// 			},
-		// 			{
-		// 				Event: models.EventType("event1"),
-		// 				Filters: map[string]any{
-		// 					"types": []string{"type1", "type2"},
-		// 				},
-		// 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
-		// 			},
-		// 			{
-		// 				Event: models.EventType("event2"),
-		// 				Filters: map[string]any{
-		// 					"types": []string{"type3", "type4"},
-		// 				},
-		// 				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-		// 			},
-		// 		},
-		// 		FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-		// 	},
-		// },
+		{
+			name: "Workflow with workflow.on with full data",
+			workflow: &githubModels.Workflow{
+				On: &githubModels.On{
+					Push: &githubModels.Ref{
+						Branches:       []string{"branch1", "branch2"},
+						BranchesIgnore: []string{"branch3", "branch4"},
+						Paths:          []string{"path1", "path2"},
+						PathsIgnore:    []string{"path3", "path4"},
+						FileReference:  testutils.CreateFileReference(1, 2, 3, 4),
+					},
+					PullRequest: &githubModels.Ref{
+						Branches:       []string{"branch1", "branch2"},
+						BranchesIgnore: []string{"branch3", "branch4"},
+						Paths:          []string{"path1", "path2"},
+						PathsIgnore:    []string{"path3", "path4"},
+						FileReference:  testutils.CreateFileReference(11, 21, 31, 41),
+					},
+					PullRequestTarget: &githubModels.Ref{
+						Branches:       []string{"branch1", "branch2"},
+						BranchesIgnore: []string{"branch3", "branch4"},
+						Paths:          []string{"path1", "path2"},
+						PathsIgnore:    []string{"path3", "path4"},
+						FileReference:  testutils.CreateFileReference(5, 6, 7, 8),
+					},
+					WorkflowDispatch: &githubModels.WorkflowDispatch{
+						Inputs:        mockInputs,
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+					},
+					WorkflowCall: &githubModels.WorkflowCall{
+						Inputs:        mockInputs,
+						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					},
+					WorkflowRun: &githubModels.WorkflowRun{
+						Workflows:     []string{"workflow1", "workflow2"},
+						FileReference: testutils.CreateFileReference(9, 10, 11, 12),
+						Ref: githubModels.Ref{
+							Branches:       []string{"branch1", "branch2"},
+							BranchesIgnore: []string{"branch3", "branch4"},
+						},
+					},
+					Schedule: &githubModels.Schedule{
+						Crons: &[]githubModels.Cron{
+							{
+								Cron: "1 * * *",
+							},
+						},
+						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					},
+					Events: githubModels.Events{
+						"event1": githubModels.Event{
+							Types:         []string{"type1", "type2"},
+							FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+						},
+						"event2": githubModels.Event{
+							Types:         []string{"type3", "type4"},
+							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+						},
+					},
+					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+				},
+			},
+			expectedTriggers: &models.Triggers{
+				Triggers: []*models.Trigger{
+					{
+						Event: models.PushEvent,
+						Branches: &models.Filter{
+							AllowList: []string{"branch1", "branch2"},
+							DenyList:  []string{"branch3", "branch4"},
+						},
+						Paths: &models.Filter{
+							AllowList: []string{"path1", "path2"},
+							DenyList:  []string{"path3", "path4"},
+						},
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+					},
+					{
+						Event: models.PullRequestEvent,
+						Branches: &models.Filter{
+							AllowList: []string{"branch1", "branch2"},
+							DenyList:  []string{"branch3", "branch4"},
+						},
+						Paths: &models.Filter{
+							AllowList: []string{"path1", "path2"},
+							DenyList:  []string{"path3", "path4"},
+						},
+						FileReference: testutils.CreateFileReference(11, 21, 31, 41),
+					},
+					{
+						Event: models.EventType(pullRequestTargetEvent),
+						Branches: &models.Filter{
+							AllowList: []string{"branch1", "branch2"},
+							DenyList:  []string{"branch3", "branch4"},
+						},
+						Paths: &models.Filter{
+							AllowList: []string{"path1", "path2"},
+							DenyList:  []string{"path3", "path4"},
+						},
+						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					},
+					{
+						Event:         models.ManualEvent,
+						Parameters:    mockExpectedParameters,
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+					},
+					{
+						Event:         models.PipelineTriggerEvent,
+						Parameters:    mockExpectedParameters,
+						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					},
+					{
+						Event:         models.PipelineRunEvent,
+						Pipelines:     []string{"workflow1", "workflow2"},
+						FileReference: testutils.CreateFileReference(9, 10, 11, 12),
+						Branches: &models.Filter{
+							AllowList: []string{"branch1", "branch2"},
+							DenyList:  []string{"branch3", "branch4"},
+						},
+					},
+					{
+						Event:         models.ScheduledEvent,
+						Schedules:     &[]string{"1 * * *"},
+						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					},
+					{
+						Event: models.EventType("event1"),
+						Filters: map[string]any{
+							"types": []string{"type1", "type2"},
+						},
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+					},
+					{
+						Event: models.EventType("event2"),
+						Filters: map[string]any{
+							"types": []string{"type3", "type4"},
+						},
+						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					},
+				},
+				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			triggers := parseWorkflowTriggers(testCase.workflow)
-			assert.Equal(t, testCase.expectedTriggers, triggers)
+			got := parseWorkflowTriggers(testCase.workflow)
+
+			changelog, err := diff.Diff(testCase.expectedTriggers, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }
@@ -290,7 +294,9 @@ func TestParseEvents(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseEvents(testCase.events)
 
-			assert.Equal(t, testCase.expectedTriggers, got, testCase.name)
+			changelog, err := diff.Diff(testCase.expectedTriggers, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }
@@ -335,7 +341,9 @@ func TestParseWorkflowRun(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowRun(testCase.workflowRun)
 
-			assert.Equal(t, testCase.expectedTrigger, got, testCase.name)
+			changelog, err := diff.Diff(testCase.expectedTrigger, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }
@@ -372,7 +380,9 @@ func TestParseWorkflowCall(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowCall(testCase.workflowCall)
 
-			assert.Equal(t, testCase.expectedTrigger, got, testCase.name)
+			changelog, err := diff.Diff(testCase.expectedTrigger, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }
@@ -408,7 +418,9 @@ func TestParseWorkflowDispatch(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowDispatch(testCase.workflowDispatch)
 
-			assert.Equal(t, testCase.expectedTrigger, got, testCase.name)
+			changelog, err := diff.Diff(testCase.expectedTrigger, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }
@@ -545,7 +557,9 @@ func TestParseRef(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseRef(testCase.ref, testCase.event)
 
-			assert.Equal(t, testCase.expectedTrigger, got, testCase.name)
+			changelog, err := diff.Diff(testCase.expectedTrigger, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }
@@ -599,7 +613,9 @@ func TestParseSchedule(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseSchedule(testCase.schedule)
 
-			assert.Equal(t, testCase.expectedTrigger, got, testCase.name)
+			changelog, err := diff.Diff(testCase.expectedTrigger, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }
@@ -639,7 +655,9 @@ func TestGenerateTriggersFromEvents(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := generateTriggersFromEvents(testCase.events)
 
-			assert.Equal(t, testCase.expectedTriggers, got, testCase.name)
+			changelog, err := diff.Diff(testCase.expectedTriggers, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }
@@ -670,7 +688,9 @@ func TestGenerateTriggerFromEvent(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := generateTriggerFromEvent(testCase.event)
 
-			assert.Equal(t, testCase.expectedTrigger, got, testCase.name)
+			changelog, err := diff.Diff(testCase.expectedTrigger, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0)
 		})
 	}
 }
