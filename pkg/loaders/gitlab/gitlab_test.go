@@ -1,8 +1,6 @@
 package gitlab
 
 import (
-	"io/ioutil"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -20,20 +18,11 @@ type TestCase struct {
 	ExpectedGitlabCIConfig *models.GitlabCIConfiguration
 }
 
-func readFile(filename string) []byte {
-	data, err := ioutil.ReadFile(filepath.Join("../../../test/fixtures/gitlab", filename))
-	if err != nil {
-		panic(err)
-	}
-
-	return data
-}
-
-func TestGitlabLoader(t *testing.T) {
+func TestLoad(t *testing.T) {
 	testCases := []TestCase{
 		{
 			Name:     "Build Job",
-			Filename: "build-job.yaml",
+			Filename: "../../../test/fixtures/gitlab/build-job.yaml",
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
 				Workflow: &models.Workflow{
 					Rules: &common.Rules{
@@ -102,7 +91,7 @@ func TestGitlabLoader(t *testing.T) {
 		},
 		{
 			Name:     "Gradle",
-			Filename: "gradle.yaml",
+			Filename: "../../../test/fixtures/gitlab/gradle.yaml",
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
 				Image: &common.Image{
 					Name:          "gradle:alpine",
@@ -153,7 +142,7 @@ func TestGitlabLoader(t *testing.T) {
 		},
 		{
 			Name:     "Terraform",
-			Filename: "terraform.yaml",
+			Filename: "../../../test/fixtures/gitlab/terraform.yaml",
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
 				Include: &models.Include{
 					{
@@ -200,7 +189,7 @@ func TestGitlabLoader(t *testing.T) {
 			},
 		},
 		{
-			Filename: "baserow.yaml",
+			Filename: "../../../test/fixtures/gitlab/baserow.yaml",
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
 				Include: &models.Include{
 					{
@@ -275,7 +264,7 @@ func TestGitlabLoader(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
 			gitlabLoader := &GitLabLoader{}
-			gitlabCIConfig, err := gitlabLoader.Load(readFile(tc.Filename))
+			gitlabCIConfig, err := gitlabLoader.Load(testutils.ReadFile(tc.Filename))
 
 			if err != tc.ExpectedError {
 				t.Errorf("Expected error: %v, got: %v", tc.ExpectedError, err)

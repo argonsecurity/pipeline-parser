@@ -117,20 +117,6 @@ func parseWorkflowCall(workflowCall *githubModels.WorkflowCall) *models.Trigger 
 	}
 }
 
-func parseInputs(inputs githubModels.Inputs) []models.Parameter {
-	parameters := []models.Parameter{}
-	if inputs != nil {
-		for k, v := range inputs {
-			parameters = append(parameters, models.Parameter{
-				Name:        &k,
-				Description: &v.Description,
-				Default:     v.Default,
-			})
-		}
-	}
-	return parameters
-}
-
 func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) *models.Trigger {
 	trigger := &models.Trigger{
 		Event:         models.ManualEvent,
@@ -141,6 +127,22 @@ func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) *mod
 		trigger.Parameters = parseInputs(workflowDispatch.Inputs)
 	}
 	return trigger
+}
+
+func parseInputs(inputs githubModels.Inputs) []models.Parameter {
+	parameters := []models.Parameter{}
+	if inputs != nil {
+		for k, v := range inputs {
+			name := k
+			desc := v.Description
+			parameters = append(parameters, models.Parameter{
+				Name:        &name,
+				Description: &desc,
+				Default:     v.Default,
+			})
+		}
+	}
+	return parameters
 }
 
 func parseRef(ref *githubModels.Ref, event models.EventType) *models.Trigger {
@@ -174,11 +176,16 @@ func parseRef(ref *githubModels.Ref, event models.EventType) *models.Trigger {
 }
 
 func parseSchedule(schedule *githubModels.Schedule) *models.Trigger {
-	return &models.Trigger{
-		Event: models.ScheduledEvent,
-		Schedules: utils.GetPtr(utils.Map(*schedule.Crons, func(cron githubModels.Cron) string {
+	schedules := []string{}
+	if schedule.Crons != nil {
+		schedules = utils.Map(*schedule.Crons, func(cron githubModels.Cron) string {
 			return cron.Cron
-		})),
+		})
+	}
+
+	return &models.Trigger{
+		Event:         models.ScheduledEvent,
+		Schedules:     &schedules,
 		FileReference: schedule.FileReference,
 	}
 

@@ -8,30 +8,11 @@ import (
 
 func enhanceStep(step *models.Step, config *config.EnhancementConfiguration) *models.Step {
 	if step.Type == models.ShellStepType {
-		if utils.AnyMatch(config.Build.ShellRegexes, step.Shell.Script) {
-			step.Metadata.Build = true
-		}
-		if utils.AnyMatch(config.Test.ShellRegexes, step.Shell.Script) {
-			step.Metadata.Test = true
-		}
-
-		if utils.AnyMatch(config.Deploy.ShellRegexes, step.Shell.Script) {
-			step.Metadata.Deploy = true
-		}
+		step = enhanceShellStep(step, config)
 	}
 
 	if step.Type == models.TaskStepType {
-		if utils.SliceContains(config.Build.Tasks, *step.Task.Name) {
-			step.Metadata.Build = true
-		}
-
-		if utils.AnyMatch(config.Test.Names, step.Name) {
-			step.Metadata.Test = true
-		}
-
-		if utils.AnyMatch(config.Deploy.Names, step.Name) {
-			step.Metadata.Deploy = true
-		}
+		step = enhanceTaskStep(step, config)
 	}
 
 	if utils.AnyMatch(config.Build.Names, step.Name) {
@@ -43,6 +24,37 @@ func enhanceStep(step *models.Step, config *config.EnhancementConfiguration) *mo
 	}
 
 	if utils.AnyMatch(config.Deploy.Names, step.Name) {
+		step.Metadata.Deploy = true
+	}
+
+	return step
+}
+
+func enhanceShellStep(step *models.Step, config *config.EnhancementConfiguration) *models.Step {
+	if utils.AnyMatch(config.Build.ShellRegexes, step.Shell.Script) {
+		step.Metadata.Build = true
+	}
+	if utils.AnyMatch(config.Test.ShellRegexes, step.Shell.Script) {
+		step.Metadata.Test = true
+	}
+
+	if utils.AnyMatch(config.Deploy.ShellRegexes, step.Shell.Script) {
+		step.Metadata.Deploy = true
+	}
+
+	return step
+}
+
+func enhanceTaskStep(step *models.Step, config *config.EnhancementConfiguration) *models.Step {
+	if utils.SliceContains(config.Build.Tasks, *step.Task.Name) {
+		step.Metadata.Build = true
+	}
+
+	if utils.SliceContains(config.Test.Tasks, *step.Task.Name) {
+		step.Metadata.Test = true
+	}
+
+	if utils.SliceContains(config.Deploy.Tasks, *step.Task.Name) {
 		step.Metadata.Deploy = true
 	}
 
