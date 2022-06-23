@@ -111,7 +111,7 @@ func TestEnhanceJob(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			enhancedJob := enhanceJob(testCase.job, testCase.config)
 
-			assert.Equal(t, testCase.expectedJob, enhancedJob)
+			assert.Equal(t, testCase.expectedJob, enhancedJob, testCase.name)
 		})
 
 	}

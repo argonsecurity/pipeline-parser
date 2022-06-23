@@ -232,7 +232,7 @@ func TestEnhanceTaskStep(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			enhancedStep := enhanceTaskStep(testCase.step, testCase.config)
 
-			assert.Equal(t, testCase.expectedStep, enhancedStep)
+			assert.Equal(t, testCase.expectedStep, enhancedStep, testCase.name)
 		})
 
 	}

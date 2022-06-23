@@ -182,7 +182,7 @@ func TestEnhance(t *testing.T) {
 			enhancedPipeline, err := Enhance(testCase.pipeline, testCase.platform)
 
 			assert.NoError(t, err)
-			assert.Equal(t, testCase.expectedPipeline, enhancedPipeline)
+			assert.Equal(t, testCase.expectedPipeline, enhancedPipeline, testCase.name)
 		})
 
 	}

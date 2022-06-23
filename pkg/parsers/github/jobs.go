@@ -11,6 +11,9 @@ var (
 )
 
 func parseWorkflowJobs(workflow *githubModels.Workflow) ([]*models.Job, error) {
+	if workflow == nil || workflow.Jobs == nil {
+		return nil, nil
+	}
 	jobs, err := utils.MapToSliceErr(workflow.Jobs.CIJobs, parseJob)
 	if err != nil {
 		return nil, err
@@ -31,7 +34,7 @@ func parseJob(jobName string, job *githubModels.Job) (*models.Job, error) {
 		parsedJob.Name = job.ID
 	}
 
-	if job.TimeoutMinutes != nil && *job.TimeoutMinutes == 0 {
+	if job.TimeoutMinutes != nil && *job.TimeoutMinutes != 0 {
 		timeout := int(*job.TimeoutMinutes) * 60 * 1000
 		parsedJob.TimeoutMS = &timeout
 	} else {
