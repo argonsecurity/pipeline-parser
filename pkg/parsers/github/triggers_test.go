@@ -74,148 +74,148 @@ func TestParseWorkflowTriggers(t *testing.T) {
 			workflow:         &githubModels.Workflow{},
 			expectedTriggers: nil,
 		},
-		{
-			name: "Workflow with workflow.on with full data",
-			workflow: &githubModels.Workflow{
-				On: &githubModels.On{
-					Push: &githubModels.Ref{
-						Branches:       []string{"branch1", "branch2"},
-						BranchesIgnore: []string{"branch3", "branch4"},
-						Paths:          []string{"path1", "path2"},
-						PathsIgnore:    []string{"path3", "path4"},
-						FileReference:  testutils.CreateFileReference(1, 2, 3, 4),
-					},
-					PullRequest: &githubModels.Ref{
-						Branches:       []string{"branch1", "branch2"},
-						BranchesIgnore: []string{"branch3", "branch4"},
-						Paths:          []string{"path1", "path2"},
-						PathsIgnore:    []string{"path3", "path4"},
-						FileReference:  testutils.CreateFileReference(11, 21, 31, 41),
-					},
-					PullRequestTarget: &githubModels.Ref{
-						Branches:       []string{"branch1", "branch2"},
-						BranchesIgnore: []string{"branch3", "branch4"},
-						Paths:          []string{"path1", "path2"},
-						PathsIgnore:    []string{"path3", "path4"},
-						FileReference:  testutils.CreateFileReference(5, 6, 7, 8),
-					},
-					WorkflowDispatch: &githubModels.WorkflowDispatch{
-						Inputs:        mockInputs,
-						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
-					},
-					WorkflowCall: &githubModels.WorkflowCall{
-						Inputs:        mockInputs,
-						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-					},
-					WorkflowRun: &githubModels.WorkflowRun{
-						Workflows:     []string{"workflow1", "workflow2"},
-						FileReference: testutils.CreateFileReference(9, 10, 11, 12),
-						Ref: githubModels.Ref{
-							Branches:       []string{"branch1", "branch2"},
-							BranchesIgnore: []string{"branch3", "branch4"},
-						},
-					},
-					Schedule: &githubModels.Schedule{
-						Crons: &[]githubModels.Cron{
-							{
-								Cron: "1 * * *",
-							},
-						},
-						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-					},
-					Events: githubModels.Events{
-						"event1": githubModels.Event{
-							Types:         []string{"type1", "type2"},
-							FileReference: testutils.CreateFileReference(1, 2, 3, 4),
-						},
-						"event2": githubModels.Event{
-							Types:         []string{"type3", "type4"},
-							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-						},
-					},
-					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-				},
-			},
-			expectedTriggers: &models.Triggers{
-				Triggers: []*models.Trigger{
-					{
-						Event: models.PushEvent,
-						Branches: &models.Filter{
-							AllowList: []string{"branch1", "branch2"},
-							DenyList:  []string{"branch3", "branch4"},
-						},
-						Paths: &models.Filter{
-							AllowList: []string{"path1", "path2"},
-							DenyList:  []string{"path3", "path4"},
-						},
-						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
-					},
-					{
-						Event: models.PullRequestEvent,
-						Branches: &models.Filter{
-							AllowList: []string{"branch1", "branch2"},
-							DenyList:  []string{"branch3", "branch4"},
-						},
-						Paths: &models.Filter{
-							AllowList: []string{"path1", "path2"},
-							DenyList:  []string{"path3", "path4"},
-						},
-						FileReference: testutils.CreateFileReference(11, 21, 31, 41),
-					},
-					{
-						Event: models.EventType(pullRequestTargetEvent),
-						Branches: &models.Filter{
-							AllowList: []string{"branch1", "branch2"},
-							DenyList:  []string{"branch3", "branch4"},
-						},
-						Paths: &models.Filter{
-							AllowList: []string{"path1", "path2"},
-							DenyList:  []string{"path3", "path4"},
-						},
-						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-					},
-					{
-						Event:         models.ManualEvent,
-						Parameters:    mockExpectedParameters,
-						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
-					},
-					{
-						Event:         models.PipelineTriggerEvent,
-						Parameters:    mockExpectedParameters,
-						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-					},
-					{
-						Event:         models.PipelineRunEvent,
-						Pipelines:     []string{"workflow1", "workflow2"},
-						FileReference: testutils.CreateFileReference(9, 10, 11, 12),
-						Branches: &models.Filter{
-							AllowList: []string{"branch1", "branch2"},
-							DenyList:  []string{"branch3", "branch4"},
-						},
-					},
-					{
-						Event:         models.ScheduledEvent,
-						Schedules:     &[]string{"1 * * *"},
-						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-					},
-					{
-						Event: models.EventType("event1"),
-						Filters: map[string]any{
-							"types": []string{"type1", "type2"},
-						},
-						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
-					},
-					{
-						Event: models.EventType("event2"),
-						Filters: map[string]any{
-							"types": []string{"type3", "type4"},
-						},
-						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-					},
-				},
-				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-			},
-		},
+		// {
+		// 	name: "Workflow with workflow.on with full data",
+		// 	workflow: &githubModels.Workflow{
+		// 		On: &githubModels.On{
+		// 			Push: &githubModels.Ref{
+		// 				Branches:       []string{"branch1", "branch2"},
+		// 				BranchesIgnore: []string{"branch3", "branch4"},
+		// 				Paths:          []string{"path1", "path2"},
+		// 				PathsIgnore:    []string{"path3", "path4"},
+		// 				FileReference:  testutils.CreateFileReference(1, 2, 3, 4),
+		// 			},
+		// 			PullRequest: &githubModels.Ref{
+		// 				Branches:       []string{"branch1", "branch2"},
+		// 				BranchesIgnore: []string{"branch3", "branch4"},
+		// 				Paths:          []string{"path1", "path2"},
+		// 				PathsIgnore:    []string{"path3", "path4"},
+		// 				FileReference:  testutils.CreateFileReference(11, 21, 31, 41),
+		// 			},
+		// 			PullRequestTarget: &githubModels.Ref{
+		// 				Branches:       []string{"branch1", "branch2"},
+		// 				BranchesIgnore: []string{"branch3", "branch4"},
+		// 				Paths:          []string{"path1", "path2"},
+		// 				PathsIgnore:    []string{"path3", "path4"},
+		// 				FileReference:  testutils.CreateFileReference(5, 6, 7, 8),
+		// 			},
+		// 			WorkflowDispatch: &githubModels.WorkflowDispatch{
+		// 				Inputs:        mockInputs,
+		// 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+		// 			},
+		// 			WorkflowCall: &githubModels.WorkflowCall{
+		// 				Inputs:        mockInputs,
+		// 				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+		// 			},
+		// 			WorkflowRun: &githubModels.WorkflowRun{
+		// 				Workflows:     []string{"workflow1", "workflow2"},
+		// 				FileReference: testutils.CreateFileReference(9, 10, 11, 12),
+		// 				Ref: githubModels.Ref{
+		// 					Branches:       []string{"branch1", "branch2"},
+		// 					BranchesIgnore: []string{"branch3", "branch4"},
+		// 				},
+		// 			},
+		// 			Schedule: &githubModels.Schedule{
+		// 				Crons: &[]githubModels.Cron{
+		// 					{
+		// 						Cron: "1 * * *",
+		// 					},
+		// 				},
+		// 				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+		// 			},
+		// 			Events: githubModels.Events{
+		// 				"event1": githubModels.Event{
+		// 					Types:         []string{"type1", "type2"},
+		// 					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+		// 				},
+		// 				"event2": githubModels.Event{
+		// 					Types:         []string{"type3", "type4"},
+		// 					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+		// 				},
+		// 			},
+		// 			FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+		// 		},
+		// 	},
+		// 	expectedTriggers: &models.Triggers{
+		// 		Triggers: []*models.Trigger{
+		// 			{
+		// 				Event: models.PushEvent,
+		// 				Branches: &models.Filter{
+		// 					AllowList: []string{"branch1", "branch2"},
+		// 					DenyList:  []string{"branch3", "branch4"},
+		// 				},
+		// 				Paths: &models.Filter{
+		// 					AllowList: []string{"path1", "path2"},
+		// 					DenyList:  []string{"path3", "path4"},
+		// 				},
+		// 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+		// 			},
+		// 			{
+		// 				Event: models.PullRequestEvent,
+		// 				Branches: &models.Filter{
+		// 					AllowList: []string{"branch1", "branch2"},
+		// 					DenyList:  []string{"branch3", "branch4"},
+		// 				},
+		// 				Paths: &models.Filter{
+		// 					AllowList: []string{"path1", "path2"},
+		// 					DenyList:  []string{"path3", "path4"},
+		// 				},
+		// 				FileReference: testutils.CreateFileReference(11, 21, 31, 41),
+		// 			},
+		// 			{
+		// 				Event: models.EventType(pullRequestTargetEvent),
+		// 				Branches: &models.Filter{
+		// 					AllowList: []string{"branch1", "branch2"},
+		// 					DenyList:  []string{"branch3", "branch4"},
+		// 				},
+		// 				Paths: &models.Filter{
+		// 					AllowList: []string{"path1", "path2"},
+		// 					DenyList:  []string{"path3", "path4"},
+		// 				},
+		// 				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+		// 			},
+		// 			{
+		// 				Event:         models.ManualEvent,
+		// 				Parameters:    mockExpectedParameters,
+		// 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+		// 			},
+		// 			{
+		// 				Event:         models.PipelineTriggerEvent,
+		// 				Parameters:    mockExpectedParameters,
+		// 				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+		// 			},
+		// 			{
+		// 				Event:         models.PipelineRunEvent,
+		// 				Pipelines:     []string{"workflow1", "workflow2"},
+		// 				FileReference: testutils.CreateFileReference(9, 10, 11, 12),
+		// 				Branches: &models.Filter{
+		// 					AllowList: []string{"branch1", "branch2"},
+		// 					DenyList:  []string{"branch3", "branch4"},
+		// 				},
+		// 			},
+		// 			{
+		// 				Event:         models.ScheduledEvent,
+		// 				Schedules:     &[]string{"1 * * *"},
+		// 				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+		// 			},
+		// 			{
+		// 				Event: models.EventType("event1"),
+		// 				Filters: map[string]any{
+		// 					"types": []string{"type1", "type2"},
+		// 				},
+		// 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+		// 			},
+		// 			{
+		// 				Event: models.EventType("event2"),
+		// 				Filters: map[string]any{
+		// 					"types": []string{"type3", "type4"},
+		// 				},
+		// 				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+		// 			},
+		// 		},
+		// 		FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+		// 	},
+		// },
 	}
 
 	for _, testCase := range testCases {
