@@ -3,6 +3,7 @@
 [![Test Pipeline Parser](https://github.com/argonsecurity/pipeline-parser/actions/workflows/test.yml/badge.svg)](https://github.com/argonsecurity/pipeline-parser/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://github.com/argonsecurity/pipeline-parser/blob/main/LICENSE)
 [![go-report-card][go-report-card]](https://goreportcard.com/report/github.com/argonsecurity/pipeline-parser)
+![coverage report](https://img.shields.io/codecov/c/github/argonsecurity/pipeline-parser?style=flat-square)
 
 [go-report-card]: https://goreportcard.com/badge/github.com/argonsecurity/pipeline-parser?style=flat-square
 

@@ -7,8 +7,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
       - name: Install Go
         uses: actions/setup-go@v2
@@ -17,3 +15,6 @@ jobs:
 
       - name: Execute Tests
         run: make test-coverage
+
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v2
