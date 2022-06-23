@@ -16,4 +16,4 @@ jobs:
           go-version: 1.18
 
       - name: Execute Tests
-        run: go test -v ./...
+        run: make test-coverage
