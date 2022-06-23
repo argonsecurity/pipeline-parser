@@ -44,16 +44,66 @@ func TestEnhanceStep(t *testing.T) {
 			},
 		},
 		{
-			name: "Step name doesn't contain build",
+			name: "Step name contains test (lowercase)",
+			step: &models.Step{
+				Name: utils.GetPtr("test app"),
+			},
+			config: config.CommonConfiguration,
+			expectedStep: &models.Step{
+				Name: utils.GetPtr("test app"),
+				Metadata: models.Metadata{
+					Test: true,
+				},
+			},
+		},
+		{
+			name: "Step name contains Test (Uppercase)",
+			step: &models.Step{
+				Name: utils.GetPtr("Test app"),
+			},
+			config: config.CommonConfiguration,
+			expectedStep: &models.Step{
+				Name: utils.GetPtr("Test app"),
+				Metadata: models.Metadata{
+					Test: true,
+				},
+			},
+		},
+		{
+			name: "Step name contains tests (lowercase)",
+			step: &models.Step{
+				Name: utils.GetPtr("tests app"),
+			},
+			config: config.CommonConfiguration,
+			expectedStep: &models.Step{
+				Name: utils.GetPtr("tests app"),
+				Metadata: models.Metadata{
+					Test: true,
+				},
+			},
+		},
+		{
+			name: "Step name contains Tests (Uppercase)",
+			step: &models.Step{
+				Name: utils.GetPtr("Tests app"),
+			},
+			config: config.CommonConfiguration,
+			expectedStep: &models.Step{
+				Name: utils.GetPtr("Tests app"),
+				Metadata: models.Metadata{
+					Test: true,
+				},
+			},
+		},
+		{
+			name: "Step name doesn't contain build test or deploy",
 			step: &models.Step{
 				Name: utils.GetPtr("some step"),
 			},
 			config: config.CommonConfiguration,
 			expectedStep: &models.Step{
-				Name: utils.GetPtr("some step"),
-				Metadata: models.Metadata{
-					Build: false,
-				},
+				Name:     utils.GetPtr("some step"),
+				Metadata: models.Metadata{},
 			},
 		},
 	}
@@ -190,7 +240,83 @@ func TestEnhanceShellStep(t *testing.T) {
 			},
 		},
 		{
-			name: "Shell no build",
+			name: "Shell go test",
+			step: &models.Step{
+				Type: models.ShellStepType,
+				Shell: &models.Shell{
+					Script: utils.GetPtr("go test"),
+				},
+			},
+			config: config.CommonConfiguration,
+			expectedStep: &models.Step{
+				Type: models.ShellStepType,
+				Shell: &models.Shell{
+					Script: utils.GetPtr("go test"),
+				},
+				Metadata: models.Metadata{
+					Test: true,
+				},
+			},
+		},
+		{
+			name: "Shell npm run test",
+			step: &models.Step{
+				Type: models.ShellStepType,
+				Shell: &models.Shell{
+					Script: utils.GetPtr("npm run test"),
+				},
+			},
+			config: config.CommonConfiguration,
+			expectedStep: &models.Step{
+				Type: models.ShellStepType,
+				Shell: &models.Shell{
+					Script: utils.GetPtr("npm run test"),
+				},
+				Metadata: models.Metadata{
+					Test: true,
+				},
+			},
+		},
+		{
+			name: "Shell yarn run test",
+			step: &models.Step{
+				Type: models.ShellStepType,
+				Shell: &models.Shell{
+					Script: utils.GetPtr("yarn run test"),
+				},
+			},
+			config: config.CommonConfiguration,
+			expectedStep: &models.Step{
+				Type: models.ShellStepType,
+				Shell: &models.Shell{
+					Script: utils.GetPtr("yarn run test"),
+				},
+				Metadata: models.Metadata{
+					Test: true,
+				},
+			},
+		},
+		{
+			name: "Shell yarn test",
+			step: &models.Step{
+				Type: models.ShellStepType,
+				Shell: &models.Shell{
+					Script: utils.GetPtr("yarn test"),
+				},
+			},
+			config: config.CommonConfiguration,
+			expectedStep: &models.Step{
+				Type: models.ShellStepType,
+				Shell: &models.Shell{
+					Script: utils.GetPtr("yarn test"),
+				},
+				Metadata: models.Metadata{
+					Test: true,
+				},
+			},
+		},
+		{
+			name: "Shell no metadata",
 			step: &models.Step{
 				Type: models.ShellStepType,
 				Shell: &models.Shell{
@@ -203,9 +329,7 @@ func TestEnhanceShellStep(t *testing.T) {
 				Shell: &models.Shell{
 					Script: utils.GetPtr("echo hello"),
 				},
-				Metadata: models.Metadata{
-					Build: false,
-				},
+				Metadata: models.Metadata{},
 			},
 		},
 	}

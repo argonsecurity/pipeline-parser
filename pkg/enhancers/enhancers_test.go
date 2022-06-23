@@ -59,27 +59,6 @@ func TestEnhance(t *testing.T) {
 			},
 		},
 		{
-			name: "Pipeline contains job with name doesn't contain build",
-			pipeline: &models.Pipeline{
-				Jobs: []*models.Job{
-					{
-						Name: utils.GetPtr("some job"),
-					},
-				},
-			},
-			platform: consts.GitHubPlatform,
-			expectedPipeline: &models.Pipeline{
-				Jobs: []*models.Job{
-					{
-						Name: utils.GetPtr("some job"),
-						Metadata: models.Metadata{
-							Build: false,
-						},
-					},
-				},
-			},
-		},
-		{
 			name: "Pipeline contains job with step with name contains build (lowercase)",
 			pipeline: &models.Pipeline{
 				Jobs: []*models.Job{
@@ -144,7 +123,238 @@ func TestEnhance(t *testing.T) {
 			},
 		},
 		{
-			name: "Pipeline contains job with step with name doesn't contain build",
+			name: "Pipeline contains job with name contains test (lowercase)",
+			pipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Name: utils.GetPtr("test app"),
+					},
+				},
+			},
+			platform: consts.GitHubPlatform,
+			expectedPipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Name: utils.GetPtr("test app"),
+						Metadata: models.Metadata{
+							Test: true,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline contains job with name contains tests (lowercase)",
+			pipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Name: utils.GetPtr("tests app"),
+					},
+				},
+			},
+			platform: consts.GitHubPlatform,
+			expectedPipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Name: utils.GetPtr("tests app"),
+						Metadata: models.Metadata{
+							Test: true,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline contains job with name contains Test (uppercase)",
+			pipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Name: utils.GetPtr("Test app"),
+					},
+				},
+			},
+			platform: consts.GitHubPlatform,
+			expectedPipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Name: utils.GetPtr("Test app"),
+						Metadata: models.Metadata{
+							Test: true,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline contains job with name contains Test (uppercase)",
+			pipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Name: utils.GetPtr("Tests app"),
+					},
+				},
+			},
+			platform: consts.GitHubPlatform,
+			expectedPipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Name: utils.GetPtr("Tests app"),
+						Metadata: models.Metadata{
+							Test: true,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline contains job with step with name contains test (lowercase)",
+			pipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Steps: []*models.Step{
+							{
+								Name: utils.GetPtr("test app"),
+							},
+						},
+					},
+				},
+			},
+			platform: consts.GitHubPlatform,
+			expectedPipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Steps: []*models.Step{
+							{
+								Name: utils.GetPtr("test app"),
+								Metadata: models.Metadata{
+									Test: true,
+								},
+							},
+						},
+						Metadata: models.Metadata{
+							Test: true,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline contains job with step with name contains tests (lowercase)",
+			pipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Steps: []*models.Step{
+							{
+								Name: utils.GetPtr("tests app"),
+							},
+						},
+					},
+				},
+			},
+			platform: consts.GitHubPlatform,
+			expectedPipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Steps: []*models.Step{
+							{
+								Name: utils.GetPtr("tests app"),
+								Metadata: models.Metadata{
+									Test: true,
+								},
+							},
+						},
+						Metadata: models.Metadata{
+							Test: true,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline contains job with step with name contains Test (uppercase)",
+			pipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Steps: []*models.Step{
+							{
+								Name: utils.GetPtr("Test app"),
+							},
+						},
+					},
+				},
+			},
+			platform: consts.GitHubPlatform,
+			expectedPipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Steps: []*models.Step{
+							{
+								Name: utils.GetPtr("Test app"),
+								Metadata: models.Metadata{
+									Test: true,
+								},
+							},
+						},
+						Metadata: models.Metadata{
+							Test: true,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline contains job with step with name contains Tests (uppercase)",
+			pipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Steps: []*models.Step{
+							{
+								Name: utils.GetPtr("Tests app"),
+							},
+						},
+					},
+				},
+			},
+			platform: consts.GitHubPlatform,
+			expectedPipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Steps: []*models.Step{
+							{
+								Name: utils.GetPtr("Tests app"),
+								Metadata: models.Metadata{
+									Test: true,
+								},
+							},
+						},
+						Metadata: models.Metadata{
+							Test: true,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline contains job with name doesn't contain build test or deploy",
+			pipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Name: utils.GetPtr("some job"),
+					},
+				},
+			},
+			platform: consts.GitHubPlatform,
+			expectedPipeline: &models.Pipeline{
+				Jobs: []*models.Job{
+					{
+						Name:     utils.GetPtr("some job"),
+						Metadata: models.Metadata{},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline contains job with step with name doesn't contain build test or deploy",
 			pipeline: &models.Pipeline{
 				Jobs: []*models.Job{
 					{
@@ -168,9 +378,7 @@ func TestEnhance(t *testing.T) {
 								},
 							},
 						},
-						Metadata: models.Metadata{
-							Build: false,
-						},
+						Metadata: models.Metadata{},
 					},
 				},
 			},

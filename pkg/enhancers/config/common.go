@@ -24,7 +24,7 @@ var (
 	}
 
 	commonTestNameRegexes = []*regexp.Regexp{
-		regexp.MustCompile(`tests?`),
+		regexp.MustCompile(`[Tt]ests?`),
 	}
 
 	CommonConfiguration = &EnhancementConfiguration{
