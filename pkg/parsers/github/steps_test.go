@@ -404,3 +404,43 @@ func TestParseActionInput(t *testing.T) {
 		})
 	}
 }
+
+func TestCalcParameterFileReference(t *testing.T) {
+	testCases := []struct {
+		name                  string
+		index                 int
+		key                   string
+		val                   any
+		fileReference         *models.FileReference
+		expectedFileReference *models.FileReference
+	}{
+		{
+			name:                  "File reference is nil",
+			fileReference:         nil,
+			expectedFileReference: nil,
+		},
+		{
+			name:                  "Index is 0",
+			index:                 0,
+			key:                   "key",
+			val:                   "value",
+			fileReference:         testutils.CreateFileReference(1, 2, 3, 4),
+			expectedFileReference: testutils.CreateFileReference(2, 4, 2, 14),
+		},
+		{
+			name:                  "Index is 3",
+			index:                 3,
+			key:                   "key",
+			val:                   "value",
+			fileReference:         testutils.CreateFileReference(1, 2, 3, 4),
+			expectedFileReference: testutils.CreateFileReference(5, 4, 5, 14),
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := calcParameterFileReference(testCase.index, testCase.key, testCase.val, testCase.fileReference)
+			assert.Equal(t, testCase.expectedFileReference, got, testCase.name)
+		})
+	}
+}
