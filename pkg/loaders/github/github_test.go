@@ -250,9 +250,13 @@ func TestLoad(t *testing.T) {
 									FileReference: testutils.CreateFileReference(7, 9, 8, 34),
 								},
 								{
-									Name:          "task with params",
-									Uses:          "actions/checkout@v1",
-									With:          map[string]any{"repo": "repository"},
+									Name: "task with params",
+									Uses: "actions/checkout@v1",
+									With: &models.With{
+										Inputs:        map[string]any{"repo": "repository"},
+										FileReference: testutils.CreateFileReference(12, 9, 13, 27),
+									},
+
 									FileReference: testutils.CreateFileReference(10, 9, 13, 27),
 								},
 								{

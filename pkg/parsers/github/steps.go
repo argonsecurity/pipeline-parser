@@ -1,6 +1,7 @@
 package github
 
 import (
+	"fmt"
 	"regexp"
 
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
@@ -101,18 +102,41 @@ func parseActionHeader(header string) (string, string, models.VersionType) {
 	return actionName, version, versionType
 }
 
-func parseActionInput(with map[string]any) *[]models.Parameter {
+func parseActionInput(with *githubModels.With) *[]models.Parameter {
 	if with == nil {
 		return nil
 	}
 
-	parsedInputs := utils.MapToSlice(with, parseActionInputItem)
-	return &parsedInputs
+	parameters := make([]models.Parameter, 0)
+	index := 0
+
+	for key, value := range with.Inputs {
+		name := key
+		parameter := models.Parameter{
+			Name:          &name,
+			Value:         value,
+			FileReference: calcParameterFileReference(index, key, value, with.FileReference),
+		}
+		parameters = append(parameters, parameter)
+		index += 1
+	}
+
+	return &parameters
 }
 
-func parseActionInputItem(k string, val any) models.Parameter {
-	return models.Parameter{
-		Name:  &k,
-		Value: val,
+func calcParameterFileReference(index int, key string, val any, fileReference *models.FileReference) *models.FileReference {
+	if fileReference == nil {
+		return nil
+	}
+
+	return &models.FileReference{
+		StartRef: &models.FileLocation{
+			Line:   fileReference.StartRef.Line + index + 1,
+			Column: fileReference.StartRef.Column + 2, // for the tab after the inputs
+		},
+		EndRef: &models.FileLocation{
+			Line:   fileReference.StartRef.Line + index + 1,
+			Column: fileReference.StartRef.Column + 2 + len(key) + 2 + len(fmt.Sprint(val)), // for the key: val. len(key) for the key, 2 fot the ": " + len(fmt.Sprint(val)) for the value
+		},
 	}
 }
