@@ -60,8 +60,9 @@ func TestGitHub(t *testing.T) {
 									VersionType: "tag",
 									Inputs: &[]models.Parameter{
 										{
-											Name:  utils.GetPtr("repo"),
-											Value: "repository",
+											Name:          utils.GetPtr("repo"),
+											Value:         "repository",
+											FileReference: testutils.CreateFileReference(13, 11, 13, 27),
 										},
 									},
 								},
