@@ -55,6 +55,13 @@ func (s *ShellCommand) UnmarshalYAML(node *yaml.Node) error {
 
 func (s *With) UnmarshalYAML(node *yaml.Node) error {
 	s.FileReference = loadersUtils.GetFileReference(node)
+
+	// The with block looks like this
+	// with:
+	//   key1: value1
+	//   key2: value2
+	// The node refers to the first input
+	// We want to include the "with" in the File Reference so we have to subtract 1 from the line number and 2 from the column number
 	s.FileReference.StartRef.Line--
 	s.FileReference.StartRef.Column -= 2
 	if err := node.Decode(&s.Inputs); err != nil {

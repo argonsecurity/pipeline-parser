@@ -12,6 +12,13 @@ jobs:
         with:
           repo: repository
 
+      - name: task with multiline params
+        uses: actions/checkout@v1
+        with:
+          repos: |
+            repository1
+            repository2
+
       - name: task with commit ID version
         uses: actions/checkout@c44948622e1b6bb0eb0cec5b813c1ac561158e1e
 

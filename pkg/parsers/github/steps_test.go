@@ -435,6 +435,14 @@ func TestCalcParameterFileReference(t *testing.T) {
 			fileReference:         testutils.CreateFileReference(1, 2, 3, 4),
 			expectedFileReference: testutils.CreateFileReference(5, 4, 5, 14),
 		},
+		{
+			name:                  "Value with \\n",
+			index:                 3,
+			key:                   "key",
+			val:                   "value\nvalue\n",
+			fileReference:         testutils.CreateFileReference(1, 2, 3, 4),
+			expectedFileReference: testutils.CreateFileReference(5, 4, 7, 21),
+		},
 	}
 
 	for _, testCase := range testCases {

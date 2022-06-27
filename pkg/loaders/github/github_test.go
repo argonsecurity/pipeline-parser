@@ -260,47 +260,57 @@ func TestLoad(t *testing.T) {
 									FileReference: testutils.CreateFileReference(10, 9, 13, 27),
 								},
 								{
+									Name: "task with multiline params",
+									Uses: "actions/checkout@v1",
+									With: &models.With{
+										Inputs:        map[string]any{"repos": "repository1\nrepository2\n"},
+										FileReference: testutils.CreateFileReference(17, 9, 20, 18),
+									},
+
+									FileReference: testutils.CreateFileReference(15, 9, 20, 18),
+								},
+								{
 									Name:          "task with commit ID version",
 									Uses:          "actions/checkout@c44948622e1b6bb0eb0cec5b813c1ac561158e1e",
-									FileReference: testutils.CreateFileReference(15, 9, 16, 72),
+									FileReference: testutils.CreateFileReference(22, 9, 23, 72),
 								},
 								{
 									Name:          "task with branch version",
 									Uses:          "actions/checkout@master",
-									FileReference: testutils.CreateFileReference(18, 9, 19, 38),
+									FileReference: testutils.CreateFileReference(25, 9, 26, 38),
 								},
 								{
 									Name:          "task with tag version",
 									Uses:          "actions/checkout@v1.1.1",
-									FileReference: testutils.CreateFileReference(21, 9, 22, 38),
+									FileReference: testutils.CreateFileReference(28, 9, 29, 38),
 								},
 								{
 									Name: "shell",
 									Run: &models.ShellCommand{
 										Script:        "command line",
-										FileReference: testutils.CreateFileReference(25, 14, 25, 26),
+										FileReference: testutils.CreateFileReference(32, 14, 32, 26),
 									},
-									FileReference: testutils.CreateFileReference(24, 9, 25, 26),
+									FileReference: testutils.CreateFileReference(31, 9, 32, 26),
 								},
 								{
 									Name:  "custom shell",
 									Shell: "cmd",
 									Run: &models.ShellCommand{
 										Script:        "command line",
-										FileReference: testutils.CreateFileReference(29, 14, 29, 26),
+										FileReference: testutils.CreateFileReference(36, 14, 36, 26),
 									},
-									FileReference: testutils.CreateFileReference(27, 9, 29, 26),
+									FileReference: testutils.CreateFileReference(34, 9, 36, 26),
 								},
 								{
 									Name: "shell with break rows",
 									Run: &models.ShellCommand{
 										Script:        "echo 1\necho 2\necho 3\n",
-										FileReference: testutils.CreateFileReference(32, 14, 35, 14),
+										FileReference: testutils.CreateFileReference(39, 14, 42, 14),
 									},
-									FileReference: testutils.CreateFileReference(31, 9, 35, 14),
+									FileReference: testutils.CreateFileReference(38, 9, 42, 14),
 								},
 							},
-							FileReference: testutils.CreateFileReference(4, 3, 35, 14),
+							FileReference: testutils.CreateFileReference(4, 3, 42, 14),
 						},
 					},
 				},
