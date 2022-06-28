@@ -109,35 +109,45 @@ func parseActionInput(with *githubModels.With) *[]models.Parameter {
 	}
 
 	parameters := make([]models.Parameter, 0)
-	index := 0
+	currentLine := -1
+	startColumn := -1
+
+	if with.FileReference != nil {
+		currentLine = with.FileReference.StartRef.Line + 1
+		startColumn = with.FileReference.StartRef.Column + 2
+	}
 
 	for key, value := range with.Inputs {
 		name := key
 		parameter := models.Parameter{
 			Name:          &name,
 			Value:         value,
-			FileReference: calcParameterFileReference(index, key, value, with.FileReference),
+			FileReference: calcParameterFileReference(currentLine, startColumn, key, value),
 		}
+		currentLine = parameter.FileReference.EndRef.Line + 1
 		parameters = append(parameters, parameter)
-		index += 1
 	}
 
 	return &parameters
 }
 
-func calcParameterFileReference(index int, key string, val any, fileReference *models.FileReference) *models.FileReference {
-	if fileReference == nil {
+func calcParameterFileReference(startLine int, startColumn int, key string, val any) *models.FileReference {
+	if startLine == -1 || startColumn == -1 {
 		return nil
 	}
 
+	splitValue := strings.Split(fmt.Sprint(val), "\n")
+	valuesLengths := utils.Map(splitValue, func(value string) int { return len(value) })
+	longestValue := utils.GetSliceMaxValue(valuesLengths, func(a, b int) bool { return a < b })
+
 	return &models.FileReference{
 		StartRef: &models.FileLocation{
-			Line:   fileReference.StartRef.Line + index + 1,
-			Column: fileReference.StartRef.Column + 2, // for the tab after the inputs
+			Line:   startLine,
+			Column: startColumn, // for the tab after the inputs
 		},
 		EndRef: &models.FileLocation{
-			Line:   fileReference.StartRef.Line + index + 1 + strings.Count(fmt.Sprint(val), "\n"),
-			Column: fileReference.StartRef.Column + 2 + len(key) + 2 + len(fmt.Sprint(val)), // for the key: val. len(key) for the key, 2 fot the ": " + len(fmt.Sprint(val)) for the value
+			Line:   startLine + strings.Count(fmt.Sprint(val), "\n"),
+			Column: startColumn + len(key) + 2 + longestValue, // for the key: val. len(key) for the key, 2 fot the ": " + longestValue for the value
 		},
 	}
 }

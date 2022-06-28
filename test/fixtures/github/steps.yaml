@@ -18,6 +18,7 @@ jobs:
           repos: |
             repository1
             repository2
+          input: value
 
       - name: task with commit ID version
         uses: actions/checkout@c44948622e1b6bb0eb0cec5b813c1ac561158e1e

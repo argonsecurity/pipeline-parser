@@ -408,46 +408,44 @@ func TestParseActionInput(t *testing.T) {
 func TestCalcParameterFileReference(t *testing.T) {
 	testCases := []struct {
 		name                  string
-		index                 int
+		startLine             int
+		startColumn           int
 		key                   string
 		val                   any
-		fileReference         *models.FileReference
 		expectedFileReference *models.FileReference
 	}{
 		{
-			name:                  "File reference is nil",
-			fileReference:         nil,
+			name:                  "Start line is -1",
+			startLine:             -1,
 			expectedFileReference: nil,
 		},
 		{
-			name:                  "Index is 0",
-			index:                 0,
+			name:                  "Start column is -1",
+			startColumn:           -1,
+			expectedFileReference: nil,
+		},
+		{
+			name:                  "Value without \\n",
+			startLine:             2,
+			startColumn:           4,
 			key:                   "key",
 			val:                   "value",
-			fileReference:         testutils.CreateFileReference(1, 2, 3, 4),
 			expectedFileReference: testutils.CreateFileReference(2, 4, 2, 14),
 		},
 		{
-			name:                  "Index is 3",
-			index:                 3,
-			key:                   "key",
-			val:                   "value",
-			fileReference:         testutils.CreateFileReference(1, 2, 3, 4),
-			expectedFileReference: testutils.CreateFileReference(5, 4, 5, 14),
-		},
-		{
-			name:                  "Value with \\n",
-			index:                 3,
+			name: "Value with \\n",
+
+			startLine:             2,
+			startColumn:           4,
 			key:                   "key",
 			val:                   "value\nvalue\n",
-			fileReference:         testutils.CreateFileReference(1, 2, 3, 4),
-			expectedFileReference: testutils.CreateFileReference(5, 4, 7, 21),
+			expectedFileReference: testutils.CreateFileReference(2, 4, 4, 14),
 		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			got := calcParameterFileReference(testCase.index, testCase.key, testCase.val, testCase.fileReference)
+			got := calcParameterFileReference(testCase.startLine, testCase.startColumn, testCase.key, testCase.val)
 			assert.Equal(t, testCase.expectedFileReference, got, testCase.name)
 		})
 	}
