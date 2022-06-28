@@ -58,18 +58,3 @@ func SliceToMap[T comparable, U any](s []T, cb func(v T) U) map[T]U {
 	}
 	return result
 }
-
-func GetSliceMaxValue[T comparable](s []T, cb func(v1 T, v2 T) bool) T {
-	var t T
-	if len(s) == 0 {
-		return t
-	}
-
-	max := s[0]
-	for _, item := range s {
-		if cb(max, item) {
-			max = item
-		}
-	}
-	return max
-}

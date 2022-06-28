@@ -136,9 +136,7 @@ func calcParameterFileReference(startLine int, startColumn int, key string, val 
 		return nil
 	}
 
-	splitValue := strings.Split(fmt.Sprint(val), "\n")
-	valuesLengths := utils.Map(splitValue, func(value string) int { return len(value) })
-	longestValue := utils.GetSliceMaxValue(valuesLengths, func(a, b int) bool { return a < b })
+	splitValue := strings.Split(strings.TrimRight(fmt.Sprint(val), "\n"), "\n")
 
 	return &models.FileReference{
 		StartRef: &models.FileLocation{
@@ -147,7 +145,7 @@ func calcParameterFileReference(startLine int, startColumn int, key string, val 
 		},
 		EndRef: &models.FileLocation{
 			Line:   startLine + strings.Count(fmt.Sprint(val), "\n"),
-			Column: startColumn + len(key) + 2 + longestValue, // for the key: val. len(key) for the key, 2 fot the ": " + longestValue for the value
+			Column: startColumn + len(key) + 2 + len(splitValue[len(splitValue)-1]), // for the key: val. len(key) for the key, 2 for the ": " + len(splitValue[len(splitValue)-1]) for the value
 		},
 	}
 }
