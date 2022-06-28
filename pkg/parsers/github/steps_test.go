@@ -108,7 +108,10 @@ func TestParseJobSteps(t *testing.T) {
 					TimeoutMinutes:   1,
 					WorkingDirectory: "dir",
 					Uses:             "actions/checkout@1.2.3",
-					With:             map[string]any{"key": "value"},
+					With: &githubModels.With{
+						Inputs:        map[string]any{"key": "value"},
+						FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+					},
 				},
 			},
 			expectedSteps: []*models.Step{
@@ -153,8 +156,9 @@ func TestParseJobSteps(t *testing.T) {
 						VersionType: models.TagVersion,
 						Inputs: &[]models.Parameter{
 							{
-								Name:  utils.GetPtr("key"),
-								Value: "value",
+								Name:          utils.GetPtr("key"),
+								Value:         "value",
+								FileReference: testutils.CreateFileReference(112, 224, 112, 234),
 							},
 						},
 					},
@@ -246,7 +250,10 @@ func TestParseJobStep(t *testing.T) {
 				TimeoutMinutes:   1,
 				WorkingDirectory: "dir",
 				Uses:             "actions/checkout@1.2.3",
-				With:             map[string]any{"key": "value"},
+				With: &githubModels.With{
+					Inputs:        map[string]any{"key": "value"},
+					FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+				},
 			},
 			expectedStep: &models.Step{
 				ID:   utils.GetPtr("1"),
@@ -268,8 +275,9 @@ func TestParseJobStep(t *testing.T) {
 					VersionType: models.TagVersion,
 					Inputs: &[]models.Parameter{
 						{
-							Name:  utils.GetPtr("key"),
-							Value: "value",
+							Name:          utils.GetPtr("key"),
+							Value:         "value",
+							FileReference: testutils.CreateFileReference(112, 224, 112, 234),
 						},
 					},
 				},
@@ -346,34 +354,40 @@ func TestParseActionHeader(t *testing.T) {
 
 func TestParseActionInput(t *testing.T) {
 	testCases := []struct {
-		name              string
-		with              map[string]any
-		expectedParameter *[]models.Parameter
+		name               string
+		with               *githubModels.With
+		expectedParameters *[]models.Parameter
 	}{
 		{
-			name:              "with nil",
-			with:              nil,
-			expectedParameter: nil,
+			name:               "with nil",
+			with:               nil,
+			expectedParameters: nil,
 		},
 		{
 			name: "with values",
-			with: map[string]any{
-				"string": "string",
-				"int":    1,
-				"bool":   true,
+			with: &githubModels.With{
+				Inputs: map[string]any{
+					"string": "string",
+					"int":    1,
+					"bool":   true,
+				},
+				FileReference: testutils.CreateFileReference(111, 222, 333, 444),
 			},
-			expectedParameter: &[]models.Parameter{
+			expectedParameters: &[]models.Parameter{
 				{
-					Name:  utils.GetPtr("string"),
-					Value: "string",
+					Name:          utils.GetPtr("string"),
+					Value:         "string",
+					FileReference: testutils.CreateFileReference(112, 224, 112, 238),
 				},
 				{
-					Name:  utils.GetPtr("int"),
-					Value: 1,
+					Name:          utils.GetPtr("int"),
+					Value:         1,
+					FileReference: testutils.CreateFileReference(113, 224, 113, 230),
 				},
 				{
-					Name:  utils.GetPtr("bool"),
-					Value: true,
+					Name:          utils.GetPtr("bool"),
+					Value:         true,
+					FileReference: testutils.CreateFileReference(114, 224, 114, 234),
 				},
 			},
 		},
@@ -383,56 +397,56 @@ func TestParseActionInput(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseActionInput(testCase.with)
 
-			changelog, err := diff.Diff(testCase.expectedParameter, got)
+			// assert.ElementsMatch(t, testCase.expectedParameters, got, testCase.name)
+			changelog, err := diff.Diff(testCase.expectedParameters, got)
 			assert.NoError(t, err)
 			assert.Len(t, changelog, 0)
 		})
 	}
 }
 
-func TestParseActionInputItem(t *testing.T) {
+func TestCalcParameterFileReference(t *testing.T) {
 	testCases := []struct {
-		name              string
-		k                 string
-		val               any
-		expectedParameter models.Parameter
+		name                  string
+		startLine             int
+		startColumn           int
+		key                   string
+		val                   any
+		expectedFileReference *models.FileReference
 	}{
 		{
-			name: "string value",
-			k:    "string",
-			val:  "value",
-			expectedParameter: models.Parameter{
-				Name:  utils.GetPtr("string"),
-				Value: "value",
-			},
+			name:                  "Start line is -1",
+			startLine:             -1,
+			expectedFileReference: nil,
 		},
 		{
-			name: "int value",
-			k:    "int",
-			val:  1,
-			expectedParameter: models.Parameter{
-				Name:  utils.GetPtr("int"),
-				Value: 1,
-			},
+			name:                  "Start column is -1",
+			startColumn:           -1,
+			expectedFileReference: nil,
 		},
 		{
-			name: "boolean value",
-			k:    "boolean",
-			val:  true,
-			expectedParameter: models.Parameter{
-				Name:  utils.GetPtr("boolean"),
-				Value: true,
-			},
+			name:                  "Value without \\n",
+			startLine:             2,
+			startColumn:           4,
+			key:                   "key",
+			val:                   "value",
+			expectedFileReference: testutils.CreateFileReference(2, 4, 2, 14),
+		},
+		{
+			name: "Value with \\n",
+
+			startLine:             2,
+			startColumn:           4,
+			key:                   "key",
+			val:                   "value\nvalue\n",
+			expectedFileReference: testutils.CreateFileReference(2, 4, 4, 14),
 		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			got := parseActionInputItem(testCase.k, testCase.val)
-
-			changelog, err := diff.Diff(testCase.expectedParameter, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			got := calcParameterFileReference(testCase.startLine, testCase.startColumn, testCase.key, testCase.val)
+			assert.Equal(t, testCase.expectedFileReference, got, testCase.name)
 		})
 	}
 }

@@ -65,7 +65,10 @@ func TestParse(t *testing.T) {
 									TimeoutMinutes:   1,
 									WorkingDirectory: "dir",
 									Uses:             "actions/checkout@1.2.3",
-									With:             map[string]any{"key": "value"},
+									With: &githubModels.With{
+										Inputs:        map[string]any{"key": "value"},
+										FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+									},
 								},
 							},
 							RunsOn: &githubModels.RunsOn{
@@ -161,8 +164,9 @@ func TestParse(t *testing.T) {
 									VersionType: models.TagVersion,
 									Inputs: &[]models.Parameter{
 										{
-											Name:  utils.GetPtr("key"),
-											Value: "value",
+											Name:          utils.GetPtr("key"),
+											Value:         "value",
+											FileReference: testutils.CreateFileReference(112, 224, 112, 234),
 										},
 									},
 								},
