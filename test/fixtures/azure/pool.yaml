@@ -1,0 +1,5 @@
+name: pool
+pool:
+  name: MyPool
+  demands: ["demand1", "demand2"]
+  vmImage: ubuntu-latest

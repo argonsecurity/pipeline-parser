@@ -1,0 +1,16 @@
+name: variables
+variables:      # pipeline-level
+  MY_VAR: 'my value'
+  ANOTHER_VAR: 'another value'
+
+stages:
+- stage: Build
+  variables:    # stage-level
+    STAGE_VAR: 'that happened'
+
+  jobs:
+  - job: FirstJob
+    variables:  # job-level
+      JOB_VAR: 'a job var'
+    steps:
+    - script: echo $(MY_VAR) $(STAGE_VAR) $(JOB_VAR)

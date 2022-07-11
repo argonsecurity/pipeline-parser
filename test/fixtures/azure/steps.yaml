@@ -1,0 +1,6 @@
+name: steps
+steps:
+  - task: Task@1
+    inputs:
+      - key: value
+    timeoutInMinutes: 120

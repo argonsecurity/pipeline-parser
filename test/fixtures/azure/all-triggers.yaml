@@ -1,0 +1,33 @@
+name: all-triggers
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+      - main
+    exclude:
+      - test/*
+  paths:
+    include:
+      - path/to/file
+      - another/path/to/file
+    exclude:
+      - all/*
+  tags:
+    include:
+      - v1.0.*
+    exclude:
+      - v2.0.*
+pr:
+  autoCancel: true
+  branches:
+    include:
+    - features/*
+    exclude:
+    - features/experimental/*
+  paths:
+    include:
+    - path/to/file
+    exclude:
+    - README.md
+  drafts: true
