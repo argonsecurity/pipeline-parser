@@ -54,6 +54,29 @@ func TestLoad(t *testing.T) {
 		// 			},
 		// 			FileReference: testutils.CreateFileReference(21, 1, 33, 15),
 		// 		},
+		// 		Schedules: &models.Schedules{
+		// 			Crons: &[]models.Cron{
+		// 				{
+		// 					Cron:        "0 0 * * *",
+		// 					DisplayName: "Daily midnight build",
+		// 					Branches: &models.Filter{
+		// 						Include: []string{"main", "releases/*"},
+		// 						Exclude: []string{"releases/ancient/*"},
+		// 					},
+		// 					FileReference: testutils.CreateFileReference(35, 3, 42, 25),
+		// 				},
+		// 				{
+		// 					Cron:        "0 12 * * 0",
+		// 					DisplayName: "Weekly Sunday build",
+		// 					Branches: &models.Filter{
+		// 						Include: []string{"releases/*"},
+		// 					},
+		// 					Always:        true,
+		// 					FileReference: testutils.CreateFileReference(43, 3, 48, 15),
+		// 				},
+		// 			},
+		// 			FileReference: testutils.CreateFileReference(34, -1, 48, 15),
+		// 		},
 		// 	},
 		// },
 		// {
@@ -65,29 +88,29 @@ func TestLoad(t *testing.T) {
 		// 		PR:      &models.PRRef{FileReference: testutils.CreateFileReference(3, 5, 3, 9)},
 		// 	},
 		// },
-		{
-			name:     "branch-list-trigger",
-			filename: "../../../test/fixtures/azure/branch-list-trigger.yaml",
-			expectedPipeline: &models.Pipeline{
-				Name: "branch-list-trigger",
-				Trigger: &models.TriggerRef{
-					Trigger: &models.Trigger{
-						Branches: &models.Filter{
-							Include: []string{"main", "development"},
-						},
-					},
-					FileReference: testutils.CreateFileReference(2, 1, 4, 16),
-				},
-				PR: &models.PRRef{
-					PR: &models.PR{
-						Branches: &models.Filter{
-							Include: []string{"main", "develop"},
-						},
-					},
-					FileReference: testutils.CreateFileReference(5, -1, 7, 10),
-				},
-			},
-		},
+		// {
+		// 	name:     "branch-list-trigger",
+		// 	filename: "../../../test/fixtures/azure/branch-list-trigger.yaml",
+		// 	expectedPipeline: &models.Pipeline{
+		// 		Name: "branch-list-trigger",
+		// 		Trigger: &models.TriggerRef{
+		// 			Trigger: &models.Trigger{
+		// 				Branches: &models.Filter{
+		// 					Include: []string{"main", "development"},
+		// 				},
+		// 			},
+		// 			FileReference: testutils.CreateFileReference(2, 1, 4, 16),
+		// 		},
+		// 		PR: &models.PRRef{
+		// 			PR: &models.PR{
+		// 				Branches: &models.Filter{
+		// 					Include: []string{"main", "develop"},
+		// 				},
+		// 			},
+		// 			FileReference: testutils.CreateFileReference(5, -1, 7, 10),
+		// 		},
+		// 	},
+		// },
 		// {
 		// 	name:     "variables",
 		// 	filename: "../../../test/fixtures/azure/variables.yaml",
@@ -117,11 +140,11 @@ func TestLoad(t *testing.T) {
 		// 		},
 		// 	},
 		// },
-		// {
-		// 	name:             "",
-		// 	filename:         "../../../test/fixtures/azure/parameters.yaml",
-		// 	expectedPipeline: &models.Pipeline{},
-		// },
+		{
+			name:             "",
+			filename:         "../../../test/fixtures/azure/steps.yaml",
+			expectedPipeline: &models.Pipeline{},
+		},
 	}
 
 	for _, testCase := range testCases {

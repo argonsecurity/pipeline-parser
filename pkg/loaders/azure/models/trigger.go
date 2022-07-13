@@ -36,6 +36,20 @@ type PRRef struct {
 	FileReference *models.FileReference
 }
 
+type Cron struct {
+	Cron          string  `yaml:"cron,omitempty"`
+	DisplayName   string  `yaml:"displayName,omitempty"`
+	Branches      *Filter `yaml:"branches,omitempty"`
+	Batch         bool    `yaml:"batch,omitempty"`
+	Always        bool    `yaml:"always,omitempty"`
+	FileReference *models.FileReference
+}
+
+type Schedules struct {
+	Crons         *[]Cron `yaml:"schedules,omitempty"`
+	FileReference *models.FileReference
+}
+
 func (tr *TriggerRef) UnmarshalYAML(node *yaml.Node) error {
 	tr.FileReference = loadersUtils.GetFileReference(node)
 	if node.Tag == consts.StringTag {
@@ -80,4 +94,20 @@ func (prr *PRRef) UnmarshalYAML(node *yaml.Node) error {
 	prr.FileReference.StartRef.Line--
 	prr.FileReference.StartRef.Column -= 2
 	return node.Decode(&prr.PR)
+}
+
+func (s *Schedules) UnmarshalYAML(node *yaml.Node) error {
+	s.FileReference = loadersUtils.GetFileReference(node)
+	crons := []Cron{}
+	for _, cronNode := range node.Content {
+		var cron Cron
+		if err := cronNode.Decode(&cron); err != nil {
+			return err
+		}
+		cron.FileReference = loadersUtils.GetFileReference(cronNode)
+		crons = append(crons, cron)
+	}
+
+	s.Crons = &crons
+	return nil
 }
