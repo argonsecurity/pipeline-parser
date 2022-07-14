@@ -1,0 +1,18 @@
+name: stages
+
+stages:
+- stage: BuildWin
+  displayName: Build for Windows
+- stage: BuildMac
+  displayName: Build for Mac
+  dependsOn: [] # by specifying an empty array, this stage doesn't depend on the stage before it
+  
+- template: stages/test.yml  # Template reference
+  parameters:
+    name: Mini
+    testFile: tests/miniSuite.js
+
+- template: stages/test.yml  # Template reference
+  parameters:
+    name: Full
+    testFile: tests/fullSuite.js

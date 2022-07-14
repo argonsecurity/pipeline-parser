@@ -11,9 +11,9 @@ type Parameter struct {
 }
 
 type Pipeline struct {
-	Extends *Extends `yaml:"extends,omitempty"`
-	Jobs    *Jobs    `yaml:"jobs,omitempty"`
-	// Stages       *Stages       `yaml:"stages,omitempty"`
+	Extends         *Extends    `yaml:"extends,omitempty"`
+	Jobs            *Jobs       `yaml:"jobs,omitempty"`
+	Stages          *Stages     `yaml:"stages,omitempty"`
 	continueOnError bool        `yaml:"continueOnError,omitempty"`
 	Pool            *Pool       `yaml:"pool,omitempty"`
 	Name            string      `yaml:"name,omitempty"`

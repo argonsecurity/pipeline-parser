@@ -15,26 +15,6 @@ const (
 	TemplateJobType   JobType = "template"
 )
 
-type DependsOn []string
-
-func (n *DependsOn) UnmarshalYAML(node *yaml.Node) error {
-	var tags []string
-	var err error
-
-	if node.Tag == consts.SequenceTag {
-		if tags, err = loadersUtils.ParseYamlStringSequenceToSlice(node); err != nil {
-			return err
-		}
-	} else if node.Tag == consts.StringTag {
-		tags = []string{node.Value}
-	} else {
-		return consts.NewErrInvalidYamlTag(node.Tag)
-	}
-
-	*n = tags
-	return nil
-}
-
 type Workspace struct {
 	Clean string `yaml:"clean,omitempty"`
 }
@@ -104,6 +84,7 @@ type Jobs struct {
 	CIJobs         *[]CIJob
 	DeploymentJobs *[]DeploymentJob
 	TemplateJobs   *[]TemplateJob
+	FileReference  *models.FileReference
 }
 
 func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
@@ -112,7 +93,6 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 	var templateJobs []TemplateJob
 
 	for _, jobNode := range node.Content {
-
 		switch getJobType(jobNode) {
 		case CIJobType:
 			job, err := parseCIJob(jobNode)
@@ -127,11 +107,10 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 			}
 			deploymentJobs = append(deploymentJobs, job)
 		case TemplateJobType:
-			var job TemplateJob
-			if err := jobNode.Decode(&job); err != nil {
+			job, err := parseTemplateJob(jobNode)
+			if err != nil {
 				return err
 			}
-			job.FileReference = loadersUtils.GetFileReference(jobNode)
 			templateJobs = append(templateJobs, job)
 		}
 	}
@@ -140,6 +119,7 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 		CIJobs:         &ciJobs,
 		DeploymentJobs: &deploymentJobs,
 		TemplateJobs:   &templateJobs,
+		FileReference:  loadersUtils.GetFileReference(node),
 	}
 	return nil
 }
@@ -155,6 +135,15 @@ func parseCIJob(node *yaml.Node) (CIJob, error) {
 
 func parseDeploymentJob(node *yaml.Node) (DeploymentJob, error) {
 	var job DeploymentJob
+	if err := node.Decode(&job); err != nil {
+		return job, err
+	}
+	job.FileReference = loadersUtils.GetFileReference(node)
+	return job, nil
+}
+
+func parseTemplateJob(node *yaml.Node) (TemplateJob, error) {
+	var job TemplateJob
 	if err := node.Decode(&job); err != nil {
 		return job, err
 	}
