@@ -80,8 +80,7 @@ type Step struct {
 	Script                  string                   `yaml:"script,omitempty"`
 	Task                    string                   `yaml:"task,omitempty"`
 	Inputs                  map[string]any           `yaml:"inputs,omitempty"`
-	Template                string                   `yaml:"template,omitempty"`
-	Parameters              map[string]any           `yaml:"parameters,omitempty"`
+	Template                `yaml:",inline"`
 
 	FileReference *models.FileReference
 }

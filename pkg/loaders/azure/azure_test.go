@@ -142,7 +142,7 @@ func TestLoad(t *testing.T) {
 		// },
 		{
 			name:             "",
-			filename:         "../../../test/fixtures/azure/steps.yaml",
+			filename:         "../../../test/fixtures/azure/jobs.yaml",
 			expectedPipeline: &models.Pipeline{},
 		},
 	}

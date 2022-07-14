@@ -23,9 +23,13 @@ func (e *EnvironmentVariablesRef) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
+type Template struct {
+	Template   string         `yaml:"template,omitempty"`
+	Parameters map[string]any `yaml:"parameters,omitempty"`
+}
+
 type Extends struct {
-	Template      string            `yaml:"template,omitempty"`
-	Parameters    map[string]string `yaml:"parameters,omitempty"`
+	Template      `yaml:"inline"`
 	FileReference *models.FileReference
 }
 

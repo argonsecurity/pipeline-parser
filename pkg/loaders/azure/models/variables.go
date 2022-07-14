@@ -10,12 +10,11 @@ import (
 type Variables []Variable
 
 type Variable struct {
-	Name          string            `yaml:"name,omitempty"`
-	Value         string            `yaml:"value,omitempty"`
-	Readonly      bool              `yaml:"readonly,omitempty"`
-	Group         string            `yaml:"group,omitempty"`
-	Template      string            `yaml:"template,omitempty"`
-	Parameters    map[string]string `yaml:"parameters,omitempty"`
+	Name          string `yaml:"name,omitempty"`
+	Value         string `yaml:"value,omitempty"`
+	Readonly      bool   `yaml:"readonly,omitempty"`
+	Group         string `yaml:"group,omitempty"`
+	Template      `yaml:"inline"`
 	FileReference *models.FileReference
 }
 
