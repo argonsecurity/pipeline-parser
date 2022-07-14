@@ -24,32 +24,6 @@ type TriggerRef struct {
 	FileReference *models.FileReference
 }
 
-type PR struct {
-	AutoCancel bool    `yaml:"autoCancel,omitempty"`
-	Branches   *Filter `yaml:"branches,omitempty"`
-	Paths      *Filter `yaml:"paths,omitempty"`
-	Drafts     bool    `yaml:"drafts,omitempty"`
-}
-
-type PRRef struct {
-	PR            *PR `yaml:"pr,omitempty"`
-	FileReference *models.FileReference
-}
-
-type Cron struct {
-	Cron          string  `yaml:"cron,omitempty"`
-	DisplayName   string  `yaml:"displayName,omitempty"`
-	Branches      *Filter `yaml:"branches,omitempty"`
-	Batch         bool    `yaml:"batch,omitempty"`
-	Always        bool    `yaml:"always,omitempty"`
-	FileReference *models.FileReference
-}
-
-type Schedules struct {
-	Crons         *[]Cron `yaml:"schedules,omitempty"`
-	FileReference *models.FileReference
-}
-
 func (tr *TriggerRef) UnmarshalYAML(node *yaml.Node) error {
 	tr.FileReference = loadersUtils.GetFileReference(node)
 	if node.Tag == consts.StringTag {
@@ -73,6 +47,18 @@ func (tr *TriggerRef) UnmarshalYAML(node *yaml.Node) error {
 	return node.Decode(&tr.Trigger)
 }
 
+type PR struct {
+	AutoCancel bool    `yaml:"autoCancel,omitempty"`
+	Branches   *Filter `yaml:"branches,omitempty"`
+	Paths      *Filter `yaml:"paths,omitempty"`
+	Drafts     bool    `yaml:"drafts,omitempty"`
+}
+
+type PRRef struct {
+	PR            *PR `yaml:"pr,omitempty"`
+	FileReference *models.FileReference
+}
+
 func (prr *PRRef) UnmarshalYAML(node *yaml.Node) error {
 	prr.FileReference = loadersUtils.GetFileReference(node)
 	if node.Tag == consts.StringTag {
@@ -94,6 +80,20 @@ func (prr *PRRef) UnmarshalYAML(node *yaml.Node) error {
 	prr.FileReference.StartRef.Line--
 	prr.FileReference.StartRef.Column -= 2
 	return node.Decode(&prr.PR)
+}
+
+type Cron struct {
+	Cron          string  `yaml:"cron,omitempty"`
+	DisplayName   string  `yaml:"displayName,omitempty"`
+	Branches      *Filter `yaml:"branches,omitempty"`
+	Batch         bool    `yaml:"batch,omitempty"`
+	Always        bool    `yaml:"always,omitempty"`
+	FileReference *models.FileReference
+}
+
+type Schedules struct {
+	Crons         *[]Cron `yaml:"schedules,omitempty"`
+	FileReference *models.FileReference
 }
 
 func (s *Schedules) UnmarshalYAML(node *yaml.Node) error {
