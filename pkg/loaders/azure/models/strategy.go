@@ -14,6 +14,12 @@ type DeploymentHook struct {
 }
 
 type DeploymentStrategy struct {
+	RunOnce *BaseDeploymentStrategy `yaml:"runOnce,omitempty"`
+	Rolling *RollingStrategy        `yaml:"rolling,omitempty"`
+	Canary  *CanaryStrategy         `yaml:"canary,omitempty"`
+}
+
+type BaseDeploymentStrategy struct {
 	PreDeploy        *DeploymentHook `yaml:"preDeploy,omitempty"`
 	Deploy           *DeploymentHook `yaml:"deploy,omitempty"`
 	RouteTraffic     *DeploymentHook `yaml:"routeTraffic,omitempty"`
@@ -25,11 +31,11 @@ type DeploymentStrategy struct {
 }
 
 type RollingStrategy struct {
-	MaxParallel        string `yaml:"maxParallel,omitempty"`
-	DeploymentStrategy `yaml:",inline"`
+	MaxParallel            string `yaml:"maxParallel,omitempty"`
+	BaseDeploymentStrategy `yaml:",inline"`
 }
 
-type CanaryDeploymentStrategy struct {
-	Increments         []string `yaml:"increments,omitempty"`
-	DeploymentStrategy `yaml:",inline"`
+type CanaryStrategy struct {
+	Increments             []string `yaml:"increments,omitempty"`
+	BaseDeploymentStrategy `yaml:",inline"`
 }

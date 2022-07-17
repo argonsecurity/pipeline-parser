@@ -47,13 +47,13 @@ func calculateValueNodeEndFileLocation(node *yaml.Node) *models.FileLocation {
 	}
 }
 
-func GetMapKeyFileReference(jobIDNode, jobNode *yaml.Node) *models.FileReference {
+func GetMapKeyFileReference(keyNode, valueNode *yaml.Node) *models.FileReference {
 	return &models.FileReference{
 		StartRef: &models.FileLocation{
-			Line:   jobIDNode.Line,
-			Column: jobIDNode.Column,
+			Line:   keyNode.Line,
+			Column: keyNode.Column,
 		},
-		EndRef: GetEndFileLocation(jobNode),
+		EndRef: GetEndFileLocation(valueNode),
 	}
 }
 

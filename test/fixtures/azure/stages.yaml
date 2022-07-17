@@ -7,10 +7,9 @@ stages:
   displayName: Build for Mac
   dependsOn: [] # by specifying an empty array, this stage doesn't depend on the stage before it
   
-- template: stages/test.yml  # Template reference
+- template: stages/build.yml  # Template reference
   parameters:
-    name: Mini
-    testFile: tests/miniSuite.js
+    param: value
 
 - template: stages/test.yml  # Template reference
   parameters:

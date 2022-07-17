@@ -65,6 +65,7 @@ type Step struct {
 	Submodules              string                   `yaml:"submodules,omitempty"`
 	Path                    string                   `yaml:"path,omitempty"`
 	Download                string                   `yaml:"download,omitempty"`
+	DownloadBuild           string                   `yaml:"downloadBuild,omitempty"`
 	Artifact                string                   `yaml:"artifact,omitempty"`
 	Patterns                string                   `yaml:"patterns,omitempty"`
 	GetPackage              string                   `yaml:"getPackage,omitempty"`
@@ -76,6 +77,7 @@ type Step struct {
 	Publish                 string                   `yaml:"publish,omitempty"`
 	Pwsh                    string                   `yaml:"pwsh,omitempty"`
 	RestoreCache            string                   `yaml:"restoreCache,omitempty"`
+	ReviewApp               string                   `yaml:"reviewApp,omitempty"`
 	SaveCache               string                   `yaml:"saveCache,omitempty"`
 	Script                  string                   `yaml:"script,omitempty"`
 	Task                    string                   `yaml:"task,omitempty"`

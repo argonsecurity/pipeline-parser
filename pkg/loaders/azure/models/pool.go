@@ -21,6 +21,7 @@ func (p *Pool) UnmarshalYAML(node *yaml.Node) error {
 		return nil
 	}
 
+	p.FileReference.StartRef.Line--
 	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		switch key {
 		case "name":

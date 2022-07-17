@@ -14,7 +14,7 @@ type Variable struct {
 	Value         string `yaml:"value,omitempty"`
 	Readonly      bool   `yaml:"readonly,omitempty"`
 	Group         string `yaml:"group,omitempty"`
-	Template      `yaml:"inline"`
+	Template      `yaml:",inline"`
 	FileReference *models.FileReference
 }
 

@@ -1,7 +1,14 @@
 name: variables
 variables:      # pipeline-level
-  MY_VAR: 'my value'
-  ANOTHER_VAR: 'another value'
+- name: var1
+  value: value1
+- name: var2
+  value: value2
+  readonly: true
+- group: my-group
+- template: variables/var.yml  # Template reference
+  parameters:
+    param: value
 
 stages:
 - stage: Build

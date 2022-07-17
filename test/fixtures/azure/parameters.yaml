@@ -43,12 +43,3 @@ parameters:
   default:
     - script: echo step one
     - script: echo step two
-
-trigger: none
-
-jobs: 
-- job: stepList
-  steps: ${{ parameters.mySteplist }}
-- job: myStep
-  steps:
-    - ${{ parameters.myStep }}
