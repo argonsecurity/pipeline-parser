@@ -13,10 +13,10 @@ type Filter struct {
 }
 
 type Trigger struct {
-	Batch    bool    `yaml:"batch,omitempty"`
-	Branches *Filter `yaml:"branches,omitempty"`
-	Paths    *Filter `yaml:"paths,omitempty"`
-	Tags     *Filter `yaml:"tags,omitempty"`
+	Batch    bool   `yaml:"batch,omitempty"`
+	Branches Filter `yaml:"branches,omitempty"`
+	Paths    Filter `yaml:"paths,omitempty"`
+	Tags     Filter `yaml:"tags,omitempty"`
 }
 
 type TriggerRef struct {
@@ -37,7 +37,7 @@ func (tr *TriggerRef) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		tr.Trigger = &Trigger{
-			Branches: &Filter{Include: branches},
+			Branches: Filter{Include: branches},
 		}
 		return nil
 	}
@@ -48,10 +48,10 @@ func (tr *TriggerRef) UnmarshalYAML(node *yaml.Node) error {
 }
 
 type PR struct {
-	AutoCancel bool    `yaml:"autoCancel,omitempty"`
-	Branches   *Filter `yaml:"branches,omitempty"`
-	Paths      *Filter `yaml:"paths,omitempty"`
-	Drafts     bool    `yaml:"drafts,omitempty"`
+	AutoCancel bool   `yaml:"autoCancel,omitempty"`
+	Branches   Filter `yaml:"branches,omitempty"`
+	Paths      Filter `yaml:"paths,omitempty"`
+	Drafts     bool   `yaml:"drafts,omitempty"`
 }
 
 type PRRef struct {
@@ -72,7 +72,7 @@ func (prr *PRRef) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		prr.PR = &PR{
-			Branches: &Filter{Include: branches},
+			Branches: Filter{Include: branches},
 		}
 		return nil
 	}

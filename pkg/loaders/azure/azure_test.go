@@ -24,15 +24,15 @@ func TestLoad(t *testing.T) {
 				Trigger: &models.TriggerRef{
 					Trigger: &models.Trigger{
 						Batch: true,
-						Branches: &models.Filter{
+						Branches: models.Filter{
 							Include: []string{"master", "main"},
 							Exclude: []string{"test/*"},
 						},
-						Paths: &models.Filter{
+						Paths: models.Filter{
 							Include: []string{"path/to/file", "another/path/to/file"},
 							Exclude: []string{"all/*"},
 						},
-						Tags: &models.Filter{
+						Tags: models.Filter{
 							Include: []string{"v1.0.*"},
 							Exclude: []string{"v2.0.*"},
 						},
@@ -42,11 +42,11 @@ func TestLoad(t *testing.T) {
 				PR: &models.PRRef{
 					PR: &models.PR{
 						AutoCancel: true,
-						Branches: &models.Filter{
+						Branches: models.Filter{
 							Include: []string{"features/*"},
 							Exclude: []string{"features/experimental/*"},
 						},
-						Paths: &models.Filter{
+						Paths: models.Filter{
 							Include: []string{"path/to/file"},
 							Exclude: []string{"README.md"},
 						},
@@ -95,7 +95,7 @@ func TestLoad(t *testing.T) {
 				Name: "branch-list-trigger",
 				Trigger: &models.TriggerRef{
 					Trigger: &models.Trigger{
-						Branches: &models.Filter{
+						Branches: models.Filter{
 							Include: []string{"main", "development"},
 						},
 					},
@@ -103,7 +103,7 @@ func TestLoad(t *testing.T) {
 				},
 				PR: &models.PRRef{
 					PR: &models.PR{
-						Branches: &models.Filter{
+						Branches: models.Filter{
 							Include: []string{"main", "develop"},
 						},
 					},
