@@ -15,6 +15,7 @@ type EventType string
 type Trigger struct {
 	Branches      *Filter        `json:"branches,omitempty"`
 	Paths         *Filter        `json:"paths,omitempty"`
+	Tags          *Filter        `json:"tags,omitempty"`
 	Exists        *Filter        `json:"exists,omitempty"`
 	Parameters    []Parameter    `json:"parameters,omitempty"`
 	Pipelines     []string       `json:"pipelines,omitempty"`
