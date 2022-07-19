@@ -63,18 +63,15 @@ func (f *Filter) UnmarshalYAML(node *yaml.Node) error {
 
 	if node.Tag == consts.MapTag {
 		return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+			parsedValue, err := loadersUtils.ParseYamlStringSequenceToSlice(value)
+			if err != nil {
+				return err
+			}
+
 			if key == "include" {
-				include, err := loadersUtils.ParseYamlStringSequenceToSlice(value)
-				if err != nil {
-					return err
-				}
-				f.Include = include
+				f.Include = parsedValue
 			} else if key == "exclude" {
-				exclude, err := loadersUtils.ParseYamlStringSequenceToSlice(value)
-				if err != nil {
-					return err
-				}
-				f.Exclude = exclude
+				f.Exclude = parsedValue
 			}
 			return nil
 		})
