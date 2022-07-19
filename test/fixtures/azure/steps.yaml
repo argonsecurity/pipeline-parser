@@ -1,0 +1,49 @@
+name: steps
+steps:
+- bash: |
+    which bash
+    echo Hello $name
+  displayName: Multiline Bash script
+  env:
+    name: Microsoft
+- checkout: self
+  submodules: true
+  persistCredentials: true
+- download: current  # refers to artifacts published by current pipeline
+  artifact: WebApp
+  patterns: '**/.js'
+  displayName: Download artifact WebApp
+- downloadBuild: current  # refers to artifacts published by current pipeline
+  artifact: WebApp
+  path: build
+  patterns: '**/.js'
+  displayName: Download artifact WebApp
+- getPackage: packageID
+  path: dist
+- powershell: Write-Host Hello $(name)
+  displayName: Say hello
+  name: firstStep
+  workingDirectory: $(build.sourcesDirectory)
+  failOnStderr: true
+  env:
+    name: Microsoft
+- publish: $(Build.SourcesDirectory)/build
+  artifact: WebApp
+  displayName: Publish artifact WebApp
+- pwsh: Write-Host Hello $(name)
+  displayName: Say hello
+  name: firstStep
+  workingDirectory: $(build.sourcesDirectory)
+  failOnStderr: true
+  env:
+    name: Microsoft
+- reviewApp: review
+- script: echo This runs in the default shell on any machine
+- task: VSBuild@1
+  displayName: Build
+  timeoutInMinutes: 120
+  inputs:
+    solution: '**\*.sln'
+- template: steps/build.yml # Template reference
+  parameters:
+    key: value

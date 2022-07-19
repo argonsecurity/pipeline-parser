@@ -1,0 +1,41 @@
+name: Jobs
+
+jobs:
+- job: MyJob
+  displayName: My First Job
+  continueOnError: true
+  dependsOn: job
+  workspace:
+    clean: outputs
+  steps:
+  - script: echo My first job
+- deployment: DeployWeb
+  displayName: deploy Web App
+  dependsOn: [job1, job2]
+  pool:
+    vmImage: ubuntu-latest
+  # creates an environment if it doesn't exist
+  environment: smarthotel-dev
+  strategy:
+    # default deployment strategy, more coming...
+    runOnce:
+      deploy:
+        steps:
+        - script: echo my first deployment
+- template: jobs/build.yml  # Template reference
+  parameters:
+    name: macOS
+    pool:
+      vmImage: macOS-latest
+
+- template: jobs/build.yml  # Template reference
+  parameters:
+    name: Linux
+    pool:
+      vmImage: ubuntu-latest
+- template: jobs/build.yml  # Template reference
+  parameters:
+    name: Windows
+    pool:
+      vmImage: windows-latest
+    sign: true  # Extra step on Windows only

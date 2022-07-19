@@ -1,0 +1,13 @@
+name: pool
+pool:
+  name: MyPool
+  demands: [demand1, demand2]
+  vmImage: ubuntu-latest
+
+
+jobs:
+- job: jobId
+  pool:
+    name: jobPool
+    demands: demand
+    vmImage: ubuntu-latest
