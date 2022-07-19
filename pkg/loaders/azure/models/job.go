@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
@@ -26,7 +28,7 @@ type Uses struct {
 
 type BaseJob struct {
 	DisplayName            string            `yaml:"displayName,omitempty"`
-	DependsOn              []string          `yaml:"dependsOn,omitempty"`
+	DependsOn              *DependsOn        `yaml:"dependsOn,omitempty"`
 	Condition              string            `yaml:"condition,omitempty"`
 	ContinueOnError        bool              `yaml:"continueOnError,omitempty"`
 	TimeoutInMinutes       int               `yaml:"timeoutInMinutes,omitempty"`
@@ -48,29 +50,23 @@ type CIJob struct {
 	FileReference *models.FileReference
 }
 
-type DeploymentEnvironment struct {
-	Name          string `yaml:"name,omitempty"`
-	ResourceName  string `yaml:"resourceName,omitempty"`
-	ResourceId    string `yaml:"resourceId,omitempty"`
-	ResourceType  string `yaml:"resourceType,omitempty"`
-	Tags          string `yaml:"tags,omitempty"`
-	FileReference *models.FileReference
+type DeploymentEnvironmentRef struct {
+	DeploymentEnvironment *DeploymentEnvironment `yaml:"deploymentEnvironment,omitempty"`
+	FileReference         *models.FileReference
 }
 
-func (de *DeploymentEnvironment) UnmarshalYAML(node *yaml.Node) error {
-	de.FileReference = loadersUtils.GetFileReference(node)
-	if node.Tag == consts.StringTag {
-		de.Name = node.Value
-		return nil
-	}
-
-	return node.Decode(&de)
+type DeploymentEnvironment struct {
+	Name         string `yaml:"name,omitempty"`
+	ResourceName string `yaml:"resourceName,omitempty"`
+	ResourceId   string `yaml:"resourceId,omitempty"`
+	ResourceType string `yaml:"resourceType,omitempty"`
+	Tags         string `yaml:"tags,omitempty"`
 }
 
 type DeploymentJob struct {
-	Deployment    string                 `yaml:"deployment,omitempty"`
-	Strategy      *DeploymentStrategy    `yaml:"strategy,omitempty"`
-	Environment   *DeploymentEnvironment `yaml:"environment,omitempty"`
+	Deployment    string                    `yaml:"deployment,omitempty"`
+	Strategy      *DeploymentStrategy       `yaml:"strategy,omitempty"`
+	Environment   *DeploymentEnvironmentRef `yaml:"environment,omitempty"`
 	BaseJob       `yaml:",inline"`
 	FileReference *models.FileReference
 }
@@ -81,88 +77,66 @@ type TemplateJob struct {
 }
 
 type Jobs struct {
-	CIJobs         *[]CIJob
-	DeploymentJobs *[]DeploymentJob
-	TemplateJobs   *[]TemplateJob
+	CIJobs         []*CIJob
+	DeploymentJobs []*DeploymentJob
+	TemplateJobs   []*TemplateJob
 	FileReference  *models.FileReference
 }
 
+func (der *DeploymentEnvironmentRef) UnmarshalYAML(node *yaml.Node) error {
+	der.FileReference = loadersUtils.GetFileReference(node)
+	if node.Tag == consts.StringTag {
+		der.DeploymentEnvironment = &DeploymentEnvironment{
+			Name: node.Value,
+		}
+		return nil
+	}
+
+	return node.Decode(&der.DeploymentEnvironment)
+}
+
 func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
-	var ciJobs []CIJob
-	var deploymentJobs []DeploymentJob
-	var templateJobs []TemplateJob
+	var ciJobs []*CIJob
+	var deploymentJobs []*DeploymentJob
+	var templateJobs []*TemplateJob
 
 	for _, jobNode := range node.Content {
-		switch getJobType(jobNode) {
+		if len(jobNode.Content) == 0 {
+			consts.NewErrInvalidYaml("job is empty")
+		}
+
+		switch JobType(jobNode.Content[0].Value) {
 		case CIJobType:
-			job, err := parseCIJob(jobNode)
-			if err != nil {
+			var job CIJob
+			if err := jobNode.Decode(&job); err != nil {
 				return err
 			}
-			ciJobs = append(ciJobs, job)
+			job.FileReference = loadersUtils.GetFileReference(jobNode)
+			ciJobs = append(ciJobs, &job)
 		case DeploymentJobType:
-			job, err := parseDeploymentJob(jobNode)
-			if err != nil {
+			var job DeploymentJob
+			if err := jobNode.Decode(&job); err != nil {
 				return err
 			}
-			deploymentJobs = append(deploymentJobs, job)
+			job.FileReference = loadersUtils.GetFileReference(jobNode)
+			deploymentJobs = append(deploymentJobs, &job)
 		case TemplateJobType:
-			job, err := parseTemplateJob(jobNode)
-			if err != nil {
+			var job TemplateJob
+			if err := jobNode.Decode(&job); err != nil {
 				return err
 			}
-			templateJobs = append(templateJobs, job)
+			job.FileReference = loadersUtils.GetFileReference(jobNode)
+			templateJobs = append(templateJobs, &job)
+		default:
+			consts.NewErrInvalidYaml(fmt.Sprintf("job must start with one of %s, %s or %s", CIJobType, DeploymentJobType, TemplateJobType))
 		}
 	}
 
 	*j = Jobs{
-		CIJobs:         &ciJobs,
-		DeploymentJobs: &deploymentJobs,
-		TemplateJobs:   &templateJobs,
+		CIJobs:         ciJobs,
+		DeploymentJobs: deploymentJobs,
+		TemplateJobs:   templateJobs,
 		FileReference:  loadersUtils.GetFileReference(node),
 	}
 	return nil
-}
-
-func parseCIJob(node *yaml.Node) (CIJob, error) {
-	var job CIJob
-	if err := node.Decode(&job); err != nil {
-		return job, err
-	}
-	job.FileReference = loadersUtils.GetFileReference(node)
-	return job, nil
-}
-
-func parseDeploymentJob(node *yaml.Node) (DeploymentJob, error) {
-	var job DeploymentJob
-	if err := node.Decode(&job); err != nil {
-		return job, err
-	}
-	job.FileReference = loadersUtils.GetFileReference(node)
-	return job, nil
-}
-
-func parseTemplateJob(node *yaml.Node) (TemplateJob, error) {
-	var job TemplateJob
-	if err := node.Decode(&job); err != nil {
-		return job, err
-	}
-	job.FileReference = loadersUtils.GetFileReference(node)
-	return job, nil
-}
-
-func getJobType(job *yaml.Node) JobType {
-	for _, node := range job.Content {
-		if node.Tag == consts.StringTag {
-			switch JobType(node.Value) {
-			case CIJobType:
-				return CIJobType
-			case DeploymentJobType:
-				return DeploymentJobType
-			case TemplateJobType:
-				return TemplateJobType
-			}
-		}
-	}
-	return CIJobType
 }

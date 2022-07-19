@@ -31,13 +31,8 @@ func (t *StepTarget) UnmarshalYAML(node *yaml.Node) error {
 			t.Commands = value.Value
 		case "settableVariables":
 			var settableVariables []string
-			var err error
-			if value.Tag == consts.StringTag {
-				settableVariables = []string{value.Value}
-			} else {
-				if settableVariables, err = loadersUtils.ParseYamlStringSequenceToSlice(value); err != nil {
-					return err
-				}
+			if err := loadersUtils.ParseSequenceOrOne(node, &settableVariables); err != nil {
+				return err
 			}
 			t.SettableVariables = settableVariables
 		}

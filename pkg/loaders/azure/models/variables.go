@@ -36,7 +36,7 @@ func (v *Variables) UnmarshalYAML(node *yaml.Node) error {
 func parseVariablesMap(node *yaml.Node) []Variable {
 	variables := []Variable{}
 
-	if err := loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+	loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		variable := Variable{
 			Name:  key,
 			Value: value.Value,
@@ -46,9 +46,7 @@ func parseVariablesMap(node *yaml.Node) []Variable {
 
 		variables = append(variables, variable)
 		return nil
-	}); err != nil {
-		return nil
-	}
+	})
 
 	return variables
 }
