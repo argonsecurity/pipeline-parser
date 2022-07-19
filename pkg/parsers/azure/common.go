@@ -15,3 +15,11 @@ func parseEnvironmentVariablesRef(envRef *azureModels.EnvironmentVariablesRef) *
 		FileReference:        envRef.FileReference,
 	}
 }
+
+func parseExtends(extends *azureModels.Extends) []string {
+	if extends == nil {
+		return nil
+	}
+
+	return []string{extends.Template.Template}
+}

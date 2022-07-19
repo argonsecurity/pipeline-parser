@@ -63,7 +63,40 @@ func TestParseEnvironmentVariablesRef(t *testing.T) {
 
 			changelog, err := diff.Diff(testCase.expectedEnv, got)
 			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			assert.Len(t, changelog, 0, testCase.name)
+		})
+	}
+}
+
+func TestParseExtends(t *testing.T) {
+	testCases := []struct {
+		name            string
+		extends         *azureModels.Extends
+		expectedImports []string
+	}{
+		{
+			name:            "Extends is nil",
+			extends:         nil,
+			expectedImports: nil,
+		},
+		{
+			name: "Extends with data",
+			extends: &azureModels.Extends{
+				Template: azureModels.Template{
+					Template: "template1",
+				},
+			},
+			expectedImports: []string{"template1"},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := parseExtends(testCase.extends)
+
+			changelog, err := diff.Diff(testCase.expectedImports, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0, testCase.name)
 		})
 	}
 }

@@ -15,6 +15,7 @@ func (g *AzureParser) Parse(azurePipeline *azureModels.Pipeline) (*models.Pipeli
 
 	pipeline.Triggers = parsePipelineTriggers(azurePipeline)
 	pipeline.Parameters = parseParameters(azurePipeline)
+	pipeline.Imports = parseExtends(azurePipeline.Extends)
 
 	return pipeline, nil
 }
