@@ -1,11 +1,10 @@
 package github
 
 import (
-	"fmt"
 	"regexp"
-	"strings"
 
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
+	loaderUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
@@ -122,30 +121,11 @@ func parseActionInput(with *githubModels.With) *[]models.Parameter {
 		parameter := models.Parameter{
 			Name:          &name,
 			Value:         value,
-			FileReference: calcParameterFileReference(currentLine, startColumn, key, value),
+			FileReference: loaderUtils.CalculateParameterFileReference(currentLine, startColumn, key, value),
 		}
 		currentLine = parameter.FileReference.EndRef.Line + 1
 		parameters = append(parameters, parameter)
 	}
 
 	return &parameters
-}
-
-func calcParameterFileReference(startLine int, startColumn int, key string, val any) *models.FileReference {
-	if startLine == -1 || startColumn == -1 {
-		return nil
-	}
-
-	splitValue := strings.Split(strings.TrimRight(fmt.Sprint(val), "\n"), "\n")
-
-	return &models.FileReference{
-		StartRef: &models.FileLocation{
-			Line:   startLine,
-			Column: startColumn, // for the tab after the inputs
-		},
-		EndRef: &models.FileLocation{
-			Line:   startLine + strings.Count(fmt.Sprint(val), "\n"),
-			Column: startColumn + len(key) + 2 + len(splitValue[len(splitValue)-1]), // for the key: val. len(key) for the key, 2 for the ": " + len(splitValue[len(splitValue)-1]) for the value
-		},
-	}
 }

@@ -16,38 +16,18 @@ type StepTarget struct {
 	FileReference     *models.FileReference
 }
 
-func (t *StepTarget) UnmarshalYAML(node *yaml.Node) error {
-	t.FileReference = loadersUtils.GetFileReference(node)
-	if node.Tag == consts.StringTag {
-		t.Container = node.Value
-		return nil
-	}
-
-	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
-		switch key {
-		case "container":
-			t.Container = value.Value
-		case "commands":
-			t.Commands = value.Value
-		case "settableVariables":
-			var settableVariables []string
-			if err := loadersUtils.ParseSequenceOrOne(node, &settableVariables); err != nil {
-				return err
-			}
-			t.SettableVariables = settableVariables
-		}
-
-		return nil
-	})
+type TaskInputs struct {
+	Inputs        map[string]any
+	FileReference *models.FileReference
 }
 
 type Step struct {
 	Name                    string                   `yaml:"name,omitempty"`
 	Condition               string                   `yaml:"condition,omitempty"`
-	ContinueOnError         bool                     `yaml:"continueOnError,omitempty"`
+	ContinueOnError         *bool                    `yaml:"continueOnError,omitempty"`
 	DisplayName             string                   `yaml:"displayName,omitempty"`
 	Target                  *StepTarget              `yaml:"target,omitempty"`
-	Enabled                 bool                     `yaml:"enabled,omitempty"`
+	Enabled                 *bool                    `yaml:"enabled,omitempty"`
 	Env                     *EnvironmentVariablesRef `yaml:"env,omitempty"`
 	TimeoutInMinutes        int                      `yaml:"timeoutInMinutes,omitempty"`
 	RetryCountOnTaskFailure int                      `yaml:"retryCountOnTaskFailure,omitempty"`
@@ -76,10 +56,48 @@ type Step struct {
 	SaveCache               string                   `yaml:"saveCache,omitempty"`
 	Script                  string                   `yaml:"script,omitempty"`
 	Task                    string                   `yaml:"task,omitempty"`
-	Inputs                  map[string]any           `yaml:"inputs,omitempty"`
+	Inputs                  *TaskInputs              `yaml:"inputs,omitempty"`
 	Template                `yaml:",inline"`
 
 	FileReference *models.FileReference
+}
+
+func (t *StepTarget) UnmarshalYAML(node *yaml.Node) error {
+	t.FileReference = loadersUtils.GetFileReference(node)
+	if node.Tag == consts.StringTag {
+		t.Container = node.Value
+		return nil
+	}
+
+	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+		switch key {
+		case "container":
+			t.Container = value.Value
+		case "commands":
+			t.Commands = value.Value
+		case "settableVariables":
+			var settableVariables []string
+			if err := loadersUtils.ParseSequenceOrOne(node, &settableVariables); err != nil {
+				return err
+			}
+			t.SettableVariables = settableVariables
+		}
+
+		return nil
+	})
+}
+
+func (ti *TaskInputs) UnmarshalYAML(node *yaml.Node) error {
+	ti.FileReference = loadersUtils.GetFileReference(node)
+	// The with block looks like this
+	// with:
+	//   key1: value1
+	//   key2: value2
+	// The node refers to the first input
+	// We want to include the "with" in the File Reference so we have to subtract 1 from the line number and 2 from the column number
+	ti.FileReference.StartRef.Line--
+	ti.FileReference.StartRef.Column -= 2
+	return node.Decode(&ti.Inputs)
 }
 
 func (s *Steps) UnmarshalYAML(node *yaml.Node) error {

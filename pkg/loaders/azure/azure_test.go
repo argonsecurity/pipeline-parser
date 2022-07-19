@@ -524,8 +524,11 @@ func TestLoad(t *testing.T) {
 						Task:             "VSBuild@1",
 						DisplayName:      "Build",
 						TimeoutInMinutes: 120,
-						Inputs: map[string]any{
-							"solution": "**\\*.sln",
+						Inputs: &models.TaskInputs{
+							Inputs: map[string]any{
+								"solution": "**\\*.sln",
+							},
+							FileReference: testutils.CreateFileReference(45, 3, 46, 23),
 						},
 						FileReference: testutils.CreateFileReference(42, 3, 46, 23),
 					},

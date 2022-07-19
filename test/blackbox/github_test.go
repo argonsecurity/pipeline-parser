@@ -43,7 +43,7 @@ func TestGitHub(t *testing.T) {
 						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("task without params"),
-								Type: "task",
+								Type: models.TaskStepType,
 								Task: &models.Task{
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1"),
@@ -53,7 +53,7 @@ func TestGitHub(t *testing.T) {
 							},
 							{
 								Name: utils.GetPtr("task with params"),
-								Type: "task",
+								Type: models.TaskStepType,
 								Task: &models.Task{
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1"),
@@ -70,7 +70,7 @@ func TestGitHub(t *testing.T) {
 							},
 							{
 								Name: utils.GetPtr("task with multiline params"),
-								Type: "task",
+								Type: models.TaskStepType,
 								Task: &models.Task{
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1"),
@@ -92,7 +92,7 @@ func TestGitHub(t *testing.T) {
 							},
 							{
 								Name: utils.GetPtr("task with commit ID version"),
-								Type: "task",
+								Type: models.TaskStepType,
 								Task: &models.Task{
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("c44948622e1b6bb0eb0cec5b813c1ac561158e1e"),
@@ -102,7 +102,7 @@ func TestGitHub(t *testing.T) {
 							},
 							{
 								Name: utils.GetPtr("task with branch version"),
-								Type: "task",
+								Type: models.TaskStepType,
 								Task: &models.Task{
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("master"),
@@ -112,7 +112,7 @@ func TestGitHub(t *testing.T) {
 							},
 							{
 								Name: utils.GetPtr("task with tag version"),
-								Type: "task",
+								Type: models.TaskStepType,
 								Task: &models.Task{
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1.1.1"),
@@ -122,7 +122,7 @@ func TestGitHub(t *testing.T) {
 							},
 							{
 								Name: utils.GetPtr("shell"),
-								Type: "shell",
+								Type: models.ShellStepType,
 								Shell: &models.Shell{
 									Script:        utils.GetPtr("command line"),
 									FileReference: testutils.CreateFileReference(33, 14, 33, 26),
@@ -131,7 +131,7 @@ func TestGitHub(t *testing.T) {
 							},
 							{
 								Name: utils.GetPtr("custom shell"),
-								Type: "shell",
+								Type: models.ShellStepType,
 								Shell: &models.Shell{
 									Script:        utils.GetPtr("command line"),
 									FileReference: testutils.CreateFileReference(37, 14, 37, 26),
@@ -140,7 +140,7 @@ func TestGitHub(t *testing.T) {
 								FileReference: testutils.CreateFileReference(35, 9, 37, 26),
 							}, {
 								Name: utils.GetPtr("shell with break rows"),
-								Type: "shell",
+								Type: models.ShellStepType,
 								Shell: &models.Shell{
 									Script:        utils.GetPtr("echo 1\necho 2\necho 3\n"),
 									FileReference: testutils.CreateFileReference(40, 14, 43, 14),
