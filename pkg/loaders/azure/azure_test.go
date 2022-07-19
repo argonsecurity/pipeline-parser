@@ -154,7 +154,7 @@ func TestLoad(t *testing.T) {
 								},
 							},
 							Jobs: &models.Jobs{
-								CIJobs: &[]models.CIJob{
+								CIJobs: []*models.CIJob{
 									{
 										Job: "FirstJob",
 										BaseJob: models.BaseJob{
@@ -175,8 +175,8 @@ func TestLoad(t *testing.T) {
 										FileReference: testutils.CreateFileReference(19, 5, 23, 53),
 									},
 								},
-								DeploymentJobs: &[]models.DeploymentJob{},
-								TemplateJobs:   &[]models.TemplateJob{},
+								DeploymentJobs: []*models.DeploymentJob{},
+								TemplateJobs:   []*models.TemplateJob{},
 								FileReference:  testutils.CreateFileReference(18, 1, 23, 53),
 							},
 							FileReference: testutils.CreateFileReference(14, 3, 23, 53),
@@ -199,7 +199,7 @@ func TestLoad(t *testing.T) {
 					FileReference: testutils.CreateFileReference(2, 3, 5, 25),
 				},
 				Jobs: &models.Jobs{
-					CIJobs: &[]models.CIJob{
+					CIJobs: []*models.CIJob{
 						{
 							Job: "jobId",
 							BaseJob: models.BaseJob{
@@ -213,8 +213,8 @@ func TestLoad(t *testing.T) {
 							FileReference: testutils.CreateFileReference(9, 3, 13, 18),
 						},
 					},
-					DeploymentJobs: &[]models.DeploymentJob{},
-					TemplateJobs:   &[]models.TemplateJob{},
+					DeploymentJobs: []*models.DeploymentJob{},
+					TemplateJobs:   []*models.TemplateJob{},
 					FileReference:  testutils.CreateFileReference(8, -1, 13, 18),
 				},
 			},
@@ -305,7 +305,7 @@ func TestLoad(t *testing.T) {
 						{
 							Stage:         "BuildMac",
 							DisplayName:   "Build for Mac",
-							DependsOn:     []models.DependsOn{},
+							DependsOn:     &models.DependsOn{},
 							FileReference: testutils.CreateFileReference(6, 3, 8, 14),
 						},
 					},
@@ -340,7 +340,7 @@ func TestLoad(t *testing.T) {
 			expectedPipeline: &models.Pipeline{
 				Name: "Jobs",
 				Jobs: &models.Jobs{
-					CIJobs: &[]models.CIJob{
+					CIJobs: []*models.CIJob{
 						{
 							Job: "MyJob",
 							BaseJob: models.BaseJob{
@@ -349,29 +349,33 @@ func TestLoad(t *testing.T) {
 								Workspace: &models.Workspace{
 									Clean: "outputs",
 								},
+								DependsOn: &models.DependsOn{"job"},
 								Steps: &models.Steps{
 									{
 										Script:        "echo My first job",
-										FileReference: testutils.CreateFileReference(10, 5, 10, 30),
+										FileReference: testutils.CreateFileReference(11, 5, 11, 30),
 									},
 								},
 							},
-							FileReference: testutils.CreateFileReference(4, 3, 10, 30),
+							FileReference: testutils.CreateFileReference(4, 3, 11, 30),
 						},
 					},
-					DeploymentJobs: &[]models.DeploymentJob{
+					DeploymentJobs: []*models.DeploymentJob{
 						{
 							Deployment: "DeployWeb",
 							BaseJob: models.BaseJob{
 								DisplayName: "deploy Web App",
+								DependsOn:   &models.DependsOn{"job1", "job2"},
 								Pool: &models.Pool{
 									VmImage:       "ubuntu-latest",
-									FileReference: testutils.CreateFileReference(13, 5, 14, 27),
+									FileReference: testutils.CreateFileReference(15, 5, 16, 27),
 								},
 							},
-							Environment: &models.DeploymentEnvironment{
-								Name:          "smarthotel-dev",
-								FileReference: testutils.CreateFileReference(16, 16, 16, 30),
+							Environment: &models.DeploymentEnvironmentRef{
+								DeploymentEnvironment: &models.DeploymentEnvironment{
+									Name: "smarthotel-dev",
+								},
+								FileReference: testutils.CreateFileReference(18, 16, 18, 30),
 							},
 							Strategy: &models.DeploymentStrategy{
 								RunOnce: &models.BaseDeploymentStrategy{
@@ -379,16 +383,16 @@ func TestLoad(t *testing.T) {
 										Steps: &models.Steps{
 											{
 												Script:        "echo my first deployment",
-												FileReference: testutils.CreateFileReference(22, 11, 22, 43),
+												FileReference: testutils.CreateFileReference(24, 11, 24, 43),
 											},
 										},
 									},
 								},
 							},
-							FileReference: testutils.CreateFileReference(11, 3, 22, 43),
+							FileReference: testutils.CreateFileReference(12, 3, 24, 43),
 						},
 					},
-					TemplateJobs: &[]models.TemplateJob{
+					TemplateJobs: []*models.TemplateJob{
 						{
 							Template: models.Template{
 								Template: "jobs/build.yml",
@@ -399,7 +403,7 @@ func TestLoad(t *testing.T) {
 									},
 								},
 							},
-							FileReference: testutils.CreateFileReference(23, 3, 27, 28),
+							FileReference: testutils.CreateFileReference(25, 3, 29, 28),
 						},
 						{
 							Template: models.Template{
@@ -411,7 +415,7 @@ func TestLoad(t *testing.T) {
 									},
 								},
 							},
-							FileReference: testutils.CreateFileReference(29, 3, 33, 29),
+							FileReference: testutils.CreateFileReference(31, 3, 35, 29),
 						},
 						{
 							Template: models.Template{
@@ -424,10 +428,10 @@ func TestLoad(t *testing.T) {
 									"sign": true,
 								},
 							},
-							FileReference: testutils.CreateFileReference(34, 3, 39, 15),
+							FileReference: testutils.CreateFileReference(36, 3, 41, 15),
 						},
 					},
-					FileReference: testutils.CreateFileReference(3, -1, 39, 15),
+					FileReference: testutils.CreateFileReference(3, -1, 41, 15),
 				},
 			},
 		},
@@ -534,6 +538,124 @@ func TestLoad(t *testing.T) {
 						},
 						FileReference: testutils.CreateFileReference(47, 3, 49, 15),
 					},
+				},
+			},
+		},
+		{
+			name:     "resources",
+			filename: "../../../test/fixtures/azure/resources.yaml",
+			expectedPipeline: &models.Pipeline{
+				Name: "resources",
+				Resources: &models.Resources{
+					Builds: []*models.BuildRef{
+						{
+							Build: &models.Build{
+								Build:      "Spaceworkz",
+								Type:       "Jenkins",
+								Connection: "MyJenkinsServer",
+								Source:     "SpaceworkzProj",
+								Trigger:    "true",
+							},
+							FileReference: testutils.CreateFileReference(5, 5, 9, 18),
+						},
+					},
+					Containers: []*models.ResourceContainerRef{
+						{
+							ResourceContainer: &models.ResourceContainer{
+								Container: "linux",
+								JobContainer: models.JobContainer{
+									Image: "ubuntu:16.04",
+								},
+							},
+							FileReference: testutils.CreateFileReference(11, 5, 12, 24),
+						},
+						{
+							ResourceContainer: &models.ResourceContainer{
+								Container: "windows",
+								JobContainer: models.JobContainer{
+									Image:    "myprivate.azurecr.io/windowsservercore:1803",
+									Endpoint: "my_acr_connection",
+								},
+							},
+							FileReference: testutils.CreateFileReference(13, 5, 15, 32),
+						},
+						{
+							ResourceContainer: &models.ResourceContainer{
+								Container: "my_service",
+								JobContainer: models.JobContainer{
+									Image:   "my_service:tag",
+									Ports:   []string{"8080:80", "6379"},
+									Volumes: []string{"/src/dir:/dst/dir"},
+								},
+							},
+							FileReference: testutils.CreateFileReference(16, 5, 22, 24),
+						},
+					},
+					Pipelines: []*models.ResourcePipelineRef{
+						{
+							ResourcePipeline: &models.ResourcePipeline{
+								Pipeline: "SmartHotel",
+								Project:  "DevOpsProject",
+								Source:   "SmartHotel-CI",
+								Trigger: &models.TriggerRef{
+									Trigger: &models.Trigger{
+										Branches: &models.Filter{
+											Include: []string{"releases/*", "main"},
+											Exclude: []string{"topic/*"},
+										},
+										Tags: &models.Filter{
+											Include: []string{"Verified", "Signed"},
+										},
+										Stages: &models.Filter{
+											Include: []string{"Production", "PreProduction"},
+										},
+									},
+									FileReference: testutils.CreateFileReference(27, 5, 39, 22),
+								},
+							},
+							FileReference: testutils.CreateFileReference(24, 5, 39, 22),
+						},
+					},
+					Repositories: []*models.RepositoryRef{
+						{
+							Repository: &models.Repository{
+								Repository: "common",
+								Type:       "github",
+								Name:       "Contoso/CommonTools",
+								Endpoint:   "MyContosoServiceConnection",
+							},
+							FileReference: testutils.CreateFileReference(41, 5, 44, 41),
+						},
+					},
+					Webhooks: []*models.WebhookRef{
+						{
+							Webhook: &models.Webhook{
+								Webhook:    "MyWebhookTriggerAlias",
+								Connection: "IncomingWebhookConnection",
+								Filters: []models.Path{
+									{
+										Path:  "JSONParameterPath",
+										Value: "JSONParameterExpectedValue",
+									},
+								},
+							},
+							FileReference: testutils.CreateFileReference(46, 5, 50, 42),
+						},
+					},
+					Packages: []*models.PackageRef{
+						{
+							Package: &models.Package{
+								Package:    "myPackageAlias",
+								Type:       "Npm",
+								Connection: "GitHubConnectionName",
+								Name:       "nugetTest/nodeapp",
+								Version:    "1.0.1",
+								Trigger:    "true",
+							},
+							FileReference: testutils.CreateFileReference(52, 7, 57, 20),
+						},
+					},
+					FileReference: testutils.CreateFileReference(3, 1, 57, 20),
 				},
 			},
 		},

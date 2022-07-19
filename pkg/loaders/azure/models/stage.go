@@ -11,7 +11,7 @@ type Stage struct {
 	Stage           string         `yaml:"stage,omitempty"`
 	DisplayName     string         `yaml:"displayName,omitempty"`
 	Pool            *Pool          `yaml:"pool,omitempty"`
-	DependsOn       []DependsOn    `yaml:"dependsOn,omitempty"`
+	DependsOn       *DependsOn     `yaml:"dependsOn,omitempty"`
 	Condition       string         `yaml:"condition,omitempty"`
 	Variables       *Variables     `yaml:"variables,omitempty"`
 	Jobs            *Jobs          `yaml:"jobs,omitempty"`
@@ -42,13 +42,14 @@ func (s *Stages) UnmarshalYAML(node *yaml.Node) error {
 				return err
 			}
 			templateStages = append(templateStages, stage)
-		} else {
-			stage, err := parseStage(stageNode)
-			if err != nil {
-				return err
-			}
-			stages = append(stages, stage)
+			continue
 		}
+
+		stage, err := parseStage(stageNode)
+		if err != nil {
+			return err
+		}
+		stages = append(stages, stage)
 	}
 
 	*s = Stages{

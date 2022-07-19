@@ -4,12 +4,14 @@ jobs:
 - job: MyJob
   displayName: My First Job
   continueOnError: true
+  dependsOn: job
   workspace:
     clean: outputs
   steps:
   - script: echo My first job
 - deployment: DeployWeb
   displayName: deploy Web App
+  dependsOn: [job1, job2]
   pool:
     vmImage: ubuntu-latest
   # creates an environment if it doesn't exist

@@ -7,19 +7,18 @@ import (
 )
 
 type Build struct {
-	Build         string `yaml:"build,omitempty"`
-	Type          string `yaml:"type,omitempty"`
-	Connection    string `yaml:"connection,omitempty"`
-	Source        string `yaml:"source,omitempty"`
-	Version       string `yaml:"version,omitempty"`
-	Branch        string `yaml:"branch,omitempty"`
-	Trigger       string `yaml:"trigger,omitempty"`
-	FileReference *models.FileReference
+	Build      string `yaml:"build,omitempty"`
+	Type       string `yaml:"type,omitempty"`
+	Connection string `yaml:"connection,omitempty"`
+	Source     string `yaml:"source,omitempty"`
+	Version    string `yaml:"version,omitempty"`
+	Branch     string `yaml:"branch,omitempty"`
+	Trigger    string `yaml:"trigger,omitempty"`
 }
 
-func (b *Build) UnmarshalYAML(node *yaml.Node) error {
-	b.FileReference = loadersUtils.GetFileReference(node)
-	return node.Decode(&b)
+type BuildRef struct {
+	Build         *Build
+	FileReference *models.FileReference
 }
 
 type MountReadOnly struct {
@@ -49,12 +48,11 @@ type ResourceContainer struct {
 	Registry          string      `yaml:"registry,omitempty"`
 	Repository        string      `yaml:"repository,omitempty"`
 	JobContainer      `yaml:",inline"`
-	FileReference     *models.FileReference
 }
 
-func (c *ResourceContainer) UnmarshalYAML(node *yaml.Node) error {
-	c.FileReference = loadersUtils.GetFileReference(node)
-	return node.Decode(&c)
+type ResourceContainerRef struct {
+	ResourceContainer *ResourceContainer
+	FileReference     *models.FileReference
 }
 
 type ResourcePipeline struct {
@@ -65,13 +63,11 @@ type ResourcePipeline struct {
 	Branch   string      `yaml:"branch,omitempty"`
 	Tags     []string    `yaml:"tags,omitempty"`
 	Trigger  *TriggerRef `yaml:"trigger,omitempty"`
-
-	FileReference *models.FileReference
 }
 
-func (p *ResourcePipeline) UnmarshalYAML(node *yaml.Node) error {
-	p.FileReference = loadersUtils.GetFileReference(node)
-	return node.Decode(&p)
+type ResourcePipelineRef struct {
+	ResourcePipeline *ResourcePipeline
+	FileReference    *models.FileReference
 }
 
 type Repository struct {
@@ -84,9 +80,9 @@ type Repository struct {
 	FileReference *models.FileReference
 }
 
-func (r *Repository) UnmarshalYAML(node *yaml.Node) error {
-	r.FileReference = loadersUtils.GetFileReference(node)
-	return node.Decode(&r)
+type RepositoryRef struct {
+	Repository    *Repository
+	FileReference *models.FileReference
 }
 
 type Path struct {
@@ -95,16 +91,15 @@ type Path struct {
 }
 
 type Webhook struct {
-	Webhook       string `yaml:"webhook,omitempty"`
-	Connection    string `yaml:"connection,omitempty"`
-	Type          string `yaml:"type,omitempty"`
-	Filters       []Path
-	FileReference *models.FileReference
+	Webhook    string `yaml:"webhook,omitempty"`
+	Connection string `yaml:"connection,omitempty"`
+	Type       string `yaml:"type,omitempty"`
+	Filters    []Path
 }
 
-func (w *Webhook) UnmarshalYAML(node *yaml.Node) error {
-	w.FileReference = loadersUtils.GetFileReference(node)
-	return node.Decode(&w)
+type WebhookRef struct {
+	Webhook       *Webhook
+	FileReference *models.FileReference
 }
 
 type Package struct {
@@ -118,22 +113,94 @@ type Package struct {
 	FileReference *models.FileReference
 }
 
-func (p *Package) UnmarshalYAML(node *yaml.Node) error {
-	p.FileReference = loadersUtils.GetFileReference(node)
-	return node.Decode(&p)
+type PackageRef struct {
+	Package       *Package
+	FileReference *models.FileReference
 }
 
 type Resources struct {
-	Builds        *[]Build             `yaml:"builds,omitempty"`
-	Containers    *[]ResourceContainer `yaml:"containers,omitempty"`
-	Pipelines     *[]ResourcePipeline  `yaml:"pipelines,omitempty"`
-	Repositories  *[]Repository        `yaml:"repositories,omitempty"`
-	Webhooks      *[]Webhook           `yaml:"webhooks,omitempty"`
-	Packages      *[]Package           `yaml:"packages,omitempty"`
+	Builds        []*BuildRef             `yaml:"builds,omitempty"`
+	Containers    []*ResourceContainerRef `yaml:"containers,omitempty"`
+	Pipelines     []*ResourcePipelineRef  `yaml:"pipelines,omitempty"`
+	Repositories  []*RepositoryRef        `yaml:"repositories,omitempty"`
+	Webhooks      []*WebhookRef           `yaml:"webhooks,omitempty"`
+	Packages      []*PackageRef           `yaml:"packages,omitempty"`
 	FileReference *models.FileReference
+}
+
+func (br *BuildRef) UnmarshalYAML(node *yaml.Node) error {
+	br.FileReference = loadersUtils.GetFileReference(node)
+	return node.Decode(&br.Build)
+}
+
+func (rcf *ResourceContainerRef) UnmarshalYAML(node *yaml.Node) error {
+	rcf.FileReference = loadersUtils.GetFileReference(node)
+	return node.Decode(&rcf.ResourceContainer)
+}
+
+func (rpr *ResourcePipelineRef) UnmarshalYAML(node *yaml.Node) error {
+	rpr.FileReference = loadersUtils.GetFileReference(node)
+	return node.Decode(&rpr.ResourcePipeline)
+}
+
+func (rr *RepositoryRef) UnmarshalYAML(node *yaml.Node) error {
+	rr.FileReference = loadersUtils.GetFileReference(node)
+	return node.Decode(&rr.Repository)
+}
+
+func (wr *WebhookRef) UnmarshalYAML(node *yaml.Node) error {
+	wr.FileReference = loadersUtils.GetFileReference(node)
+	return node.Decode(&wr.Webhook)
+}
+
+func (pr *PackageRef) UnmarshalYAML(node *yaml.Node) error {
+	pr.FileReference = loadersUtils.GetFileReference(node)
+	return node.Decode(&pr.Package)
 }
 
 func (r *Resources) UnmarshalYAML(node *yaml.Node) error {
 	r.FileReference = loadersUtils.GetFileReference(node)
-	return node.Decode(&r)
+	r.FileReference.StartRef.Line--      // The "resources" node is not accessible, this is a patch
+	r.FileReference.StartRef.Column -= 2 // The "resources" node is not accessible, this is a patch
+	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+		switch key {
+		case "builds":
+			var builds []*BuildRef
+			if err := value.Decode(&builds); err != nil {
+				return err
+			}
+			r.Builds = builds
+		case "containers":
+			var containers []*ResourceContainerRef
+			if err := value.Decode(&containers); err != nil {
+				return err
+			}
+			r.Containers = containers
+		case "pipelines":
+			var pipelines []*ResourcePipelineRef
+			if err := value.Decode(&pipelines); err != nil {
+				return err
+			}
+			r.Pipelines = pipelines
+		case "repositories":
+			var repositories []*RepositoryRef
+			if err := value.Decode(&repositories); err != nil {
+				return err
+			}
+			r.Repositories = repositories
+		case "webhooks":
+			var webhooks []*WebhookRef
+			if err := value.Decode(&webhooks); err != nil {
+				return err
+			}
+			r.Webhooks = webhooks
+		case "packages":
+			var packages []*PackageRef
+			if err := value.Decode(&packages); err != nil {
+				return err
+			}
+			r.Packages = packages
+		}
+		return nil
+	})
 }

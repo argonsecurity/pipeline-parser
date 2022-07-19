@@ -14,6 +14,18 @@ func NewErrInvalidPlatform(platform Platform) error {
 	return &ErrInvalidPlatform{Platform: platform}
 }
 
+type ErrInvalidYaml struct {
+	Message string
+}
+
+func (e *ErrInvalidYaml) Error() string {
+	return fmt.Sprintf("invalid yaml: %s", e.Message)
+}
+
+func NewErrInvalidYaml(message string) error {
+	return &ErrInvalidYaml{Message: message}
+}
+
 type ErrInvalidYamlTag struct {
 	Tag string
 }

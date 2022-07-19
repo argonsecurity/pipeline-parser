@@ -28,13 +28,8 @@ func (p *Pool) UnmarshalYAML(node *yaml.Node) error {
 			p.Name = value.Value
 		case "demands":
 			var demands []string
-			var err error
-			if value.Tag == consts.StringTag {
-				demands = []string{value.Value}
-			} else {
-				if demands, err = loadersUtils.ParseYamlStringSequenceToSlice(value); err != nil {
-					return err
-				}
+			if err := loadersUtils.ParseSequenceOrOne(value, &demands); err != nil {
+				return err
 			}
 			p.Demands = demands
 		case "vmImage":
