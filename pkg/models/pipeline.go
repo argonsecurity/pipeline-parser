@@ -24,6 +24,7 @@ type Defaults struct {
 	Scans                *Scans                   `json:"scans,omitempty"`
 	Runner               *Runner                  `json:"runner,omitempty"`
 	Conditions           []*Condition             `json:"conditions,omitempty"`
+	ContinueOnError      *bool                    `json:"continue_on_error,omitempty"`
 	TokenPermissions     *TokenPermissions        `json:"token_permissions,omitempty"`
 	Settings             *map[string]any          `json:"settings,omitempty"`
 	FileReference        *FileReference           `json:"file_reference,omitempty"`

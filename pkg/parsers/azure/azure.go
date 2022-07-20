@@ -17,5 +17,15 @@ func (g *AzureParser) Parse(azurePipeline *azureModels.Pipeline) (*models.Pipeli
 	pipeline.Parameters = parseParameters(azurePipeline)
 	pipeline.Imports = parseExtends(azurePipeline.Extends)
 
+	if azurePipeline.ContinueOnError != nil {
+		pipeline.Defaults = &models.Defaults{
+			ContinueOnError: azurePipeline.ContinueOnError,
+		}
+	}
+
+	if azurePipeline.Jobs != nil {
+		pipeline.Jobs = parseJobs(azurePipeline.Jobs)
+	}
+
 	return pipeline, nil
 }

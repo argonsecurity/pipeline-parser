@@ -143,7 +143,7 @@ func TestLoad(t *testing.T) {
 					},
 				},
 				Stages: &models.Stages{
-					Stages: &[]models.Stage{
+					Stages: []*models.Stage{
 						{
 							Stage: "Build",
 							Variables: &models.Variables{
@@ -182,7 +182,7 @@ func TestLoad(t *testing.T) {
 							FileReference: testutils.CreateFileReference(14, 3, 23, 53),
 						},
 					},
-					TemplateStages: &[]models.TemplateStage{},
+					TemplateStages: []*models.TemplateStage{},
 					FileReference:  testutils.CreateFileReference(13, -1, 23, 53),
 				},
 			},
@@ -296,7 +296,7 @@ func TestLoad(t *testing.T) {
 			expectedPipeline: &models.Pipeline{
 				Name: "stages",
 				Stages: &models.Stages{
-					Stages: &[]models.Stage{
+					Stages: []*models.Stage{
 						{
 							Stage:         "BuildWin",
 							DisplayName:   "Build for Windows",
@@ -309,7 +309,7 @@ func TestLoad(t *testing.T) {
 							FileReference: testutils.CreateFileReference(6, 3, 8, 14),
 						},
 					},
-					TemplateStages: &[]models.TemplateStage{
+					TemplateStages: []*models.TemplateStage{
 						{
 							Template: models.Template{
 								Template: "stages/build.yml",
