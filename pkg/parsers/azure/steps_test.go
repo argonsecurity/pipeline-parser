@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseJobSteps(t *testing.T) {
+func TestParseSteps(t *testing.T) {
 	testCases := []struct {
 		name          string
 		steps         *azureModels.Steps
@@ -166,7 +166,7 @@ func TestParseJobSteps(t *testing.T) {
 	}
 }
 
-func TestParseJobStep(t *testing.T) {
+func TestParseStep(t *testing.T) {
 	testCases := []struct {
 		name         string
 		step         azureModels.Step
