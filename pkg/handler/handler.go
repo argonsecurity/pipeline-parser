@@ -4,6 +4,7 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders"
+	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
@@ -24,6 +25,8 @@ func Handle(data []byte, platform consts.Platform) (*models.Pipeline, error) {
 		pipeline, err = handle[githubModels.Workflow](data, &GitHubHandler{})
 	case consts.GitLabPlatform:
 		pipeline, err = handle[gitlabModels.GitlabCIConfiguration](data, &GitLabHandler{})
+	case consts.AzurePlatform:
+		pipeline, err = handle[azureModels.Pipeline](data, &AzureHandler{})
 	}
 
 	if err != nil {

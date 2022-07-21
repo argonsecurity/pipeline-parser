@@ -8,9 +8,9 @@ import (
 
 type AzureParser struct{}
 
-func (g *AzureParser) Parse(azurePipeline *azureModels.Pipeline) *models.Pipeline {
+func (g *AzureParser) Parse(azurePipeline *azureModels.Pipeline) (*models.Pipeline, error) {
 	if azurePipeline == nil {
-		return nil
+		return nil, nil
 	}
 
 	pipeline := &models.Pipeline{
@@ -36,7 +36,7 @@ func (g *AzureParser) Parse(azurePipeline *azureModels.Pipeline) *models.Pipelin
 		}
 	}
 
-	return pipeline
+	return pipeline, nil
 }
 
 func generateDefaultJob() *models.Job {

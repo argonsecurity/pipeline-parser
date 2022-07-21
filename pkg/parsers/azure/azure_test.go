@@ -473,7 +473,8 @@ func TestParse(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			parser := AzureParser{}
 
-			pipeline := parser.Parse(testCase.azurePipeline)
+			pipeline, err := parser.Parse(testCase.azurePipeline)
+			assert.NoError(t, err)
 
 			changelog, err := diff.Diff(testCase.expectedPipeline, pipeline)
 			assert.NoError(t, err)
