@@ -36,6 +36,7 @@ func parseCIJob(job *azureModels.CIJob) *models.Job {
 	parsedJob := parseBaseJob(&job.BaseJob)
 
 	parsedJob.ID = &job.Job
+	parsedJob.FileReference = job.FileReference
 
 	return parsedJob
 }
@@ -48,6 +49,7 @@ func parseDeploymentJob(job *azureModels.DeploymentJob) *models.Job {
 	parsedJob := parseBaseJob(&job.BaseJob)
 
 	parsedJob.ID = &job.Deployment
+	parsedJob.FileReference = job.FileReference
 
 	return parsedJob
 }

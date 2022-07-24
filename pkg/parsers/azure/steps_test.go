@@ -214,7 +214,7 @@ func TestParseStep(t *testing.T) {
 				WorkingDirectory: utils.GetPtr("dir"),
 				Shell: &models.Shell{
 					Script: utils.GetPtr("script"),
-					Type:   utils.GetPtr("cmd or bash"),
+					Type:   utils.GetPtr(""),
 				},
 				Disabled: utils.GetPtr(false),
 				Type:     models.ShellStepType,
@@ -425,7 +425,7 @@ func TestParseStepScript(t *testing.T) {
 			},
 			expectedShell: &models.Shell{
 				Script: utils.GetPtr("script"),
-				Type:   utils.GetPtr("cmd or bash"),
+				Type:   utils.GetPtr(""),
 			},
 		},
 		{

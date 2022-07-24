@@ -274,19 +274,6 @@ func TestLoad(t *testing.T) {
 						},
 						FileReference: testutils.CreateFileReference(37, 3, 40, 25),
 					},
-					{
-						Name: "myStepList",
-						Type: "stepList",
-						Default: []map[string]any{
-							{
-								"script": "echo step one",
-							},
-							{
-								"script": "echo step two",
-							},
-						},
-						FileReference: testutils.CreateFileReference(41, 3, 45, 28),
-					},
 				},
 			},
 		},

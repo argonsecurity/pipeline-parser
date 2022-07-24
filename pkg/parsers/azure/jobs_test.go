@@ -5,6 +5,7 @@ import (
 
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/r3labs/diff/v3"
 	"github.com/stretchr/testify/assert"
@@ -46,6 +47,7 @@ func TestParseJobs(t *testing.T) {
 								},
 							},
 						},
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 					},
 					{
 						Job: "job-2",
@@ -63,6 +65,7 @@ func TestParseJobs(t *testing.T) {
 								},
 							},
 						},
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 					},
 				},
 				DeploymentJobs: []*azureModels.DeploymentJob{
@@ -82,6 +85,7 @@ func TestParseJobs(t *testing.T) {
 								},
 							},
 						},
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 					},
 					{
 						Deployment: "deployment-2",
@@ -99,6 +103,7 @@ func TestParseJobs(t *testing.T) {
 								},
 							},
 						},
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 					},
 				},
 			},
@@ -122,6 +127,7 @@ func TestParseJobs(t *testing.T) {
 							Conditions: &[]models.Condition{{Statement: "step-1-condition"}},
 						},
 					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 				},
 				{
 					ID:              utils.GetPtr("job-2"),
@@ -142,6 +148,7 @@ func TestParseJobs(t *testing.T) {
 							Conditions: &[]models.Condition{{Statement: "step-2-condition"}},
 						},
 					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 				},
 				{
 					ID:              utils.GetPtr("deployment-1"),
@@ -162,6 +169,7 @@ func TestParseJobs(t *testing.T) {
 							Conditions: &[]models.Condition{{Statement: "step-1-condition"}},
 						},
 					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 				},
 				{
 					ID:              utils.GetPtr("deployment-2"),
@@ -182,6 +190,7 @@ func TestParseJobs(t *testing.T) {
 							Conditions: &[]models.Condition{{Statement: "step-2-condition"}},
 						},
 					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 				},
 			},
 		},
@@ -237,6 +246,7 @@ func TestParseCIJob(t *testing.T) {
 						},
 					},
 				},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 			},
 			expectedJob: &models.Job{
 				ID:              utils.GetPtr("job-1"),
@@ -257,6 +267,7 @@ func TestParseCIJob(t *testing.T) {
 						Conditions: &[]models.Condition{{Statement: "step-1-condition"}},
 					},
 				},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 			},
 		},
 	}
@@ -311,6 +322,7 @@ func TestParseDeploymentJob(t *testing.T) {
 						},
 					},
 				},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 			},
 			expectedJob: &models.Job{
 				ID:              utils.GetPtr("deployment-1"),
@@ -331,6 +343,7 @@ func TestParseDeploymentJob(t *testing.T) {
 						Conditions: &[]models.Condition{{Statement: "step-1-condition"}},
 					},
 				},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 			},
 		},
 	}

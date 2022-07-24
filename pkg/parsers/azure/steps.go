@@ -77,7 +77,7 @@ func parseStepScript(step azureModels.Step) *models.Shell {
 	var script string
 
 	if step.Script != "" {
-		shellType = "cmd or bash"
+		shellType = ""
 		script = step.Script
 	} else if step.Bash != "" {
 		shellType = "bash"

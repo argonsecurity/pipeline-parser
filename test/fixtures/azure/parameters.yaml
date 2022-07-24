@@ -38,8 +38,3 @@ parameters:
   type: step
   default:
     script: echo my step
-- name: mySteplist
-  type: stepList
-  default:
-    - script: echo step one
-    - script: echo step two

@@ -24,13 +24,18 @@ func parsePipelineTriggers(pipeline *azureModels.Pipeline) *models.Triggers {
 		triggers = append(triggers, parseSchedules(pipeline.Schedules))
 	}
 
+	triggers = utils.Filter(triggers, func(t *models.Trigger) bool { return t != nil })
+
 	if len(triggers) == 0 {
 		return nil
 	}
 
 	return &models.Triggers{
-		Triggers:      triggers,
-		FileReference: triggers[0].FileReference,
+		Triggers: triggers,
+		FileReference: &models.FileReference{
+			StartRef: triggers[0].FileReference.StartRef,
+			EndRef:   triggers[len(triggers)-1].FileReference.EndRef,
+		},
 	}
 }
 

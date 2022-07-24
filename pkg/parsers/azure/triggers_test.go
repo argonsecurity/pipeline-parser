@@ -152,7 +152,7 @@ func TestParsePipelineTriggers(t *testing.T) {
 						FileReference: testutils.CreateFileReference(13, 14, 15, 16),
 					},
 				},
-				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				FileReference: testutils.CreateFileReference(1, 2, 15, 16),
 			},
 		},
 	}

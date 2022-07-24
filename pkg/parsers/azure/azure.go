@@ -27,13 +27,24 @@ func (g *AzureParser) Parse(azurePipeline *azureModels.Pipeline) (*models.Pipeli
 		}
 	}
 
+	var jobs []*models.Job
+
+	if azurePipeline.Stages != nil {
+		jobs = append(jobs, parseStages(azurePipeline.Stages)...)
+	}
+
 	if azurePipeline.Jobs != nil {
-		pipeline.Jobs = parseJobs(azurePipeline.Jobs)
-	} else {
-		pipeline.Jobs = []*models.Job{generateDefaultJob()}
-		if azurePipeline.Steps != nil {
-			pipeline.Jobs[0].Steps = parseSteps(azurePipeline.Steps)
-		}
+		jobs = append(pipeline.Jobs, parseJobs(azurePipeline.Jobs)...)
+	}
+
+	if len(jobs) == 0 {
+		jobs = []*models.Job{generateDefaultJob()}
+	}
+
+	pipeline.Jobs = jobs
+
+	if azurePipeline.Steps != nil {
+		pipeline.Jobs[0].Steps = parseSteps(azurePipeline.Steps)
 	}
 
 	return pipeline, nil
