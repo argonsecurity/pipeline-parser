@@ -13,11 +13,11 @@ type Filter struct {
 }
 
 type Trigger struct {
-	Batch    bool    `yaml:"batch,omitempty"`
-	Branches *Filter `yaml:"branches,omitempty"`
-	Paths    *Filter `yaml:"paths,omitempty"`
-	Tags     *Filter `yaml:"tags,omitempty"`
-	Stages   *Filter `yaml:"stages,omitempty"`
+	Batch    bool   `yaml:"batch,omitempty"`
+	Branches Filter `yaml:"branches,omitempty"`
+	Paths    Filter `yaml:"paths,omitempty"`
+	Tags     Filter `yaml:"tags,omitempty"`
+	Stages   Filter `yaml:"stages,omitempty"`
 }
 
 type TriggerRef struct {
@@ -26,10 +26,10 @@ type TriggerRef struct {
 }
 
 type PR struct {
-	AutoCancel bool    `yaml:"autoCancel,omitempty"`
-	Branches   *Filter `yaml:"branches,omitempty"`
-	Paths      *Filter `yaml:"paths,omitempty"`
-	Drafts     bool    `yaml:"drafts,omitempty"`
+	AutoCancel bool   `yaml:"autoCancel,omitempty"`
+	Branches   Filter `yaml:"branches,omitempty"`
+	Paths      Filter `yaml:"paths,omitempty"`
+	Drafts     bool   `yaml:"drafts,omitempty"`
 }
 
 type PRRef struct {
@@ -38,11 +38,11 @@ type PRRef struct {
 }
 
 type Cron struct {
-	Cron          string  `yaml:"cron,omitempty"`
-	DisplayName   string  `yaml:"displayName,omitempty"`
-	Branches      *Filter `yaml:"branches,omitempty"`
-	Batch         bool    `yaml:"batch,omitempty"`
-	Always        bool    `yaml:"always,omitempty"`
+	Cron          string `yaml:"cron,omitempty"`
+	DisplayName   string `yaml:"displayName,omitempty"`
+	Branches      Filter `yaml:"branches,omitempty"`
+	Batch         bool   `yaml:"batch,omitempty"`
+	Always        bool   `yaml:"always,omitempty"`
 	FileReference *models.FileReference
 }
 
@@ -93,7 +93,7 @@ func (tr *TriggerRef) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		tr.Trigger = &Trigger{
-			Branches: &Filter{Include: branches},
+			Branches: Filter{Include: branches},
 		}
 		return nil
 	}
@@ -116,7 +116,7 @@ func (prr *PRRef) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		prr.PR = &PR{
-			Branches: &Filter{Include: branches},
+			Branches: Filter{Include: branches},
 		}
 		return nil
 	}

@@ -1,9 +1,9 @@
-package github
+package azure
 
 import (
 	"testing"
 
-	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
+	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -11,10 +11,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseJobSteps(t *testing.T) {
+func TestParseSteps(t *testing.T) {
 	testCases := []struct {
 		name          string
-		steps         *githubModels.Steps
+		steps         *azureModels.Steps
 		expectedSteps []*models.Step
 	}{
 		{
@@ -24,11 +24,11 @@ func TestParseJobSteps(t *testing.T) {
 		},
 		{
 			name: "steps with one step",
-			steps: &githubModels.Steps{
+			steps: &azureModels.Steps{
 				{
-					Id:   "1",
-					Name: "step-name",
-					Env: &githubModels.EnvironmentVariablesRef{
+					Name:        "1",
+					DisplayName: "step-name",
+					Env: &azureModels.EnvironmentVariablesRef{
 						EnvironmentVariables: models.EnvironmentVariables{
 							"key": "value",
 						},
@@ -36,14 +36,10 @@ func TestParseJobSteps(t *testing.T) {
 					},
 					FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
 					ContinueOnError:  utils.GetPtr(true),
-					If:               "condition",
-					TimeoutMinutes:   1,
+					Condition:        "condition",
+					TimeoutInMinutes: 1,
 					WorkingDirectory: "dir",
-					Run: &githubModels.ShellCommand{
-						Script:        "script",
-						FileReference: testutils.CreateFileReference(111, 222, 333, 444),
-					},
-					Shell: "ubuntu",
+					Bash:             "script",
 				},
 			},
 			expectedSteps: []*models.Step{
@@ -62,9 +58,8 @@ func TestParseJobSteps(t *testing.T) {
 					Timeout:          utils.GetPtr(60000),
 					WorkingDirectory: utils.GetPtr("dir"),
 					Shell: &models.Shell{
-						Script:        utils.GetPtr("script"),
-						Type:          utils.GetPtr("ubuntu"),
-						FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+						Script: utils.GetPtr("script"),
+						Type:   utils.GetPtr("bash"),
 					},
 					Type: models.ShellStepType,
 				},
@@ -72,11 +67,11 @@ func TestParseJobSteps(t *testing.T) {
 		},
 		{
 			name: "steps with some steps",
-			steps: &githubModels.Steps{
+			steps: &azureModels.Steps{
 				{
-					Id:   "1",
-					Name: "step-name1",
-					Env: &githubModels.EnvironmentVariablesRef{
+					Name:        "1",
+					DisplayName: "step-name1",
+					Env: &azureModels.EnvironmentVariablesRef{
 						EnvironmentVariables: models.EnvironmentVariables{
 							"key": "value1",
 						},
@@ -84,19 +79,15 @@ func TestParseJobSteps(t *testing.T) {
 					},
 					FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
 					ContinueOnError:  utils.GetPtr(true),
-					If:               "condition1",
-					TimeoutMinutes:   1,
+					Condition:        "condition1",
+					TimeoutInMinutes: 1,
 					WorkingDirectory: "dir",
-					Run: &githubModels.ShellCommand{
-						Script:        "script",
-						FileReference: testutils.CreateFileReference(111, 222, 333, 444),
-					},
-					Shell: "ubuntu",
+					Bash:             "script",
 				},
 				{
-					Id:   "2",
-					Name: "step-name2",
-					Env: &githubModels.EnvironmentVariablesRef{
+					Name:        "2",
+					DisplayName: "step-name2",
+					Env: &azureModels.EnvironmentVariablesRef{
 						EnvironmentVariables: models.EnvironmentVariables{
 							"key": "value2",
 						},
@@ -104,11 +95,11 @@ func TestParseJobSteps(t *testing.T) {
 					},
 					FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
 					ContinueOnError:  utils.GetPtr(true),
-					If:               "condition2",
-					TimeoutMinutes:   1,
+					Condition:        "condition2",
+					TimeoutInMinutes: 1,
 					WorkingDirectory: "dir",
-					Uses:             "actions/checkout@1.2.3",
-					With: &githubModels.With{
+					Task:             "Task@2",
+					Inputs: &azureModels.TaskInputs{
 						Inputs:        map[string]any{"key": "value"},
 						FileReference: testutils.CreateFileReference(111, 222, 333, 444),
 					},
@@ -130,9 +121,8 @@ func TestParseJobSteps(t *testing.T) {
 					Timeout:          utils.GetPtr(60000),
 					WorkingDirectory: utils.GetPtr("dir"),
 					Shell: &models.Shell{
-						Script:        utils.GetPtr("script"),
-						Type:          utils.GetPtr("ubuntu"),
-						FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+						Script: utils.GetPtr("script"),
+						Type:   utils.GetPtr("bash"),
 					},
 					Type: models.ShellStepType,
 				},
@@ -151,8 +141,8 @@ func TestParseJobSteps(t *testing.T) {
 					Timeout:          utils.GetPtr(60000),
 					WorkingDirectory: utils.GetPtr("dir"),
 					Task: &models.Task{
-						Name:        utils.GetPtr("actions/checkout"),
-						Version:     utils.GetPtr("1.2.3"),
+						Name:        utils.GetPtr("Task"),
+						Version:     utils.GetPtr("2"),
 						VersionType: models.TagVersion,
 						Inputs: &[]models.Parameter{
 							{
@@ -170,31 +160,31 @@ func TestParseJobSteps(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			got := parseJobSteps(testCase.steps)
+			got := parseSteps(testCase.steps)
 			assert.ElementsMatch(t, testCase.expectedSteps, got, testCase.name)
 		})
 	}
 }
 
-func TestParseJobStep(t *testing.T) {
+func TestParseStep(t *testing.T) {
 	testCases := []struct {
 		name         string
-		step         githubModels.Step
+		step         azureModels.Step
 		expectedStep *models.Step
 	}{
 		{
 			name: "Empty step",
-			step: githubModels.Step{},
+			step: azureModels.Step{},
 			expectedStep: &models.Step{
 				Name: utils.GetPtr(""),
 			},
 		},
 		{
-			name: "Shell step",
-			step: githubModels.Step{
-				Id:   "1",
-				Name: "step-name",
-				Env: &githubModels.EnvironmentVariablesRef{
+			name: "Script step",
+			step: azureModels.Step{
+				Name:        "1",
+				DisplayName: "step-name",
+				Env: &azureModels.EnvironmentVariablesRef{
 					EnvironmentVariables: models.EnvironmentVariables{
 						"key": "value",
 					},
@@ -202,14 +192,11 @@ func TestParseJobStep(t *testing.T) {
 				},
 				FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
 				ContinueOnError:  utils.GetPtr(true),
-				If:               "condition",
-				TimeoutMinutes:   1,
+				Condition:        "condition",
+				TimeoutInMinutes: 1,
 				WorkingDirectory: "dir",
-				Run: &githubModels.ShellCommand{
-					Script:        "script",
-					FileReference: testutils.CreateFileReference(111, 222, 333, 444),
-				},
-				Shell: "ubuntu",
+				Script:           "script",
+				Enabled:          utils.GetPtr(true),
 			},
 			expectedStep: &models.Step{
 				ID:   utils.GetPtr("1"),
@@ -226,19 +213,19 @@ func TestParseJobStep(t *testing.T) {
 				Timeout:          utils.GetPtr(60000),
 				WorkingDirectory: utils.GetPtr("dir"),
 				Shell: &models.Shell{
-					Script:        utils.GetPtr("script"),
-					Type:          utils.GetPtr("ubuntu"),
-					FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+					Script: utils.GetPtr("script"),
+					Type:   utils.GetPtr(""),
 				},
-				Type: models.ShellStepType,
+				Disabled: utils.GetPtr(false),
+				Type:     models.ShellStepType,
 			},
 		},
 		{
-			name: "Task step",
-			step: githubModels.Step{
-				Id:   "1",
-				Name: "step-name",
-				Env: &githubModels.EnvironmentVariablesRef{
+			name: "Bash step",
+			step: azureModels.Step{
+				Name:        "1",
+				DisplayName: "step-name",
+				Env: &azureModels.EnvironmentVariablesRef{
 					EnvironmentVariables: models.EnvironmentVariables{
 						"key": "value",
 					},
@@ -246,11 +233,134 @@ func TestParseJobStep(t *testing.T) {
 				},
 				FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
 				ContinueOnError:  utils.GetPtr(true),
-				If:               "condition",
-				TimeoutMinutes:   1,
+				Condition:        "condition",
+				TimeoutInMinutes: 1,
 				WorkingDirectory: "dir",
-				Uses:             "actions/checkout@1.2.3",
-				With: &githubModels.With{
+				Bash:             "script",
+				Enabled:          utils.GetPtr(true),
+			},
+			expectedStep: &models.Step{
+				ID:   utils.GetPtr("1"),
+				Name: utils.GetPtr("step-name"),
+				EnvironmentVariables: &models.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"key": "value",
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+				FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
+				FailsPipeline:    utils.GetPtr(false),
+				Conditions:       &[]models.Condition{{Statement: "condition"}},
+				Timeout:          utils.GetPtr(60000),
+				WorkingDirectory: utils.GetPtr("dir"),
+				Shell: &models.Shell{
+					Script: utils.GetPtr("script"),
+					Type:   utils.GetPtr("bash"),
+				},
+				Disabled: utils.GetPtr(false),
+				Type:     models.ShellStepType,
+			},
+		},
+		{
+			name: "Powershell step",
+			step: azureModels.Step{
+				Name:        "1",
+				DisplayName: "step-name",
+				Env: &azureModels.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"key": "value",
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+				FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
+				ContinueOnError:  utils.GetPtr(true),
+				Condition:        "condition",
+				TimeoutInMinutes: 1,
+				WorkingDirectory: "dir",
+				Powershell:       "script",
+				Enabled:          utils.GetPtr(true),
+			},
+			expectedStep: &models.Step{
+				ID:   utils.GetPtr("1"),
+				Name: utils.GetPtr("step-name"),
+				EnvironmentVariables: &models.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"key": "value",
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+				FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
+				FailsPipeline:    utils.GetPtr(false),
+				Conditions:       &[]models.Condition{{Statement: "condition"}},
+				Timeout:          utils.GetPtr(60000),
+				WorkingDirectory: utils.GetPtr("dir"),
+				Shell: &models.Shell{
+					Script: utils.GetPtr("script"),
+					Type:   utils.GetPtr("powershell"),
+				},
+				Disabled: utils.GetPtr(false),
+				Type:     models.ShellStepType,
+			},
+		},
+		{
+			name: "Script step",
+			step: azureModels.Step{
+				Name:        "1",
+				DisplayName: "step-name",
+				Env: &azureModels.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"key": "value",
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+				FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
+				ContinueOnError:  utils.GetPtr(true),
+				Condition:        "condition",
+				TimeoutInMinutes: 1,
+				WorkingDirectory: "dir",
+				Pwsh:             "script",
+				Enabled:          utils.GetPtr(true),
+			},
+			expectedStep: &models.Step{
+				ID:   utils.GetPtr("1"),
+				Name: utils.GetPtr("step-name"),
+				EnvironmentVariables: &models.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"key": "value",
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+				FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
+				FailsPipeline:    utils.GetPtr(false),
+				Conditions:       &[]models.Condition{{Statement: "condition"}},
+				Timeout:          utils.GetPtr(60000),
+				WorkingDirectory: utils.GetPtr("dir"),
+				Shell: &models.Shell{
+					Script: utils.GetPtr("script"),
+					Type:   utils.GetPtr("powershell core"),
+				},
+				Disabled: utils.GetPtr(false),
+				Type:     models.ShellStepType,
+			},
+		},
+		{
+			name: "Task step",
+			step: azureModels.Step{
+				Name:        "1",
+				DisplayName: "step-name",
+				Env: &azureModels.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"key": "value",
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+				FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
+				ContinueOnError:  utils.GetPtr(true),
+				Condition:        "condition",
+				TimeoutInMinutes: 1,
+				WorkingDirectory: "dir",
+				Task:             "Task@2",
+				Inputs: &azureModels.TaskInputs{
 					Inputs:        map[string]any{"key": "value"},
 					FileReference: testutils.CreateFileReference(111, 222, 333, 444),
 				},
@@ -270,8 +380,8 @@ func TestParseJobStep(t *testing.T) {
 				Timeout:          utils.GetPtr(60000),
 				WorkingDirectory: utils.GetPtr("dir"),
 				Task: &models.Task{
-					Name:        utils.GetPtr("actions/checkout"),
-					Version:     utils.GetPtr("1.2.3"),
+					Name:        utils.GetPtr("Task"),
+					Version:     utils.GetPtr("2"),
 					VersionType: models.TagVersion,
 					Inputs: &[]models.Parameter{
 						{
@@ -288,11 +398,82 @@ func TestParseJobStep(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			got := parseJobStep(testCase.step)
+			got := parseStep(testCase.step)
 
 			changelog, err := diff.Diff(testCase.expectedStep, got)
 			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			assert.Len(t, changelog, 0, testCase.name)
+		})
+	}
+}
+
+func TestParseStepScript(t *testing.T) {
+	testCases := []struct {
+		name          string
+		step          azureModels.Step
+		expectedShell *models.Shell
+	}{
+		{
+			name:          "Empty step",
+			step:          azureModels.Step{},
+			expectedShell: nil,
+		},
+		{
+			name: "Script step",
+			step: azureModels.Step{
+				Script: "script",
+			},
+			expectedShell: &models.Shell{
+				Script: utils.GetPtr("script"),
+				Type:   utils.GetPtr(""),
+			},
+		},
+		{
+			name: "Bash step",
+			step: azureModels.Step{
+				Bash: "script",
+			},
+			expectedShell: &models.Shell{
+				Script: utils.GetPtr("script"),
+				Type:   utils.GetPtr("bash"),
+			},
+		},
+		{
+			name: "Powershell step",
+			step: azureModels.Step{
+				Powershell: "script",
+			},
+			expectedShell: &models.Shell{
+				Script: utils.GetPtr("script"),
+				Type:   utils.GetPtr("powershell"),
+			},
+		},
+		{
+			name: "Pwsh step",
+			step: azureModels.Step{
+				Pwsh: "script",
+			},
+			expectedShell: &models.Shell{
+				Script: utils.GetPtr("script"),
+				Type:   utils.GetPtr("powershell core"),
+			},
+		},
+		{
+			name: "Task step",
+			step: azureModels.Step{
+				Task: "Task",
+			},
+			expectedShell: nil,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := parseStepScript(testCase.step)
+
+			changelog, err := diff.Diff(testCase.expectedShell, got)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0, testCase.name)
 		})
 	}
 }
@@ -306,45 +487,31 @@ func TestParseActionHeader(t *testing.T) {
 		expectedVersionType models.VersionType
 	}{
 		{
-			name:                "Header doesn't fit regex",
+			name:                "Header doesn't have @",
 			header:              "action",
 			expectedActionName:  "action",
 			expectedVersion:     "",
 			expectedVersionType: models.None,
 		},
 		{
-			name:                "Header with no version",
-			header:              "actions/checkout",
-			expectedActionName:  "actions/checkout",
-			expectedVersion:     "",
-			expectedVersionType: models.None,
-		},
-		{
-			name:                "Header semver version",
-			header:              "actions/checkout@1.2.3",
-			expectedActionName:  "actions/checkout",
-			expectedVersion:     "1.2.3",
+			name:                "Header has @ with only major",
+			header:              "Task@1",
+			expectedActionName:  "Task",
+			expectedVersion:     "1",
 			expectedVersionType: models.TagVersion,
 		},
 		{
-			name:                "Header semver version",
-			header:              "actions/checkout@1e204e9a9253d643386038d443f96446fa156a97",
-			expectedActionName:  "actions/checkout",
-			expectedVersion:     "1e204e9a9253d643386038d443f96446fa156a97",
-			expectedVersionType: models.CommitSHA,
-		},
-		{
-			name:                "Header semver version",
-			header:              "actions/checkout@branch-name",
-			expectedActionName:  "actions/checkout",
-			expectedVersion:     "branch-name",
-			expectedVersionType: models.BranchVersion,
+			name:                "Header has @ with semver version",
+			header:              "Task@1.2.3",
+			expectedActionName:  "Task",
+			expectedVersion:     "1.2.3",
+			expectedVersionType: models.TagVersion,
 		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			actionName, version, versionType := parseActionHeader(testCase.header)
+			actionName, version, versionType := parseTaskHeader(testCase.header)
 			assert.Equal(t, testCase.expectedActionName, actionName, testCase.name)
 			assert.Equal(t, testCase.expectedVersion, version, testCase.name)
 			assert.Equal(t, testCase.expectedVersionType, versionType, testCase.name)
@@ -352,20 +519,20 @@ func TestParseActionHeader(t *testing.T) {
 	}
 }
 
-func TestParseActionInput(t *testing.T) {
+func TestParseTaskInput(t *testing.T) {
 	testCases := []struct {
 		name               string
-		with               *githubModels.With
+		taskInputs         *azureModels.TaskInputs
 		expectedParameters *[]models.Parameter
 	}{
 		{
-			name:               "with nil",
-			with:               nil,
+			name:               "Task inputs are nil",
+			taskInputs:         nil,
 			expectedParameters: nil,
 		},
 		{
-			name: "with values",
-			with: &githubModels.With{
+			name: "Task inputs with values",
+			taskInputs: &azureModels.TaskInputs{
 				Inputs: map[string]any{
 					"string": "string",
 					"int":    1,
@@ -395,12 +562,12 @@ func TestParseActionInput(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			got := parseActionInput(testCase.with)
+			got := parseTaskInput(testCase.taskInputs)
 
 			// assert.ElementsMatch(t, testCase.expectedParameters, got, testCase.name)
 			changelog, err := diff.Diff(testCase.expectedParameters, got)
 			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			assert.Len(t, changelog, 0, testCase.name)
 		})
 	}
 }

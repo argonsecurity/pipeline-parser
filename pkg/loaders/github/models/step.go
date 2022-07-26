@@ -64,8 +64,5 @@ func (s *With) UnmarshalYAML(node *yaml.Node) error {
 	// We want to include the "with" in the File Reference so we have to subtract 1 from the line number and 2 from the column number
 	s.FileReference.StartRef.Line--
 	s.FileReference.StartRef.Column -= 2
-	if err := node.Decode(&s.Inputs); err != nil {
-		return err
-	}
-	return nil
+	return node.Decode(&s.Inputs)
 }

@@ -24,15 +24,15 @@ func TestLoad(t *testing.T) {
 				Trigger: &models.TriggerRef{
 					Trigger: &models.Trigger{
 						Batch: true,
-						Branches: &models.Filter{
+						Branches: models.Filter{
 							Include: []string{"master", "main"},
 							Exclude: []string{"test/*"},
 						},
-						Paths: &models.Filter{
+						Paths: models.Filter{
 							Include: []string{"path/to/file", "another/path/to/file"},
 							Exclude: []string{"all/*"},
 						},
-						Tags: &models.Filter{
+						Tags: models.Filter{
 							Include: []string{"v1.0.*"},
 							Exclude: []string{"v2.0.*"},
 						},
@@ -42,11 +42,11 @@ func TestLoad(t *testing.T) {
 				PR: &models.PRRef{
 					PR: &models.PR{
 						AutoCancel: true,
-						Branches: &models.Filter{
+						Branches: models.Filter{
 							Include: []string{"features/*"},
 							Exclude: []string{"features/experimental/*"},
 						},
-						Paths: &models.Filter{
+						Paths: models.Filter{
 							Include: []string{"path/to/file"},
 							Exclude: []string{"README.md"},
 						},
@@ -59,7 +59,7 @@ func TestLoad(t *testing.T) {
 						{
 							Cron:        "0 0 * * *",
 							DisplayName: "Daily midnight build",
-							Branches: &models.Filter{
+							Branches: models.Filter{
 								Include: []string{"main", "releases/*"},
 								Exclude: []string{"releases/ancient/*"},
 							},
@@ -68,7 +68,7 @@ func TestLoad(t *testing.T) {
 						{
 							Cron:        "0 12 * * 0",
 							DisplayName: "Weekly Sunday build",
-							Branches: &models.Filter{
+							Branches: models.Filter{
 								Include: []string{"releases/*"},
 							},
 							Always:        true,
@@ -95,7 +95,7 @@ func TestLoad(t *testing.T) {
 				Name: "branch-list-trigger",
 				Trigger: &models.TriggerRef{
 					Trigger: &models.Trigger{
-						Branches: &models.Filter{
+						Branches: models.Filter{
 							Include: []string{"main", "development"},
 						},
 					},
@@ -103,7 +103,7 @@ func TestLoad(t *testing.T) {
 				},
 				PR: &models.PRRef{
 					PR: &models.PR{
-						Branches: &models.Filter{
+						Branches: models.Filter{
 							Include: []string{"main", "develop"},
 						},
 					},
@@ -143,7 +143,7 @@ func TestLoad(t *testing.T) {
 					},
 				},
 				Stages: &models.Stages{
-					Stages: &[]models.Stage{
+					Stages: []*models.Stage{
 						{
 							Stage: "Build",
 							Variables: &models.Variables{
@@ -182,7 +182,7 @@ func TestLoad(t *testing.T) {
 							FileReference: testutils.CreateFileReference(14, 3, 23, 53),
 						},
 					},
-					TemplateStages: &[]models.TemplateStage{},
+					TemplateStages: []*models.TemplateStage{},
 					FileReference:  testutils.CreateFileReference(13, -1, 23, 53),
 				},
 			},
@@ -274,19 +274,6 @@ func TestLoad(t *testing.T) {
 						},
 						FileReference: testutils.CreateFileReference(37, 3, 40, 25),
 					},
-					{
-						Name: "myStepList",
-						Type: "stepList",
-						Default: []map[string]any{
-							{
-								"script": "echo step one",
-							},
-							{
-								"script": "echo step two",
-							},
-						},
-						FileReference: testutils.CreateFileReference(41, 3, 45, 28),
-					},
 				},
 			},
 		},
@@ -296,7 +283,7 @@ func TestLoad(t *testing.T) {
 			expectedPipeline: &models.Pipeline{
 				Name: "stages",
 				Stages: &models.Stages{
-					Stages: &[]models.Stage{
+					Stages: []*models.Stage{
 						{
 							Stage:         "BuildWin",
 							DisplayName:   "Build for Windows",
@@ -309,7 +296,7 @@ func TestLoad(t *testing.T) {
 							FileReference: testutils.CreateFileReference(6, 3, 8, 14),
 						},
 					},
-					TemplateStages: &[]models.TemplateStage{
+					TemplateStages: []*models.TemplateStage{
 						{
 							Template: models.Template{
 								Template: "stages/build.yml",
@@ -524,8 +511,11 @@ func TestLoad(t *testing.T) {
 						Task:             "VSBuild@1",
 						DisplayName:      "Build",
 						TimeoutInMinutes: 120,
-						Inputs: map[string]any{
-							"solution": "**\\*.sln",
+						Inputs: &models.TaskInputs{
+							Inputs: map[string]any{
+								"solution": "**\\*.sln",
+							},
+							FileReference: testutils.CreateFileReference(45, 3, 46, 23),
 						},
 						FileReference: testutils.CreateFileReference(42, 3, 46, 23),
 					},
@@ -599,14 +589,14 @@ func TestLoad(t *testing.T) {
 								Source:   "SmartHotel-CI",
 								Trigger: &models.TriggerRef{
 									Trigger: &models.Trigger{
-										Branches: &models.Filter{
+										Branches: models.Filter{
 											Include: []string{"releases/*", "main"},
 											Exclude: []string{"topic/*"},
 										},
-										Tags: &models.Filter{
+										Tags: models.Filter{
 											Include: []string{"Verified", "Signed"},
 										},
-										Stages: &models.Filter{
+										Stages: models.Filter{
 											Include: []string{"Production", "PreProduction"},
 										},
 									},

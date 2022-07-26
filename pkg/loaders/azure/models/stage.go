@@ -26,14 +26,14 @@ type TemplateStage struct {
 }
 
 type Stages struct {
-	Stages         *[]Stage         `yaml:"stages,omitempty"`
-	TemplateStages *[]TemplateStage `yaml:"templateStages,omitempty"`
+	Stages         []*Stage         `yaml:"stages,omitempty"`
+	TemplateStages []*TemplateStage `yaml:"templateStages,omitempty"`
 	FileReference  *models.FileReference
 }
 
 func (s *Stages) UnmarshalYAML(node *yaml.Node) error {
-	var stages []Stage
-	var templateStages []TemplateStage
+	var stages []*Stage
+	var templateStages []*TemplateStage
 
 	for _, stageNode := range node.Content {
 		if isTemplateStage(stageNode) {
@@ -41,7 +41,7 @@ func (s *Stages) UnmarshalYAML(node *yaml.Node) error {
 			if err != nil {
 				return err
 			}
-			templateStages = append(templateStages, stage)
+			templateStages = append(templateStages, &stage)
 			continue
 		}
 
@@ -49,12 +49,12 @@ func (s *Stages) UnmarshalYAML(node *yaml.Node) error {
 		if err != nil {
 			return err
 		}
-		stages = append(stages, stage)
+		stages = append(stages, &stage)
 	}
 
 	*s = Stages{
-		Stages:         &stages,
-		TemplateStages: &templateStages,
+		Stages:         stages,
+		TemplateStages: templateStages,
 		FileReference:  loadersUtils.GetFileReference(node),
 	}
 	return nil
