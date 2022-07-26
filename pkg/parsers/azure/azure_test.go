@@ -26,7 +26,8 @@ func TestParse(t *testing.T) {
 			name:          "Empty pipeline",
 			azurePipeline: &azureModels.Pipeline{},
 			expectedPipeline: &models.Pipeline{
-				Name: utils.GetPtr(""),
+				Name:     utils.GetPtr(""),
+				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
 						Name: utils.GetPtr("default"),
@@ -287,6 +288,18 @@ func TestParse(t *testing.T) {
 			azurePipeline: &azureModels.Pipeline{
 				Name:            "pipeline",
 				ContinueOnError: utils.GetPtr(true),
+				Variables: &azureModels.Variables{
+					{
+						Name:          "var1",
+						Value:         "value1",
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+					},
+					{
+						Name:          "var2",
+						Value:         "value2",
+						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					},
+				},
 				Trigger: &azureModels.TriggerRef{
 					Trigger: &azureModels.Trigger{
 						Branches: azureModels.Filter{
@@ -373,6 +386,13 @@ func TestParse(t *testing.T) {
 				Name: utils.GetPtr("pipeline"),
 				Defaults: &models.Defaults{
 					ContinueOnError: utils.GetPtr(true),
+					EnvironmentVariables: &models.EnvironmentVariablesRef{
+						EnvironmentVariables: models.EnvironmentVariables{
+							"var1": "value1",
+							"var2": "value2",
+						},
+						FileReference: testutils.CreateFileReference(1, 2, 7, 8),
+					},
 				},
 				Triggers: &models.Triggers{
 					Triggers: []*models.Trigger{
@@ -477,6 +497,64 @@ func TestParse(t *testing.T) {
 			assert.NoError(t, err)
 
 			changelog, err := diff.Diff(testCase.expectedPipeline, pipeline)
+			assert.NoError(t, err)
+			assert.Len(t, changelog, 0, testCase.name)
+		})
+	}
+}
+
+func TestParsePipelineDefaults(t *testing.T) {
+	testCases := []struct {
+		name             string
+		azurePipeline    *azureModels.Pipeline
+		expectedDefaults *models.Defaults
+	}{
+		{
+			name:             "pipeline is nil",
+			azurePipeline:    nil,
+			expectedDefaults: nil,
+		},
+		{
+			name:             "pipeline is empty",
+			azurePipeline:    &azureModels.Pipeline{},
+			expectedDefaults: &models.Defaults{},
+		},
+		{
+			name: "pipeline with variables and continue on error",
+			azurePipeline: &azureModels.Pipeline{
+				ContinueOnError: utils.GetPtr(true),
+				Variables: &azureModels.Variables{
+					{
+						Name:          "var1",
+						Value:         "value1",
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+					},
+					{
+						Name:          "var2",
+						Value:         "value2",
+						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					},
+				},
+			},
+			expectedDefaults: &models.Defaults{
+				ContinueOnError: utils.GetPtr(true),
+				EnvironmentVariables: &models.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"var1": "value1",
+						"var2": "value2",
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 7, 8),
+				},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+
+			got := parsePipelineDefaults(testCase.azurePipeline)
+
+			changelog, err := diff.Diff(testCase.expectedDefaults, got)
 			assert.NoError(t, err)
 			assert.Len(t, changelog, 0, testCase.name)
 		})

@@ -238,6 +238,22 @@ func TestParseCIJob(t *testing.T) {
 					Condition:        "job-1-condition",
 					ContinueOnError:  true,
 					TimeoutInMinutes: 100,
+					Variables: &azureModels.Variables{
+						{
+							Name:          "var1",
+							Value:         "value1",
+							FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+						},
+						{
+							Group:         "group1",
+							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+						},
+						{
+							Name:          "var2",
+							Value:         "value2",
+							FileReference: testutils.CreateFileReference(9, 10, 11, 12),
+						},
+					},
 					Steps: &azureModels.Steps{
 						{
 							Name:      "step-1",
@@ -255,6 +271,13 @@ func TestParseCIJob(t *testing.T) {
 				TimeoutMS:       utils.GetPtr(6000000),
 				Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 				Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
+				EnvironmentVariables: &models.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"var1": "value1",
+						"var2": "value2",
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 11, 12),
+				},
 				Steps: []*models.Step{
 					{
 						ID:   utils.GetPtr("step-1"),
@@ -314,6 +337,22 @@ func TestParseDeploymentJob(t *testing.T) {
 					Condition:        "job-1-condition",
 					ContinueOnError:  true,
 					TimeoutInMinutes: 100,
+					Variables: &azureModels.Variables{
+						{
+							Name:          "var1",
+							Value:         "value1",
+							FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+						},
+						{
+							Group:         "group1",
+							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+						},
+						{
+							Name:          "var2",
+							Value:         "value2",
+							FileReference: testutils.CreateFileReference(9, 10, 11, 12),
+						},
+					},
 					Steps: &azureModels.Steps{
 						{
 							Name:      "step-1",
@@ -331,6 +370,13 @@ func TestParseDeploymentJob(t *testing.T) {
 				TimeoutMS:       utils.GetPtr(6000000),
 				Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 				Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
+				EnvironmentVariables: &models.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"var1": "value1",
+						"var2": "value2",
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 11, 12),
+				},
 				Steps: []*models.Step{
 					{
 						ID:   utils.GetPtr("step-1"),
@@ -387,6 +433,22 @@ func TestParseBaseJob(t *testing.T) {
 				Condition:        "job-1-condition",
 				ContinueOnError:  true,
 				TimeoutInMinutes: 100,
+				Variables: &azureModels.Variables{
+					{
+						Name:          "var1",
+						Value:         "value1",
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+					},
+					{
+						Group:         "group1",
+						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					},
+					{
+						Name:          "var2",
+						Value:         "value2",
+						FileReference: testutils.CreateFileReference(9, 10, 11, 12),
+					},
+				},
 				Steps: &azureModels.Steps{
 					{
 						Name:      "step-1",
@@ -401,6 +463,13 @@ func TestParseBaseJob(t *testing.T) {
 				TimeoutMS:       utils.GetPtr(6000000),
 				Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 				Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
+				EnvironmentVariables: &models.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"var1": "value1",
+						"var2": "value2",
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 11, 12),
+				},
 				Steps: []*models.Step{
 					{
 						ID:   utils.GetPtr("step-1"),

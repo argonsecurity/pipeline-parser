@@ -5,21 +5,21 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 )
 
-func parseParameters(pipeline *azureModels.Pipeline) []*models.Parameter {
-	if pipeline == nil || pipeline.Parameters == nil {
+func parseParameters(parameters *azureModels.Parameters) []*models.Parameter {
+	if parameters == nil || len(*parameters) == 0 {
 		return nil
 	}
 
-	var parameters []*models.Parameter
-	for _, param := range *pipeline.Parameters {
+	var parsedParameters []*models.Parameter
+	for _, param := range *parameters {
 		name := param.Name
 
-		parameters = append(parameters, &models.Parameter{
-			Name: &name,
-			// Value:         &param.Values, // TODO: check what value means
+		parsedParameters = append(parsedParameters, &models.Parameter{
+			Name:          &name,
 			Default:       param.Default,
+			Options:       param.Values,
 			FileReference: param.FileReference,
 		})
 	}
-	return parameters
+	return parsedParameters
 }

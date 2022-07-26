@@ -17,15 +17,10 @@ func (g *AzureParser) Parse(azurePipeline *azureModels.Pipeline) (*models.Pipeli
 		Name: &azurePipeline.Name,
 	}
 
+	pipeline.Defaults = parsePipelineDefaults(azurePipeline)
 	pipeline.Triggers = parsePipelineTriggers(azurePipeline)
-	pipeline.Parameters = parseParameters(azurePipeline)
+	pipeline.Parameters = parseParameters(azurePipeline.Parameters)
 	pipeline.Imports = parseExtends(azurePipeline.Extends)
-
-	if azurePipeline.ContinueOnError != nil {
-		pipeline.Defaults = &models.Defaults{
-			ContinueOnError: azurePipeline.ContinueOnError,
-		}
-	}
 
 	var jobs []*models.Job
 
@@ -48,6 +43,22 @@ func (g *AzureParser) Parse(azurePipeline *azureModels.Pipeline) (*models.Pipeli
 	}
 
 	return pipeline, nil
+}
+
+func parsePipelineDefaults(pipeline *azureModels.Pipeline) *models.Defaults {
+	if pipeline == nil {
+		return nil
+	}
+
+	defaults := &models.Defaults{
+		ContinueOnError: pipeline.ContinueOnError,
+	}
+
+	if pipeline.Variables != nil {
+		defaults.EnvironmentVariables = parseVariables(pipeline.Variables)
+	}
+
+	return defaults
 }
 
 func generateDefaultJob() *models.Job {

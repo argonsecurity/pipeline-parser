@@ -64,6 +64,10 @@ func parseBaseJob(job *azureModels.BaseJob) *models.Job {
 		ContinueOnError: &job.ContinueOnError,
 	}
 
+	if job.Variables != nil {
+		parsedJob.EnvironmentVariables = parseVariables(job.Variables)
+	}
+
 	if job.TimeoutInMinutes != 0 {
 		timeout := int(job.TimeoutInMinutes) * 60 * 1000
 		parsedJob.TimeoutMS = &timeout

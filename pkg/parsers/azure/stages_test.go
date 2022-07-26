@@ -102,10 +102,44 @@ func TestParseStage(t *testing.T) {
 		{
 			name: "Stage has jobs",
 			stage: &azureModels.Stage{
+				Variables: &azureModels.Variables{
+					{
+						Name:          "var1",
+						Value:         "value1",
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+					},
+					{
+						Group:         "group1",
+						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					},
+					{
+						Name:          "var2",
+						Value:         "value2",
+						FileReference: testutils.CreateFileReference(9, 10, 11, 12),
+					},
+				},
 				Jobs: &azureModels.Jobs{
 					CIJobs: []*azureModels.CIJob{
 						{
-							Job:           "ci-job",
+							Job: "ci-job",
+							BaseJob: azureModels.BaseJob{
+								Variables: &azureModels.Variables{
+									{
+										Name:          "varjob1",
+										Value:         "valuejob1",
+										FileReference: testutils.CreateFileReference(31, 23, 33, 34),
+									},
+									{
+										Group:         "groupjob1",
+										FileReference: testutils.CreateFileReference(35, 36, 37, 83),
+									},
+									{
+										Name:          "varjob2",
+										Value:         "valuejob2",
+										FileReference: testutils.CreateFileReference(39, 310, 131, 132),
+									},
+								},
+							},
 							FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 						},
 					},
@@ -123,14 +157,30 @@ func TestParseStage(t *testing.T) {
 					Name:            utils.GetPtr(""),
 					TimeoutMS:       utils.GetPtr(defaultTimeoutMS),
 					ContinueOnError: utils.GetPtr(false),
-					FileReference:   testutils.CreateFileReference(1, 2, 3, 4),
+					EnvironmentVariables: &models.EnvironmentVariablesRef{
+						EnvironmentVariables: models.EnvironmentVariables{
+							"var1":    "value1",
+							"var2":    "value2",
+							"varjob1": "valuejob1",
+							"varjob2": "valuejob2",
+						},
+						FileReference: testutils.CreateFileReference(31, 23, 131, 132),
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 				},
 				{
 					ID:              utils.GetPtr("deployment-job"),
 					Name:            utils.GetPtr(""),
 					TimeoutMS:       utils.GetPtr(defaultTimeoutMS),
 					ContinueOnError: utils.GetPtr(false),
-					FileReference:   testutils.CreateFileReference(1, 2, 3, 4),
+					EnvironmentVariables: &models.EnvironmentVariablesRef{
+						EnvironmentVariables: models.EnvironmentVariables{
+							"var1": "value1",
+							"var2": "value2",
+						},
+						FileReference: testutils.CreateFileReference(1, 2, 11, 12),
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 				},
 			},
 		},

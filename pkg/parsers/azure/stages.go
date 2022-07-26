@@ -26,5 +26,23 @@ func parseStage(stage *azureModels.Stage) []*models.Job {
 		return nil
 	}
 
-	return parseJobs(stage.Jobs)
+	parsedJobs := parseJobs(stage.Jobs)
+
+	if stage.Variables == nil {
+		return parsedJobs
+	}
+	envs := parseVariables(stage.Variables)
+
+	for _, job := range parsedJobs {
+		if job.EnvironmentVariables == nil {
+			job.EnvironmentVariables = envs
+			continue
+		}
+
+		for k, v := range envs.EnvironmentVariables {
+			job.EnvironmentVariables.EnvironmentVariables[k] = v
+		}
+	}
+
+	return parsedJobs
 }

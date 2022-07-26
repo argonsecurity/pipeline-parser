@@ -14,7 +14,8 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "all-triggers.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("all-triggers"),
+				Name:     utils.GetPtr("all-triggers"),
+				Defaults: &models.Defaults{},
 				Triggers: &models.Triggers{
 					Triggers: []*models.Trigger{
 						{
@@ -63,7 +64,8 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "branch-list-trigger.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("branch-list-trigger"),
+				Name:     utils.GetPtr("branch-list-trigger"),
+				Defaults: &models.Defaults{},
 				Triggers: &models.Triggers{
 					Triggers: []*models.Trigger{
 						{
@@ -93,7 +95,8 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "no-trigger.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("no-trigger"),
+				Name:     utils.GetPtr("no-trigger"),
+				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
 						Name: utils.GetPtr("default"),
@@ -105,7 +108,8 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "jobs.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("Jobs"),
+				Name:     utils.GetPtr("Jobs"),
+				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
 						ID:              utils.GetPtr("DeployWeb"),
@@ -143,7 +147,8 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "parameters.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("parameters"),
+				Name:     utils.GetPtr("parameters"),
+				Defaults: &models.Defaults{},
 				Parameters: []*models.Parameter{
 					{
 						Name:          utils.GetPtr("myString"),
@@ -153,11 +158,13 @@ func TestAzure(t *testing.T) {
 					{
 						Name:          utils.GetPtr("myMultiString"),
 						Default:       "default",
+						Options:       []string{"default", "ubuntu"},
 						FileReference: testutils.CreateFileReference(6, 3, 11, 11),
 					},
 					{
 						Name:          utils.GetPtr("myNumber"),
 						Default:       2,
+						Options:       []string{"1", "2", "4", "8", "16"},
 						FileReference: testutils.CreateFileReference(12, 3, 20, 7),
 					},
 					{
@@ -197,7 +204,8 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "pool.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("pool"),
+				Name:     utils.GetPtr("pool"),
+				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
 						ID:              utils.GetPtr("jobId"),
@@ -212,7 +220,8 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "resources.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("resources"),
+				Name:     utils.GetPtr("resources"),
+				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
 						Name: utils.GetPtr("default"),
@@ -223,7 +232,8 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "stages.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("stages"),
+				Name:     utils.GetPtr("stages"),
+				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
 						Name: utils.GetPtr("default"),
@@ -234,7 +244,8 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "steps.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("steps"),
+				Name:     utils.GetPtr("steps"),
+				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
 						Name: utils.GetPtr("default"),
@@ -355,12 +366,42 @@ func TestAzure(t *testing.T) {
 			},
 		},
 		{
-			Filename: "variables.yml",
+			Filename: "variables.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr(""),
+				Name: utils.GetPtr("variables"),
+				Defaults: &models.Defaults{
+					EnvironmentVariables: &models.EnvironmentVariablesRef{
+						EnvironmentVariables: models.EnvironmentVariables{
+							"var1": "value1",
+							"var2": "value2",
+						},
+						FileReference: testutils.CreateFileReference(3, 3, 11, 17),
+					},
+				},
 				Jobs: []*models.Job{
 					{
-						Name: utils.GetPtr("default"),
+						ID:              utils.GetPtr("FirstJob"),
+						Name:            utils.GetPtr(""),
+						TimeoutMS:       utils.GetPtr(3600000),
+						ContinueOnError: utils.GetPtr(false),
+						EnvironmentVariables: &models.EnvironmentVariablesRef{
+							EnvironmentVariables: models.EnvironmentVariables{
+								"JOB_VAR": "a job var",
+							},
+							FileReference: testutils.CreateFileReference(21, 7, 21, 16),
+						},
+						Steps: []*models.Step{
+							{
+								Name: utils.GetPtr(""),
+								Type: models.ShellStepType,
+								Shell: &models.Shell{
+									Type:   utils.GetPtr(""),
+									Script: utils.GetPtr("echo $(MY_VAR) $(STAGE_VAR) $(JOB_VAR)"),
+								},
+								FileReference: testutils.CreateFileReference(23, 7, 23, 53),
+							},
+						},
+						FileReference: testutils.CreateFileReference(19, 5, 23, 53),
 					},
 				},
 			},
