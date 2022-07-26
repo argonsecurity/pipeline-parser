@@ -273,11 +273,13 @@ func TestParse(t *testing.T) {
 					{
 						Name:          utils.GetPtr("param1"),
 						Default:       "default1",
+						Options:       []string{"value1", "value2"},
 						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 					},
 					{
 						Name:          utils.GetPtr("param2"),
 						Default:       2,
+						Options:       []string{"1", "2"},
 						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
 					},
 				},
@@ -477,11 +479,13 @@ func TestParse(t *testing.T) {
 					{
 						Name:          utils.GetPtr("param1"),
 						Default:       "default1",
+						Options:       []string{"value1", "value2"},
 						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 					},
 					{
 						Name:          utils.GetPtr("param2"),
 						Default:       2,
+						Options:       []string{"1", "2"},
 						FileReference: testutils.CreateFileReference(5, 6, 7, 8),
 					},
 				},
