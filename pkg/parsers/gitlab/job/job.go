@@ -17,32 +17,6 @@ func ParseJobs(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) ([]*mo
 	return jobs, nil
 }
 
-func getJobConditions(job *gitlabModels.Job) []*models.Condition {
-	conditions := triggers.ParseConditionRules(job.Rules)
-	if parsedExcept := triggers.ParseControls(job.Except, true); parsedExcept != nil {
-		conditions = append(conditions, parsedExcept)
-	}
-	if parsedOnly := triggers.ParseControls(job.Only, false); parsedOnly != nil {
-		conditions = append(conditions, parsedOnly)
-	}
-	return conditions
-}
-
-func getJobContinueOnError(job *gitlabModels.Job) *bool {
-	if job.AllowFailure != nil {
-		return job.AllowFailure.Enabled
-	}
-	return nil
-}
-
-func getJobConcurrencyGroup(job *gitlabModels.Job) *models.ConcurrencyGroup {
-	if job.Stage == "" {
-		return nil
-	}
-
-	return utils.GetPtr(models.ConcurrencyGroup(job.Stage))
-}
-
 func parseJob(jobID string, job *gitlabModels.Job) (*models.Job, error) {
 	parsedJob := &models.Job{
 		ID:                   &jobID,
@@ -60,4 +34,30 @@ func parseJob(jobID string, job *gitlabModels.Job) (*models.Job, error) {
 		FileReference:        job.FileReference,
 	}
 	return parsedJob, nil
+}
+
+func getJobContinueOnError(job *gitlabModels.Job) *bool {
+	if job.AllowFailure != nil {
+		return job.AllowFailure.Enabled
+	}
+	return nil
+}
+
+func getJobConcurrencyGroup(job *gitlabModels.Job) *models.ConcurrencyGroup {
+	if job.Stage == "" {
+		return nil
+	}
+
+	return utils.GetPtr(models.ConcurrencyGroup(job.Stage))
+}
+
+func getJobConditions(job *gitlabModels.Job) []*models.Condition {
+	conditions := triggers.ParseConditionRules(job.Rules)
+	if parsedExcept := triggers.ParseControls(job.Except, true); parsedExcept != nil {
+		conditions = append(conditions, parsedExcept)
+	}
+	if parsedOnly := triggers.ParseControls(job.Only, false); parsedOnly != nil {
+		conditions = append(conditions, parsedOnly)
+	}
+	return conditions
 }
