@@ -17,10 +17,10 @@ type Pipeline struct {
 	Parameters      *Parameters `yaml:"parameters,omitempty"`
 	PR              *PRRef      `yaml:"pr,omitempty"`
 	Schedules       *Schedules  `yaml:"schedules,omitempty"`
-	Resources       *Resources  `yaml:"resources,omitempty"`
-	Steps           *Steps      `yaml:"steps,omitempty"`
-	Variables       *Variables  `yaml:"variables,omitempty"`
-	LockBehavior    string      `yaml:"lockBehavior,omitempty"`
+	// Resources       *Resources  `yaml:"resources,omitempty"` // Currently can't load it due to mismatch in the azure pipelines documentation
+	Steps        *Steps     `yaml:"steps,omitempty"`
+	Variables    *Variables `yaml:"variables,omitempty"`
+	LockBehavior string     `yaml:"lockBehavior,omitempty"`
 }
 
 type Parameter struct {

@@ -14,6 +14,18 @@ func NewErrInvalidPlatform(platform Platform) error {
 	return &ErrInvalidPlatform{Platform: platform}
 }
 
+type ErrInvalidOutputTarget struct {
+	OutputTarget OutputTarget
+}
+
+func (e *ErrInvalidOutputTarget) Error() string {
+	return fmt.Sprintf("invalid output target: %s. Supported output targets: %v", e.OutputTarget, OutputTargets)
+}
+
+func NewErrInvalidOutputTarget(outputTarget OutputTarget) error {
+	return &ErrInvalidOutputTarget{OutputTarget: outputTarget}
+}
+
 type ErrInvalidYaml struct {
 	Message string
 }
