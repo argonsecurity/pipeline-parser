@@ -397,7 +397,9 @@ func TestParseActionInput(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseActionInput(testCase.with)
 
-			assert.ElementsMatch(t, *testCase.expectedParameters, *got, testCase.name)
+			changeLog, err := diff.Diff(testCase.expectedParameters, got)
+			assert.NoError(t, err)
+			assert.Len(t, changeLog, 0)
 		})
 	}
 }
