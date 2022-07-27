@@ -9,8 +9,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Jobs map[string]*Job
-
 type Job struct {
 	AfterScript  *common.Script `yaml:"after_script"`
 	BeforeScript *common.Script `yaml:"before_script"`
