@@ -37,5 +37,5 @@ func (p *Pool) UnmarshalYAML(node *yaml.Node) error {
 		}
 
 		return nil
-	})
+	}, "Pool")
 }

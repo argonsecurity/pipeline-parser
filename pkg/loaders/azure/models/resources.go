@@ -202,5 +202,5 @@ func (r *Resources) UnmarshalYAML(node *yaml.Node) error {
 			r.Packages = packages
 		}
 		return nil
-	})
+	}, "Resources")
 }

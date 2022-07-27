@@ -27,15 +27,16 @@ func NewErrInvalidYaml(message string) error {
 }
 
 type ErrInvalidYamlTag struct {
-	Tag string
+	Tag  string
+	Type string
 }
 
 func (e *ErrInvalidYamlTag) Error() string {
-	return fmt.Sprintf("invalid yaml tag: %s", e.Tag)
+	return fmt.Sprintf("invalid yaml tag '%s' for type '%s'", e.Tag, e.Type)
 }
 
-func NewErrInvalidYamlTag(tag string) error {
-	return &ErrInvalidYamlTag{Tag: tag}
+func NewErrInvalidYamlTag(tag string, structType string) error {
+	return &ErrInvalidYamlTag{Tag: tag, Type: structType}
 }
 
 type ErrInvalidArgumentsCount struct {

@@ -37,12 +37,12 @@ func (p *Parallel) UnmarshalYAML(node *yaml.Node) error {
 			}
 		}
 		return nil
-	})
+	}, "Parallel")
 }
 
 func (m *Matrix) UnmarshalYAML(node *yaml.Node) error {
 	if node.Tag != consts.MapTag {
-		return consts.NewErrInvalidYamlTag(node.Tag)
+		return consts.NewErrInvalidYamlTag(node.Tag, "Matrix")
 	}
 
 	return utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
@@ -51,12 +51,12 @@ func (m *Matrix) UnmarshalYAML(node *yaml.Node) error {
 		}
 
 		if value.Tag == consts.SequenceTag {
-			parsedStrings, err := utils.ParseYamlStringSequenceToSlice(value)
+			parsedStrings, err := utils.ParseYamlStringSequenceToSlice(value, "Matrix")
 			if err != nil {
 				return err
 			}
 			(*m)[key] = parsedStrings
 		}
 		return nil
-	})
+	}, "Matrix")
 }

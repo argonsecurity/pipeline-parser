@@ -46,7 +46,7 @@ func parseVariablesMap(node *yaml.Node) []Variable {
 
 		variables = append(variables, variable)
 		return nil
-	})
+	}, "Variables")
 
 	return variables
 }

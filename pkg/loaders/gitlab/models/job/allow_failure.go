@@ -43,7 +43,7 @@ func (a *AllowFailure) UnmarshalYAML(node *yaml.Node) error {
 			}
 			return nil
 		}
-		return consts.NewErrInvalidYamlTag(exitCodesNode.Tag)
+		return consts.NewErrInvalidYamlTag(exitCodesNode.Tag, "ExitCode")
 	}
-	return consts.NewErrInvalidYamlTag(node.Tag)
+	return consts.NewErrInvalidYamlTag(node.Tag, "AllowFailure")
 }

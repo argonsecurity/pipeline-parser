@@ -24,7 +24,7 @@ func (r *Retry) UnmarshalYAML(node *yaml.Node) error {
 		switch key {
 		case "when":
 			if value.Tag == consts.SequenceTag {
-				parsedStrings, _ := utils.ParseYamlStringSequenceToSlice(value)
+				parsedStrings, _ := utils.ParseYamlStringSequenceToSlice(value, "Retry.when")
 				r.When = &parsedStrings
 			}
 			if value.Tag == consts.StringTag {
@@ -35,5 +35,5 @@ func (r *Retry) UnmarshalYAML(node *yaml.Node) error {
 			r.Max = &parsedInt
 		}
 		return nil
-	})
+	}, "Retry")
 }

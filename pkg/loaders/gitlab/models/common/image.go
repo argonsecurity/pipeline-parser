@@ -30,12 +30,12 @@ func (im *Image) UnmarshalYAML(node *yaml.Node) error {
 		case "name":
 			im.Name = value.Value
 		case "entrypoint":
-			entrypoints, err := utils.ParseYamlStringSequenceToSlice(value)
+			entrypoints, err := utils.ParseYamlStringSequenceToSlice(value, "Image.entrypoint")
 			if err != nil {
 				return err
 			}
 			im.Entrypoint = entrypoints
 		}
 		return nil
-	})
+	}, "Image")
 }

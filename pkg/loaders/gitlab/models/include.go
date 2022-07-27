@@ -53,5 +53,5 @@ func (it *IncludeItem) UnmarshalYAML(node *yaml.Node) error {
 			it.Remote = value.Value
 		}
 		return nil
-	})
+	}, "IncludeItem")
 }
