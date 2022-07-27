@@ -22,7 +22,7 @@ func (s *Script) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	if node.Tag == consts.SequenceTag {
-		commands, err := utils.ParseYamlStringSequenceToSlice(node)
+		commands, err := utils.ParseYamlStringSequenceToSlice(node, "Script")
 		if err != nil {
 			return err
 		}

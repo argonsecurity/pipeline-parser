@@ -84,7 +84,7 @@ func (t *StepTarget) UnmarshalYAML(node *yaml.Node) error {
 		}
 
 		return nil
-	})
+	}, "StepTarget")
 }
 
 func (ti *TaskInputs) UnmarshalYAML(node *yaml.Node) error {

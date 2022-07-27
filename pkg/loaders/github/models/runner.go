@@ -24,7 +24,7 @@ func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
 	if node.Tag == consts.StringTag {
 		tags = []string{node.Value}
 	} else if node.Tag == consts.SequenceTag {
-		if tags, err = loadersUtils.ParseYamlStringSequenceToSlice(node); err != nil {
+		if tags, err = loadersUtils.ParseYamlStringSequenceToSlice(node, "RunsOn"); err != nil {
 			return err
 		}
 	} else {

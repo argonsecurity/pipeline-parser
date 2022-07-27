@@ -32,7 +32,7 @@ func (v *Variables) UnmarshalYAML(node *yaml.Node) error {
 			variables[key] = value.Value
 		}
 		return nil
-	}); err != nil {
+	}, "Variables"); err != nil {
 		return err
 	}
 

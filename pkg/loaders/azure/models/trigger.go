@@ -53,7 +53,7 @@ type Schedules struct {
 
 func (f *Filter) UnmarshalYAML(node *yaml.Node) error {
 	if node.Tag == consts.SequenceTag {
-		include, err := loadersUtils.ParseYamlStringSequenceToSlice(node)
+		include, err := loadersUtils.ParseYamlStringSequenceToSlice(node, "Filter")
 		if err != nil {
 			return err
 		}
@@ -63,7 +63,7 @@ func (f *Filter) UnmarshalYAML(node *yaml.Node) error {
 
 	if node.Tag == consts.MapTag {
 		return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
-			parsedValue, err := loadersUtils.ParseYamlStringSequenceToSlice(value)
+			parsedValue, err := loadersUtils.ParseYamlStringSequenceToSlice(value, "Filter")
 			if err != nil {
 				return err
 			}
@@ -74,7 +74,7 @@ func (f *Filter) UnmarshalYAML(node *yaml.Node) error {
 				f.Exclude = parsedValue
 			}
 			return nil
-		})
+		}, "Filter")
 	}
 
 	return consts.NewErrInvalidYamlTag(node.Tag, "Filter")
@@ -88,7 +88,7 @@ func (tr *TriggerRef) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	if node.Tag == consts.SequenceTag {
-		branches, err := loadersUtils.ParseYamlStringSequenceToSlice(node)
+		branches, err := loadersUtils.ParseYamlStringSequenceToSlice(node, "TriggerRef")
 		if err != nil {
 			return err
 		}
@@ -111,7 +111,7 @@ func (prr *PRRef) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	if node.Tag == consts.SequenceTag {
-		branches, err := loadersUtils.ParseYamlStringSequenceToSlice(node)
+		branches, err := loadersUtils.ParseYamlStringSequenceToSlice(node, "PRRef")
 		if err != nil {
 			return err
 		}

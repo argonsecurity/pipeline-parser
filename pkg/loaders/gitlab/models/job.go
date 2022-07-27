@@ -150,5 +150,5 @@ func (j *Job) UnmarshalYAML(node *yaml.Node) error {
 			return value.Decode(&j.Only)
 		}
 		return nil
-	})
+	}, "Job")
 }

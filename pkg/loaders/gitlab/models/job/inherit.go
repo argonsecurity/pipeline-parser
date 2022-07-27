@@ -23,7 +23,7 @@ func (i *InheritValues) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	if node.Tag == consts.SequenceTag {
-		keys, err := utils.ParseYamlStringSequenceToSlice(node)
+		keys, err := utils.ParseYamlStringSequenceToSlice(node, "InheritValues")
 		if err != nil {
 			return err
 		}
