@@ -42,10 +42,12 @@ func main() {
 
 func GetCommand(version string) *cobra.Command {
 	command := &cobra.Command{
-		Use:          "pipeline-parser",
-		Short:        "Parses a pipeline file",
-		Long:         "Parses a pipeline file",
-		Example:      "pipeline-parser --platform github workflow.yml\npipeline-parser --platform gitlab .gitlab-ci.yml\npipeline-parser --platform azure azure-pipelines.yml",
+		Use:   "pipeline-parser",
+		Short: "Parses a pipeline file",
+		Long:  "Parses a pipeline file",
+		Example: `pipeline-parser --platform github workflow.yml
+pipeline-parser --platform gitlab .gitlab-ci.yml
+pipeline-parser --platform azure azure-pipelines.yml`,
 		SilenceUsage: true,
 		Version:      version,
 		PreRunE:      preRun,
