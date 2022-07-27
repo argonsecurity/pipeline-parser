@@ -26,7 +26,7 @@ func (n *Needs) UnmarshalYAML(node *yaml.Node) error {
 	} else if node.Tag == consts.StringTag {
 		tags = []string{node.Value}
 	} else {
-		return consts.NewErrInvalidYamlTag(node.Tag)
+		return consts.NewErrInvalidYamlTag(node.Tag, "Needs")
 	}
 
 	*n = tags

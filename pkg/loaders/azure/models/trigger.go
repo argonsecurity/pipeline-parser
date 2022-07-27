@@ -77,7 +77,7 @@ func (f *Filter) UnmarshalYAML(node *yaml.Node) error {
 		})
 	}
 
-	return consts.NewErrInvalidYamlTag(node.Tag)
+	return consts.NewErrInvalidYamlTag(node.Tag, "Filter")
 }
 
 func (tr *TriggerRef) UnmarshalYAML(node *yaml.Node) error {

@@ -30,5 +30,5 @@ func (s *Script) UnmarshalYAML(node *yaml.Node) error {
 		return nil
 	}
 
-	return consts.NewErrInvalidYamlTag(node.Tag)
+	return consts.NewErrInvalidYamlTag(node.Tag, "Script")
 }

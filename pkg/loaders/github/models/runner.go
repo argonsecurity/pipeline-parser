@@ -28,7 +28,7 @@ func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 	} else {
-		return consts.NewErrInvalidYamlTag(node.Tag)
+		return consts.NewErrInvalidYamlTag(node.Tag, "RunsOn")
 	}
 
 	*r = *generateRunsOnFromTags(tags)

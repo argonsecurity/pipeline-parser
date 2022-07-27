@@ -32,5 +32,5 @@ func (i *InheritValues) UnmarshalYAML(node *yaml.Node) error {
 		return nil
 	}
 
-	return consts.NewErrInvalidYamlTag(node.Tag)
+	return consts.NewErrInvalidYamlTag(node.Tag, "InheritValues")
 }

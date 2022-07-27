@@ -78,13 +78,13 @@ func GetMapKeyFileReference(keyNode, valueNode *yaml.Node) *models.FileReference
 
 func ParseYamlStringSequenceToSlice(node *yaml.Node) ([]string, error) {
 	if node.Tag != consts.SequenceTag {
-		return nil, consts.NewErrInvalidYamlTag(node.Tag)
+		return nil, consts.NewErrInvalidYamlTag(node.Tag, consts.SequenceTag)
 	}
 
 	strings := make([]string, len(node.Content))
 	for i, n := range node.Content {
 		if n.Tag != consts.StringTag {
-			return nil, consts.NewErrInvalidYamlTag(node.Tag)
+			return nil, consts.NewErrInvalidYamlTag(node.Tag, consts.StringTag)
 		}
 
 		strings[i] = n.Value
@@ -108,7 +108,7 @@ func MustParseYamlBooleanValue(node *yaml.Node) *bool {
 // This function wraps the messy part for cleaner code
 func IterateOnMap(node *yaml.Node, cb func(key string, value *yaml.Node) error) error {
 	if node.Tag != consts.MapTag {
-		return consts.NewErrInvalidYamlTag(node.Tag)
+		return consts.NewErrInvalidYamlTag(node.Tag, consts.MapTag)
 	}
 
 	for i := 0; i < len(node.Content); i += 2 {

@@ -42,7 +42,7 @@ func (p *Parallel) UnmarshalYAML(node *yaml.Node) error {
 
 func (m *Matrix) UnmarshalYAML(node *yaml.Node) error {
 	if node.Tag != consts.MapTag {
-		return consts.NewErrInvalidYamlTag(node.Tag)
+		return consts.NewErrInvalidYamlTag(node.Tag, "Matrix")
 	}
 
 	return utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
