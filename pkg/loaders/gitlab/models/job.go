@@ -1,12 +1,15 @@
 package models
 
 import (
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/job"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
 )
+
+type Jobs map[string]*Job
 
 type Job struct {
 	AfterScript  *common.Script `yaml:"after_script"`
@@ -78,6 +81,10 @@ type SecretsItem struct {
 // while keeping the job's file reference.
 // Without overcomplicating, the bug won't allow us to both implement UnmarshalYAML and parse Job inline (as in, without a separate internal field)
 func (j *Job) UnmarshalYAML(node *yaml.Node) error {
+	if node.Tag != consts.MapTag {
+		return nil
+	}
+
 	j.FileReference = &models.FileReference{
 		StartRef: &models.FileLocation{
 			Line:   node.Line - 1, // We don't have access to the key node, and therefor we assume it's one line higher
