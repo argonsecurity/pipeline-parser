@@ -14,11 +14,6 @@ var (
 	semverRegex = regexp.MustCompile(`v?([0-9]+)(\.[0-9]+)?(\.[0-9]+)?(-([0-9A-Za-z\-]+(\.[0-9A-Za-z\-]+)*))?(\+([0-9A-Za-z\-]+(\.[0-9A-Za-z\-]+)*))?`)
 
 	githubActionNameRegex = regexp.MustCompile(`(.+?)(?:@(.+)|$)`)
-
-	regexToType = map[*regexp.Regexp]models.VersionType{
-		sha1Regex:   models.CommitSHA,
-		semverRegex: models.TagVersion,
-	}
 )
 
 func parseJobSteps(steps *githubModels.Steps) []*models.Step {
