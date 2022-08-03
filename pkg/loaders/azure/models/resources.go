@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
@@ -126,6 +127,15 @@ type Resources struct {
 	Webhooks      []*WebhookRef           `yaml:"webhooks,omitempty"`
 	Packages      []*PackageRef           `yaml:"packages,omitempty"`
 	FileReference *models.FileReference
+}
+
+func (jc *JobContainer) UnmarshalYAML(node *yaml.Node) error {
+	if node.Tag == consts.StringTag {
+		jc.Image = node.Value
+		return nil
+	}
+
+	return node.Decode(&jc)
 }
 
 func (br *BuildRef) UnmarshalYAML(node *yaml.Node) error {

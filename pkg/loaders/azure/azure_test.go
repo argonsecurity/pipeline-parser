@@ -331,7 +331,10 @@ func TestLoad(t *testing.T) {
 						{
 							Job: "MyJob",
 							BaseJob: models.BaseJob{
-								DisplayName:     "My First Job",
+								DisplayName: "My First Job",
+								Container: &models.JobContainer{
+									Image: "ubuntu:18.04",
+								},
 								ContinueOnError: true,
 								Workspace: &models.Workspace{
 									Clean: "outputs",
@@ -340,11 +343,11 @@ func TestLoad(t *testing.T) {
 								Steps: &models.Steps{
 									{
 										Script:        "echo My first job",
-										FileReference: testutils.CreateFileReference(11, 5, 11, 30),
+										FileReference: testutils.CreateFileReference(12, 5, 12, 30),
 									},
 								},
 							},
-							FileReference: testutils.CreateFileReference(4, 3, 11, 30),
+							FileReference: testutils.CreateFileReference(4, 3, 12, 30),
 						},
 					},
 					DeploymentJobs: []*models.DeploymentJob{
@@ -355,14 +358,14 @@ func TestLoad(t *testing.T) {
 								DependsOn:   &models.DependsOn{"job1", "job2"},
 								Pool: &models.Pool{
 									VmImage:       "ubuntu-latest",
-									FileReference: testutils.CreateFileReference(15, 5, 16, 27),
+									FileReference: testutils.CreateFileReference(16, 5, 17, 27),
 								},
 							},
 							Environment: &models.DeploymentEnvironmentRef{
 								DeploymentEnvironment: &models.DeploymentEnvironment{
 									Name: "smarthotel-dev",
 								},
-								FileReference: testutils.CreateFileReference(18, 16, 18, 30),
+								FileReference: testutils.CreateFileReference(19, 16, 19, 30),
 							},
 							Strategy: &models.DeploymentStrategy{
 								RunOnce: &models.BaseDeploymentStrategy{
@@ -370,13 +373,13 @@ func TestLoad(t *testing.T) {
 										Steps: &models.Steps{
 											{
 												Script:        "echo my first deployment",
-												FileReference: testutils.CreateFileReference(24, 11, 24, 43),
+												FileReference: testutils.CreateFileReference(25, 11, 25, 43),
 											},
 										},
 									},
 								},
 							},
-							FileReference: testutils.CreateFileReference(12, 3, 24, 43),
+							FileReference: testutils.CreateFileReference(13, 3, 25, 43),
 						},
 					},
 					TemplateJobs: []*models.TemplateJob{
@@ -390,7 +393,7 @@ func TestLoad(t *testing.T) {
 									},
 								},
 							},
-							FileReference: testutils.CreateFileReference(25, 3, 29, 28),
+							FileReference: testutils.CreateFileReference(26, 3, 30, 28),
 						},
 						{
 							Template: models.Template{
@@ -402,7 +405,7 @@ func TestLoad(t *testing.T) {
 									},
 								},
 							},
-							FileReference: testutils.CreateFileReference(31, 3, 35, 29),
+							FileReference: testutils.CreateFileReference(32, 3, 36, 29),
 						},
 						{
 							Template: models.Template{
@@ -415,10 +418,10 @@ func TestLoad(t *testing.T) {
 									"sign": true,
 								},
 							},
-							FileReference: testutils.CreateFileReference(36, 3, 41, 15),
+							FileReference: testutils.CreateFileReference(37, 3, 42, 15),
 						},
 					},
-					FileReference: testutils.CreateFileReference(3, -1, 41, 15),
+					FileReference: testutils.CreateFileReference(3, -1, 42, 15),
 				},
 			},
 		},
@@ -427,6 +430,13 @@ func TestLoad(t *testing.T) {
 			filename: "../../../test/fixtures/azure/steps.yaml",
 			expectedPipeline: &models.Pipeline{
 				Name: "steps",
+				Container: &models.JobContainer{
+					Image: "ubuntu:18.04",
+				},
+				Pool: &models.Pool{
+					VmImage:       "ubuntu-latest",
+					FileReference: testutils.CreateFileReference(50, 3, 51, 25),
+				},
 				Steps: &models.Steps{
 					{
 						Bash:        "which bash\necho Hello $name\n",
