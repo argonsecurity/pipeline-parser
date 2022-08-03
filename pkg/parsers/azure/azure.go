@@ -34,20 +34,19 @@ func (g *AzureParser) Parse(azurePipeline *azureModels.Pipeline) (*models.Pipeli
 
 	if len(jobs) == 0 {
 		jobs = []*models.Job{generateDefaultJob()}
+		if azurePipeline.Pool != nil {
+			jobs[0].Runner = parsePool(azurePipeline.Pool, jobs[0].Runner)
+		}
+
+		if azurePipeline.Container != nil {
+			jobs[0].Runner = parseContainer(azurePipeline.Container, jobs[0].Runner)
+		}
 	}
 
 	pipeline.Jobs = jobs
 
 	if azurePipeline.Steps != nil {
 		pipeline.Jobs[0].Steps = parseSteps(azurePipeline.Steps)
-	}
-
-	if azurePipeline.Pool != nil {
-		pipeline.Jobs[0].Runner = parsePool(azurePipeline.Pool, pipeline.Jobs[0].Runner)
-	}
-
-	if azurePipeline.Container != nil {
-		pipeline.Jobs[0].Runner = parseContainer(azurePipeline.Container, pipeline.Jobs[0].Runner)
 	}
 
 	return pipeline, nil
