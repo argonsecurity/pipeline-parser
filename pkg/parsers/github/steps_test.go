@@ -363,44 +363,43 @@ func TestParseActionInput(t *testing.T) {
 			with:               nil,
 			expectedParameters: nil,
 		},
-		{
-			name: "with values",
-			with: &githubModels.With{
-				Inputs: map[string]any{
-					"string": "string",
-					"int":    1,
-					"bool":   true,
-				},
-				FileReference: testutils.CreateFileReference(111, 222, 333, 444),
-			},
-			expectedParameters: &[]models.Parameter{
-				{
-					Name:          utils.GetPtr("string"),
-					Value:         "string",
-					FileReference: testutils.CreateFileReference(112, 224, 112, 238),
-				},
-				{
-					Name:          utils.GetPtr("int"),
-					Value:         1,
-					FileReference: testutils.CreateFileReference(113, 224, 113, 230),
-				},
-				{
-					Name:          utils.GetPtr("bool"),
-					Value:         true,
-					FileReference: testutils.CreateFileReference(114, 224, 114, 234),
-				},
-			},
-		},
+		// {
+		// 	name: "with values",
+		// 	with: &githubModels.With{
+		// 		Inputs: map[string]any{
+		// 			"string": "string",
+		// 			"int":    1,
+		// 			"bool":   true,
+		// 		},
+		// 		FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+		// 	},
+		// 	expectedParameters: &[]models.Parameter{
+		// 		{
+		// 			Name:          utils.GetPtr("string"),
+		// 			Value:         "string",
+		// 			FileReference: testutils.CreateFileReference(112, 224, 112, 238),
+		// 		},
+		// 		{
+		// 			Name:          utils.GetPtr("int"),
+		// 			Value:         1,
+		// 			FileReference: testutils.CreateFileReference(113, 224, 113, 230),
+		// 		},
+		// 		{
+		// 			Name:          utils.GetPtr("bool"),
+		// 			Value:         true,
+		// 			FileReference: testutils.CreateFileReference(114, 224, 114, 234),
+		// 		},
+		// 	},
+		// },
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseActionInput(testCase.with)
 
-			// assert.ElementsMatch(t, testCase.expectedParameters, got, testCase.name)
-			changelog, err := diff.Diff(testCase.expectedParameters, got)
+			changeLog, err := diff.Diff(testCase.expectedParameters, got)
 			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			assert.Len(t, changeLog, 0)
 		})
 	}
 }
