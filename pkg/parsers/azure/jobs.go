@@ -62,6 +62,7 @@ func parseBaseJob(job *azureModels.BaseJob) *models.Job {
 	parsedJob := &models.Job{
 		Name:            &job.DisplayName,
 		ContinueOnError: &job.ContinueOnError,
+		Runner:          parseRunner(job),
 	}
 
 	if job.Variables != nil {

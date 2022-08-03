@@ -5,6 +5,7 @@ jobs:
   displayName: My First Job
   continueOnError: true
   dependsOn: job
+  container: ubuntu:18.04
   workspace:
     clean: outputs
   steps:

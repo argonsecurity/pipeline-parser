@@ -7,16 +7,17 @@ import (
 )
 
 type Pipeline struct {
-	Extends         *Extends    `yaml:"extends,omitempty"`
-	Jobs            *Jobs       `yaml:"jobs,omitempty"`
-	Stages          *Stages     `yaml:"stages,omitempty"`
-	ContinueOnError *bool       `yaml:"continueOnError,omitempty"`
-	Pool            *Pool       `yaml:"pool,omitempty"`
-	Name            string      `yaml:"name,omitempty"`
-	Trigger         *TriggerRef `yaml:"trigger,omitempty"`
-	Parameters      *Parameters `yaml:"parameters,omitempty"`
-	PR              *PRRef      `yaml:"pr,omitempty"`
-	Schedules       *Schedules  `yaml:"schedules,omitempty"`
+	Extends         *Extends      `yaml:"extends,omitempty"`
+	Jobs            *Jobs         `yaml:"jobs,omitempty"`
+	Stages          *Stages       `yaml:"stages,omitempty"`
+	ContinueOnError *bool         `yaml:"continueOnError,omitempty"`
+	Pool            *Pool         `yaml:"pool,omitempty"`
+	Container       *JobContainer `yaml:"container,omitempty"`
+	Name            string        `yaml:"name,omitempty"`
+	Trigger         *TriggerRef   `yaml:"trigger,omitempty"`
+	Parameters      *Parameters   `yaml:"parameters,omitempty"`
+	PR              *PRRef        `yaml:"pr,omitempty"`
+	Schedules       *Schedules    `yaml:"schedules,omitempty"`
 	// Resources       *Resources  `yaml:"resources,omitempty"` // Currently can't load it due to mismatch in the azure pipelines documentation
 	Steps        *Steps     `yaml:"steps,omitempty"`
 	Variables    *Variables `yaml:"variables,omitempty"`

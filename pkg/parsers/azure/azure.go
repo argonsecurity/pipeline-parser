@@ -34,6 +34,13 @@ func (g *AzureParser) Parse(azurePipeline *azureModels.Pipeline) (*models.Pipeli
 
 	if len(jobs) == 0 {
 		jobs = []*models.Job{generateDefaultJob()}
+		if azurePipeline.Pool != nil {
+			jobs[0].Runner = parsePool(azurePipeline.Pool, jobs[0].Runner)
+		}
+
+		if azurePipeline.Container != nil {
+			jobs[0].Runner = parseContainer(azurePipeline.Container, jobs[0].Runner)
+		}
 	}
 
 	pipeline.Jobs = jobs
@@ -63,6 +70,7 @@ func parsePipelineDefaults(pipeline *azureModels.Pipeline) *models.Defaults {
 
 func generateDefaultJob() *models.Job {
 	return &models.Job{
-		Name: utils.GetPtr("default"),
+		Name:   utils.GetPtr("default"),
+		Runner: &models.Runner{},
 	}
 }

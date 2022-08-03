@@ -1,6 +1,8 @@
 package models
 
 import (
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
+	"github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
@@ -126,6 +128,46 @@ type Resources struct {
 	Webhooks      []*WebhookRef           `yaml:"webhooks,omitempty"`
 	Packages      []*PackageRef           `yaml:"packages,omitempty"`
 	FileReference *models.FileReference
+}
+
+func (jc *JobContainer) UnmarshalYAML(node *yaml.Node) error {
+	if node.Tag == consts.StringTag {
+		jc.Image = node.Value
+		return nil
+	}
+
+	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+		var err error
+		switch key {
+		case "image":
+			jc.Image = value.Value
+		case "endpoint":
+			var demands []string
+			if err := loadersUtils.ParseSequenceOrOne(value, &demands); err != nil {
+				return err
+			}
+			jc.Endpoint = value.Value
+		case "env":
+			value.Decode(&jc.Env)
+		case "mapDockerSocket":
+			jc.MapDockerSocket = value.Value == "true"
+		case "options":
+			jc.Options = value.Value
+		case "ports":
+			jc.Ports, err = utils.ParseYamlStringSequenceToSlice(value, "Ports")
+			if err != nil {
+				return err
+			}
+		case "volumes":
+			jc.Volumes, err = utils.ParseYamlStringSequenceToSlice(value, "Volumes")
+			if err != nil {
+				return err
+			}
+		case "mountReadOnly":
+			value.Decode(&jc.MountReadOnly)
+		}
+		return nil
+	}, "Pool")
 }
 
 func (br *BuildRef) UnmarshalYAML(node *yaml.Node) error {

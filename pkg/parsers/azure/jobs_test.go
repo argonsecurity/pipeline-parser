@@ -39,6 +39,12 @@ func TestParseJobs(t *testing.T) {
 							Condition:        "job-1-condition",
 							ContinueOnError:  true,
 							TimeoutInMinutes: 100,
+							Pool: &azureModels.Pool{
+								VmImage: "ubuntu-18.04",
+							},
+							Container: &azureModels.JobContainer{
+								Image: "ubuntu:18.04",
+							},
 							Steps: &azureModels.Steps{
 								{
 									Name:      "step-1",
@@ -115,6 +121,13 @@ func TestParseJobs(t *testing.T) {
 					TimeoutMS:       utils.GetPtr(6000000),
 					Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 					Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
+					Runner: &models.Runner{
+						OS: utils.GetPtr("linux"),
+						DockerMetadata: &models.DockerMetadata{
+							Image: utils.GetPtr("ubuntu"),
+							Label: utils.GetPtr("18.04"),
+						},
+					},
 					Steps: []*models.Step{
 						{
 							ID:   utils.GetPtr("step-1"),
@@ -238,6 +251,12 @@ func TestParseCIJob(t *testing.T) {
 					Condition:        "job-1-condition",
 					ContinueOnError:  true,
 					TimeoutInMinutes: 100,
+					Pool: &azureModels.Pool{
+						VmImage: "ubuntu-18.04",
+					},
+					Container: &azureModels.JobContainer{
+						Image: "ubuntu:18.04",
+					},
 					Variables: &azureModels.Variables{
 						{
 							Name:          "var1",
@@ -271,6 +290,13 @@ func TestParseCIJob(t *testing.T) {
 				TimeoutMS:       utils.GetPtr(6000000),
 				Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 				Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
+				Runner: &models.Runner{
+					OS: utils.GetPtr("linux"),
+					DockerMetadata: &models.DockerMetadata{
+						Image: utils.GetPtr("ubuntu"),
+						Label: utils.GetPtr("18.04"),
+					},
+				},
 				EnvironmentVariables: &models.EnvironmentVariablesRef{
 					EnvironmentVariables: models.EnvironmentVariables{
 						"var1": "value1",
@@ -337,6 +363,12 @@ func TestParseDeploymentJob(t *testing.T) {
 					Condition:        "job-1-condition",
 					ContinueOnError:  true,
 					TimeoutInMinutes: 100,
+					Pool: &azureModels.Pool{
+						VmImage: "ubuntu-18.04",
+					},
+					Container: &azureModels.JobContainer{
+						Image: "ubuntu:18.04",
+					},
 					Variables: &azureModels.Variables{
 						{
 							Name:          "var1",
@@ -370,6 +402,13 @@ func TestParseDeploymentJob(t *testing.T) {
 				TimeoutMS:       utils.GetPtr(6000000),
 				Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 				Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
+				Runner: &models.Runner{
+					OS: utils.GetPtr("linux"),
+					DockerMetadata: &models.DockerMetadata{
+						Image: utils.GetPtr("ubuntu"),
+						Label: utils.GetPtr("18.04"),
+					},
+				},
 				EnvironmentVariables: &models.EnvironmentVariablesRef{
 					EnvironmentVariables: models.EnvironmentVariables{
 						"var1": "value1",
@@ -433,6 +472,12 @@ func TestParseBaseJob(t *testing.T) {
 				Condition:        "job-1-condition",
 				ContinueOnError:  true,
 				TimeoutInMinutes: 100,
+				Pool: &azureModels.Pool{
+					VmImage: "ubuntu-18.04",
+				},
+				Container: &azureModels.JobContainer{
+					Image: "ubuntu:18.04",
+				},
 				Variables: &azureModels.Variables{
 					{
 						Name:          "var1",
@@ -463,6 +508,13 @@ func TestParseBaseJob(t *testing.T) {
 				TimeoutMS:       utils.GetPtr(6000000),
 				Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 				Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
+				Runner: &models.Runner{
+					OS: utils.GetPtr("linux"),
+					DockerMetadata: &models.DockerMetadata{
+						Image: utils.GetPtr("ubuntu"),
+						Label: utils.GetPtr("18.04"),
+					},
+				},
 				EnvironmentVariables: &models.EnvironmentVariablesRef{
 					EnvironmentVariables: models.EnvironmentVariables{
 						"var1": "value1",

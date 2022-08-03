@@ -56,7 +56,8 @@ func TestAzure(t *testing.T) {
 				},
 				Jobs: []*models.Job{
 					{
-						Name: utils.GetPtr("default"),
+						Name:   utils.GetPtr("default"),
+						Runner: &models.Runner{},
 					},
 				},
 			},
@@ -87,7 +88,8 @@ func TestAzure(t *testing.T) {
 				},
 				Jobs: []*models.Job{
 					{
-						Name: utils.GetPtr("default"),
+						Name:   utils.GetPtr("default"),
+						Runner: &models.Runner{},
 					},
 				},
 			},
@@ -99,7 +101,8 @@ func TestAzure(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
-						Name: utils.GetPtr("default"),
+						Name:   utils.GetPtr("default"),
+						Runner: &models.Runner{},
 					},
 				},
 				Triggers: nil,
@@ -116,18 +119,27 @@ func TestAzure(t *testing.T) {
 						Name:            utils.GetPtr("deploy Web App"),
 						TimeoutMS:       utils.GetPtr(3600000),
 						ContinueOnError: utils.GetPtr(false),
+						Runner: &models.Runner{
+							OS: utils.GetPtr("linux"),
+						},
 						Dependencies: []*models.JobDependency{
 							{JobID: utils.GetPtr("job1")},
 							{JobID: utils.GetPtr("job2")},
 						},
-						FileReference: testutils.CreateFileReference(12, 3, 24, 43),
+						FileReference: testutils.CreateFileReference(13, 3, 25, 43),
 					},
 					{
 						ID:              utils.GetPtr("MyJob"),
 						Name:            utils.GetPtr("My First Job"),
 						TimeoutMS:       utils.GetPtr(3600000),
 						ContinueOnError: utils.GetPtr(true),
-						Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job")}},
+						Runner: &models.Runner{
+							DockerMetadata: &models.DockerMetadata{
+								Image: utils.GetPtr("ubuntu"),
+								Label: utils.GetPtr("18.04"),
+							},
+						},
+						Dependencies: []*models.JobDependency{{JobID: utils.GetPtr("job")}},
 						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr(""),
@@ -136,10 +148,10 @@ func TestAzure(t *testing.T) {
 									Type:   utils.GetPtr(""),
 									Script: utils.GetPtr("echo My first job"),
 								},
-								FileReference: testutils.CreateFileReference(11, 5, 11, 30),
+								FileReference: testutils.CreateFileReference(12, 5, 12, 30),
 							},
 						},
-						FileReference: testutils.CreateFileReference(4, 3, 11, 30),
+						FileReference: testutils.CreateFileReference(4, 3, 12, 30),
 					},
 				},
 			},
@@ -196,7 +208,8 @@ func TestAzure(t *testing.T) {
 				},
 				Jobs: []*models.Job{
 					{
-						Name: utils.GetPtr("default"),
+						Name:   utils.GetPtr("default"),
+						Runner: &models.Runner{},
 					},
 				},
 			},
@@ -212,7 +225,10 @@ func TestAzure(t *testing.T) {
 						Name:            utils.GetPtr(""),
 						ContinueOnError: utils.GetPtr(false),
 						TimeoutMS:       utils.GetPtr(3600000),
-						FileReference:   testutils.CreateFileReference(9, 3, 13, 18),
+						Runner: &models.Runner{
+							OS: utils.GetPtr("linux"),
+						},
+						FileReference: testutils.CreateFileReference(9, 3, 13, 18),
 					},
 				},
 			},
@@ -224,7 +240,8 @@ func TestAzure(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
-						Name: utils.GetPtr("default"),
+						Name:   utils.GetPtr("default"),
+						Runner: &models.Runner{},
 					},
 				},
 			},
@@ -236,7 +253,8 @@ func TestAzure(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
-						Name: utils.GetPtr("default"),
+						Name:   utils.GetPtr("default"),
+						Runner: &models.Runner{},
 					},
 				},
 			},
@@ -249,6 +267,13 @@ func TestAzure(t *testing.T) {
 				Jobs: []*models.Job{
 					{
 						Name: utils.GetPtr("default"),
+						Runner: &models.Runner{
+							OS: utils.GetPtr("linux"),
+							DockerMetadata: &models.DockerMetadata{
+								Image: utils.GetPtr("ubuntu"),
+								Label: utils.GetPtr("18.04"),
+							},
+						},
 						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("Multiline Bash script"),

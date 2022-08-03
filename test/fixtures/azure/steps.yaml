@@ -47,3 +47,6 @@ steps:
 - template: steps/build.yml # Template reference
   parameters:
     key: value
+pool:
+  vmImage: ubuntu-latest
+container: ubuntu:18.04
