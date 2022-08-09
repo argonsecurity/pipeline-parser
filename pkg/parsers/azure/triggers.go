@@ -50,39 +50,24 @@ func parseTrigger(ref *azureModels.TriggerRef) *models.Trigger {
 	}
 
 	if len(ref.Trigger.Branches.Include)+len(ref.Trigger.Branches.Exclude) > 0 {
-		trigger.Branches = &models.Filter{}
+		trigger.Branches = &models.Filter{
+			AllowList: ref.Trigger.Branches.Include,
+			DenyList:  ref.Trigger.Branches.Exclude,
+		}
 	}
 
 	if len(ref.Trigger.Paths.Include)+len(ref.Trigger.Paths.Exclude) > 0 {
-		trigger.Paths = &models.Filter{}
+		trigger.Paths = &models.Filter{
+			AllowList: ref.Trigger.Paths.Include,
+			DenyList:  ref.Trigger.Paths.Exclude,
+		}
 	}
 
 	if len(ref.Trigger.Tags.Include)+len(ref.Trigger.Tags.Exclude) > 0 {
-		trigger.Tags = &models.Filter{}
-	}
-
-	for _, branch := range ref.Trigger.Branches.Include {
-		trigger.Branches.AllowList = append(trigger.Branches.AllowList, branch)
-	}
-
-	for _, branch := range ref.Trigger.Branches.Exclude {
-		trigger.Branches.DenyList = append(trigger.Branches.DenyList, branch)
-	}
-
-	for _, path := range ref.Trigger.Paths.Include {
-		trigger.Paths.AllowList = append(trigger.Paths.AllowList, path)
-	}
-
-	for _, path := range ref.Trigger.Paths.Exclude {
-		trigger.Paths.DenyList = append(trigger.Paths.DenyList, path)
-	}
-
-	for _, tag := range ref.Trigger.Tags.Include {
-		trigger.Tags.AllowList = append(trigger.Tags.AllowList, tag)
-	}
-
-	for _, tag := range ref.Trigger.Tags.Exclude {
-		trigger.Tags.DenyList = append(trigger.Tags.DenyList, tag)
+		trigger.Tags = &models.Filter{
+			AllowList: ref.Trigger.Tags.Include,
+			DenyList:  ref.Trigger.Tags.Exclude,
+		}
 	}
 
 	return trigger

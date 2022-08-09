@@ -35,7 +35,7 @@ func ParseRules(rules *common.Rules) (*models.Triggers, []*models.Condition) {
 	triggers := []*models.Trigger{}
 	conditions := []*models.Condition{}
 	for _, rule := range rules.RulesList {
-		if ruleTriggers := parseTriggerRules(rule); ruleTriggers != nil && len(ruleTriggers) > 0 {
+		if ruleTriggers := parseTriggerRules(rule); len(ruleTriggers) > 0 {
 			triggers = append(triggers, ruleTriggers...)
 		} else {
 			conditions = append(conditions, parseConditionRule(rule))
