@@ -17,7 +17,7 @@ type StepTarget struct {
 	FileReference     *models.FileReference
 }
 
-type TaskInputs *commonModels.Map
+type TaskInputs commonModels.Map
 
 type Step struct {
 	Name                    string                   `yaml:"name,omitempty"`
@@ -54,10 +54,19 @@ type Step struct {
 	SaveCache               string                   `yaml:"saveCache,omitempty"`
 	Script                  string                   `yaml:"script,omitempty"`
 	Task                    string                   `yaml:"task,omitempty"`
-	Inputs                  TaskInputs               `yaml:"inputs,omitempty"`
+	Inputs                  *TaskInputs              `yaml:"inputs,omitempty"`
 	Template                `yaml:",inline"`
 
 	FileReference *models.FileReference
+}
+
+func (t *TaskInputs) UnmarshalYAML(value *yaml.Node) error {
+	var m commonModels.Map
+	if err := value.Decode(&m); err != nil {
+		return err
+	}
+	*t = TaskInputs(m)
+	return nil
 }
 
 func (t *StepTarget) UnmarshalYAML(node *yaml.Node) error {

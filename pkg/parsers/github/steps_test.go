@@ -110,7 +110,7 @@ func TestParseJobSteps(t *testing.T) {
 					TimeoutMinutes:   1,
 					WorkingDirectory: "dir",
 					Uses:             "actions/checkout@1.2.3",
-					With: &loadersCommonModels.Map{
+					With: &githubModels.With{
 						Values: []*loadersCommonModels.MapEntry{
 							{
 								Key:           "key",
@@ -258,7 +258,7 @@ func TestParseJobStep(t *testing.T) {
 				TimeoutMinutes:   1,
 				WorkingDirectory: "dir",
 				Uses:             "actions/checkout@1.2.3",
-				With: &loadersCommonModels.Map{
+				With: &githubModels.With{
 					Values: []*loadersCommonModels.MapEntry{
 						{
 							Key:           "key",
@@ -369,7 +369,7 @@ func TestParseActionHeader(t *testing.T) {
 func TestParseActionInput(t *testing.T) {
 	testCases := []struct {
 		name               string
-		with               githubModels.With
+		with               *githubModels.With
 		expectedParameters []*models.Parameter
 	}{
 		{
@@ -379,7 +379,7 @@ func TestParseActionInput(t *testing.T) {
 		},
 		{
 			name: "with values",
-			with: &loadersCommonModels.Map{
+			with: &githubModels.With{
 				Values: []*loadersCommonModels.MapEntry{
 					{
 						Key:           "string",
@@ -421,7 +421,12 @@ func TestParseActionInput(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			got := parserUtils.ParseMapToParameters(testCase.with)
+			var m loadersCommonModels.Map
+			if testCase.with != nil {
+				m = loadersCommonModels.Map(*testCase.with)
+			}
+
+			got := parserUtils.ParseMapToParameters(m)
 
 			changeLog, err := diff.Diff(testCase.expectedParameters, got)
 			assert.NoError(t, err)

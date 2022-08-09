@@ -253,7 +253,7 @@ func TestLoad(t *testing.T) {
 								{
 									Name: "task with params",
 									Uses: "actions/checkout@v1",
-									With: &commonModels.Map{
+									With: &githubModels.With{
 										Values: []*commonModels.MapEntry{
 											{
 												Key:           "repo",
@@ -268,7 +268,7 @@ func TestLoad(t *testing.T) {
 								{
 									Name: "task with multiline params",
 									Uses: "actions/checkout@v1",
-									With: &commonModels.Map{
+									With: &githubModels.With{
 										Values: []*commonModels.MapEntry{
 											{
 												Key:           "repos",

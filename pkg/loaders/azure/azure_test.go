@@ -522,7 +522,7 @@ func TestLoad(t *testing.T) {
 						Task:             "VSBuild@1",
 						DisplayName:      "Build",
 						TimeoutInMinutes: 120,
-						Inputs: &commonModels.Map{
+						Inputs: &models.TaskInputs{
 							Values: []*commonModels.MapEntry{
 								{
 									Key:           "solution",

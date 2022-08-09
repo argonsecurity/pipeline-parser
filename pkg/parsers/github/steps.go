@@ -3,6 +3,7 @@ package github
 import (
 	"regexp"
 
+	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	parserUtils "github.com/argonsecurity/pipeline-parser/pkg/parsers/utils"
@@ -67,8 +68,12 @@ func parseJobStep(step githubModels.Step) *models.Step {
 			Name:        &actionName,
 			Version:     &version,
 			VersionType: versionType,
-			Inputs:      parserUtils.ParseMapToParameters(step.With),
 		}
+
+		if step.With != nil {
+			parsedStep.Task.Inputs = parserUtils.ParseMapToParameters(loadersCommonModels.Map(*step.With))
+		}
+
 		parsedStep.Type = models.TaskStepType
 	}
 

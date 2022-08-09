@@ -380,7 +380,7 @@ func TestParse(t *testing.T) {
 						TimeoutInMinutes: 1,
 						WorkingDirectory: "dir",
 						Task:             "Task@2",
-						Inputs: &commonLoaderModels.Map{
+						Inputs: &azureModels.TaskInputs{
 							Values: []*commonLoaderModels.MapEntry{
 								{
 									Key:           "key",

@@ -14,7 +14,7 @@ type ShellCommand struct {
 	FileReference *models.FileReference
 }
 
-type With *commonModels.Map
+type With commonModels.Map
 
 type Step struct {
 	ContinueOnError  *bool                    `yaml:"continue-on-error,omitempty"`
@@ -26,9 +26,18 @@ type Step struct {
 	Shell            string                   `yaml:"shell,omitempty"`
 	TimeoutMinutes   int                      `yaml:"timeout-minutes,omitempty"`
 	Uses             string                   `yaml:"uses,omitempty"`
-	With             With                     `yaml:"with,omitempty"`
+	With             *With                    `yaml:"with,omitempty"`
 	WorkingDirectory string                   `yaml:"working-directory,omitempty"`
 	FileReference    *models.FileReference
+}
+
+func (w *With) UnmarshalYAML(value *yaml.Node) error {
+	var m commonModels.Map
+	if err := value.Decode(&m); err != nil {
+		return err
+	}
+	*w = With(m)
+	return nil
 }
 
 func (s *Steps) UnmarshalYAML(node *yaml.Node) error {

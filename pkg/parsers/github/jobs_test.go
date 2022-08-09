@@ -63,7 +63,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 									TimeoutMinutes:   1,
 									WorkingDirectory: "dir",
 									Uses:             "actions/checkout@1.2.3",
-									With: &loadersCommonModels.Map{
+									With: &githubModels.With{
 										Values: []*loadersCommonModels.MapEntry{
 											{
 												Key:           "key",
@@ -222,7 +222,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 									TimeoutMinutes:   1,
 									WorkingDirectory: "dir",
 									Uses:             "actions/checkout@1.2.3",
-									With: &loadersCommonModels.Map{
+									With: &githubModels.With{
 										Values: []*loadersCommonModels.MapEntry{
 											{
 												Key:           "key",
@@ -415,7 +415,7 @@ func TestParseJob(t *testing.T) {
 						TimeoutMinutes:   1,
 						WorkingDirectory: "dir",
 						Uses:             "actions/checkout@1.2.3",
-						With: &loadersCommonModels.Map{
+						With: &githubModels.With{
 							Values: []*loadersCommonModels.MapEntry{
 								{
 									Key:           "key",

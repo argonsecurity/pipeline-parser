@@ -101,7 +101,7 @@ func TestParseSteps(t *testing.T) {
 					TimeoutInMinutes: 1,
 					WorkingDirectory: "dir",
 					Task:             "Task@2",
-					Inputs: &loadersCommonModels.Map{
+					Inputs: &azureModels.TaskInputs{
 						Values: []*loadersCommonModels.MapEntry{
 							{
 								Key:           "key",
@@ -367,7 +367,7 @@ func TestParseStep(t *testing.T) {
 				TimeoutInMinutes: 1,
 				WorkingDirectory: "dir",
 				Task:             "Task@2",
-				Inputs: &loadersCommonModels.Map{
+				Inputs: &azureModels.TaskInputs{
 					Values: []*loadersCommonModels.MapEntry{
 						{
 							Key:           "key",
@@ -534,7 +534,7 @@ func TestParseActionHeader(t *testing.T) {
 func TestParseTaskInput(t *testing.T) {
 	testCases := []struct {
 		name               string
-		taskInputs         azureModels.TaskInputs
+		taskInputs         *azureModels.TaskInputs
 		expectedParameters []*models.Parameter
 	}{
 		{
@@ -544,7 +544,7 @@ func TestParseTaskInput(t *testing.T) {
 		},
 		{
 			name: "Task inputs with values",
-			taskInputs: &loadersCommonModels.Map{
+			taskInputs: &azureModels.TaskInputs{
 				Values: []*loadersCommonModels.MapEntry{
 					{
 						Key:           "string",
@@ -585,7 +585,12 @@ func TestParseTaskInput(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			got := parserUtils.ParseMapToParameters(testCase.taskInputs)
+			var m loadersCommonModels.Map
+			if testCase.taskInputs != nil {
+				m = loadersCommonModels.Map(*testCase.taskInputs)
+			}
+
+			got := parserUtils.ParseMapToParameters(m)
 
 			// assert.ElementsMatch(t, testCase.expectedParameters, got, testCase.name)
 			changelog, err := diff.Diff(testCase.expectedParameters, got)
