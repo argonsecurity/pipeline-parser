@@ -20,6 +20,10 @@ func Handle(data []byte, platform consts.Platform) (*models.Pipeline, error) {
 	var pipeline *models.Pipeline
 	var err error
 
+	if len(data) == 0 {
+		return nil, nil
+	}
+
 	switch platform {
 	case consts.GitHubPlatform:
 		pipeline, err = handle[githubModels.Workflow](data, &GitHubHandler{})
@@ -27,6 +31,8 @@ func Handle(data []byte, platform consts.Platform) (*models.Pipeline, error) {
 		pipeline, err = handle[gitlabModels.GitlabCIConfiguration](data, &GitLabHandler{})
 	case consts.AzurePlatform:
 		pipeline, err = handle[azureModels.Pipeline](data, &AzureHandler{})
+	default:
+		return nil, consts.NewErrInvalidPlatform(platform)
 	}
 
 	if err != nil {
