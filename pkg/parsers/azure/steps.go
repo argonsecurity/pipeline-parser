@@ -1,17 +1,13 @@
 package azure
 
 import (
-	"regexp"
 	"strings"
 
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
-	loaderUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
+	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	parserUtils "github.com/argonsecurity/pipeline-parser/pkg/parsers/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-)
-
-var (
-	azureTaskNameRegex = regexp.MustCompile(`(.+?)(?:@(.+)|$)`)
 )
 
 func parseSteps(steps *azureModels.Steps) []*models.Step {
@@ -55,8 +51,12 @@ func parseStep(step azureModels.Step) *models.Step {
 			Name:        &actionName,
 			Version:     &version,
 			VersionType: versionType,
-			Inputs:      parseTaskInput(step.Inputs),
 		}
+
+		if step.Inputs != nil {
+			parsedStep.Task.Inputs = parserUtils.ParseMapToParameters(loadersCommonModels.Map(*step.Inputs))
+		}
+
 		parsedStep.Type = models.TaskStepType
 	}
 
@@ -105,32 +105,4 @@ func parseTaskHeader(header string) (string, string, models.VersionType) {
 	}
 
 	return result[0], result[1], models.TagVersion
-}
-
-func parseTaskInput(taskInputs *azureModels.TaskInputs) *[]models.Parameter {
-	if taskInputs == nil {
-		return nil
-	}
-
-	parameters := make([]models.Parameter, 0)
-	currentLine := -1
-	startColumn := -1
-
-	if taskInputs.FileReference != nil {
-		currentLine = taskInputs.FileReference.StartRef.Line + 1
-		startColumn = taskInputs.FileReference.StartRef.Column + 2
-	}
-
-	for key, value := range taskInputs.Inputs {
-		name := key
-		parameter := models.Parameter{
-			Name:          &name,
-			Value:         value,
-			FileReference: loaderUtils.CalculateParameterFileReference(currentLine, startColumn, key, value),
-		}
-		currentLine = parameter.FileReference.EndRef.Line + 1
-		parameters = append(parameters, parameter)
-	}
-
-	return &parameters
 }

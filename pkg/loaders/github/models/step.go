@@ -1,6 +1,7 @@
 package models
 
 import (
+	commonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
@@ -13,10 +14,7 @@ type ShellCommand struct {
 	FileReference *models.FileReference
 }
 
-type With struct {
-	Inputs        map[string]any
-	FileReference *models.FileReference
-}
+type With commonModels.Map
 
 type Step struct {
 	ContinueOnError  *bool                    `yaml:"continue-on-error,omitempty"`
@@ -31,6 +29,15 @@ type Step struct {
 	With             *With                    `yaml:"with,omitempty"`
 	WorkingDirectory string                   `yaml:"working-directory,omitempty"`
 	FileReference    *models.FileReference
+}
+
+func (w *With) UnmarshalYAML(value *yaml.Node) error {
+	var m commonModels.Map
+	if err := value.Decode(&m); err != nil {
+		return err
+	}
+	*w = With(m)
+	return nil
 }
 
 func (s *Steps) UnmarshalYAML(node *yaml.Node) error {
@@ -51,18 +58,4 @@ func (s *ShellCommand) UnmarshalYAML(node *yaml.Node) error {
 	s.FileReference = loadersUtils.GetFileReference(node)
 	s.Script = node.Value
 	return nil
-}
-
-func (s *With) UnmarshalYAML(node *yaml.Node) error {
-	s.FileReference = loadersUtils.GetFileReference(node)
-
-	// The with block looks like this
-	// with:
-	//   key1: value1
-	//   key2: value2
-	// The node refers to the first input
-	// We want to include the "with" in the File Reference so we have to subtract 1 from the line number and 2 from the column number
-	s.FileReference.StartRef.Line--
-	s.FileReference.StartRef.Column -= 2
-	return node.Decode(&s.Inputs)
 }

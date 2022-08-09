@@ -3,6 +3,7 @@ package github
 import (
 	"testing"
 
+	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
@@ -63,8 +64,13 @@ func TestParseWorkflowJobs(t *testing.T) {
 									WorkingDirectory: "dir",
 									Uses:             "actions/checkout@1.2.3",
 									With: &githubModels.With{
-										Inputs:        map[string]any{"key": "value"},
-										FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+										Values: []*loadersCommonModels.MapEntry{
+											{
+												Key:           "key",
+												Value:         "value",
+												FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+											},
+										},
 									},
 								},
 							},
@@ -127,7 +133,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 								Name:        utils.GetPtr("actions/checkout"),
 								Version:     utils.GetPtr("1.2.3"),
 								VersionType: models.TagVersion,
-								Inputs: &[]models.Parameter{
+								Inputs: []*models.Parameter{
 									{
 										Name:          utils.GetPtr("key"),
 										Value:         "value",
@@ -217,8 +223,13 @@ func TestParseWorkflowJobs(t *testing.T) {
 									WorkingDirectory: "dir",
 									Uses:             "actions/checkout@1.2.3",
 									With: &githubModels.With{
-										Inputs:        map[string]any{"key": "value"},
-										FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+										Values: []*loadersCommonModels.MapEntry{
+											{
+												Key:           "key",
+												Value:         "value",
+												FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+											},
+										},
 									},
 								},
 							},
@@ -284,7 +295,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 								Name:        utils.GetPtr("actions/checkout"),
 								Version:     utils.GetPtr("1.2.3"),
 								VersionType: models.TagVersion,
-								Inputs: &[]models.Parameter{
+								Inputs: []*models.Parameter{
 									{
 										Name:          utils.GetPtr("key"),
 										Value:         "value",
@@ -405,8 +416,13 @@ func TestParseJob(t *testing.T) {
 						WorkingDirectory: "dir",
 						Uses:             "actions/checkout@1.2.3",
 						With: &githubModels.With{
-							Inputs:        map[string]any{"key": "value"},
-							FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+							Values: []*loadersCommonModels.MapEntry{
+								{
+									Key:           "key",
+									Value:         "value",
+									FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+								},
+							},
 						},
 					},
 				},
@@ -465,7 +481,7 @@ func TestParseJob(t *testing.T) {
 							Name:        utils.GetPtr("actions/checkout"),
 							Version:     utils.GetPtr("1.2.3"),
 							VersionType: models.TagVersion,
-							Inputs: &[]models.Parameter{
+							Inputs: []*models.Parameter{
 								{
 									Name:          utils.GetPtr("key"),
 									Value:         "value",

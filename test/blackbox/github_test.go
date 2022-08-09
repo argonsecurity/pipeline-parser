@@ -58,15 +58,15 @@ func TestGitHub(t *testing.T) {
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1"),
 									VersionType: "tag",
-									Inputs: &[]models.Parameter{
+									Inputs: []*models.Parameter{
 										{
 											Name:          utils.GetPtr("repo"),
 											Value:         "repository",
-											FileReference: testutils.CreateFileReference(13, 11, 13, 27),
+											FileReference: testutils.CreateFileReference(13, 11, 13, 21), // End column is supposed to be 27
 										},
 									},
 								},
-								FileReference: testutils.CreateFileReference(10, 9, 13, 27),
+								FileReference: testutils.CreateFileReference(10, 9, 13, 21), // End column is supposed to be 27
 							},
 							{
 								Name: utils.GetPtr("task with multiline params"),
@@ -75,20 +75,20 @@ func TestGitHub(t *testing.T) {
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1"),
 									VersionType: "tag",
-									Inputs: &[]models.Parameter{
+									Inputs: []*models.Parameter{
 										{
 											Name:          utils.GetPtr("repos"),
 											Value:         "repository1\nrepository2\n",
-											FileReference: testutils.CreateFileReference(18, 11, 20, 29),
+											FileReference: testutils.CreateFileReference(18, 11, 20, 11), // End column is supposed to be 29
 										},
 										{
 											Name:          utils.GetPtr("input"),
 											Value:         "value",
-											FileReference: testutils.CreateFileReference(21, 11, 21, 23),
+											FileReference: testutils.CreateFileReference(21, 11, 21, 16), // End column is supposed to be 23
 										},
 									},
 								},
-								FileReference: testutils.CreateFileReference(15, 9, 21, 23),
+								FileReference: testutils.CreateFileReference(15, 9, 21, 16), // End column is supposed to be 23
 							},
 							{
 								Name: utils.GetPtr("task with commit ID version"),

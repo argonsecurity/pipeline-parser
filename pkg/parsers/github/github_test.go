@@ -3,6 +3,7 @@ package github
 import (
 	"testing"
 
+	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
@@ -66,7 +67,13 @@ func TestParse(t *testing.T) {
 									WorkingDirectory: "dir",
 									Uses:             "actions/checkout@1.2.3",
 									With: &githubModels.With{
-										Inputs:        map[string]any{"key": "value"},
+										Values: []*loadersCommonModels.MapEntry{
+											{
+												Key:           "key",
+												Value:         "value",
+												FileReference: testutils.CreateFileReference(112, 212, 112, 234),
+											},
+										},
 										FileReference: testutils.CreateFileReference(111, 222, 333, 444),
 									},
 								},
@@ -162,11 +169,11 @@ func TestParse(t *testing.T) {
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("1.2.3"),
 									VersionType: models.TagVersion,
-									Inputs: &[]models.Parameter{
+									Inputs: []*models.Parameter{
 										{
 											Name:          utils.GetPtr("key"),
 											Value:         "value",
-											FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+											FileReference: testutils.CreateFileReference(112, 212, 112, 234),
 										},
 									},
 								},

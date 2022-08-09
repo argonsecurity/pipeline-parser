@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
+	commonLoaderModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -380,7 +381,13 @@ func TestParse(t *testing.T) {
 						WorkingDirectory: "dir",
 						Task:             "Task@2",
 						Inputs: &azureModels.TaskInputs{
-							Inputs:        map[string]any{"key": "value"},
+							Values: []*commonLoaderModels.MapEntry{
+								{
+									Key:           "key",
+									Value:         "value",
+									FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+								},
+							},
 							FileReference: testutils.CreateFileReference(111, 222, 333, 444),
 						},
 					},
@@ -489,7 +496,7 @@ func TestParse(t *testing.T) {
 									Name:        utils.GetPtr("Task"),
 									Version:     utils.GetPtr("2"),
 									VersionType: models.TagVersion,
-									Inputs: &[]models.Parameter{
+									Inputs: []*models.Parameter{
 										{
 											Name:          utils.GetPtr("key"),
 											Value:         "value",

@@ -3,6 +3,7 @@ package github
 import (
 	"testing"
 
+	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
@@ -109,7 +110,13 @@ func TestParseJobSteps(t *testing.T) {
 					WorkingDirectory: "dir",
 					Uses:             "actions/checkout@1.2.3",
 					With: &githubModels.With{
-						Inputs:        map[string]any{"key": "value"},
+						Values: []*loadersCommonModels.MapEntry{
+							{
+								Key:           "key",
+								Value:         "value",
+								FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+							},
+						},
 						FileReference: testutils.CreateFileReference(111, 222, 333, 444),
 					},
 				},
@@ -154,7 +161,7 @@ func TestParseJobSteps(t *testing.T) {
 						Name:        utils.GetPtr("actions/checkout"),
 						Version:     utils.GetPtr("1.2.3"),
 						VersionType: models.TagVersion,
-						Inputs: &[]models.Parameter{
+						Inputs: []*models.Parameter{
 							{
 								Name:          utils.GetPtr("key"),
 								Value:         "value",
@@ -251,7 +258,13 @@ func TestParseJobStep(t *testing.T) {
 				WorkingDirectory: "dir",
 				Uses:             "actions/checkout@1.2.3",
 				With: &githubModels.With{
-					Inputs:        map[string]any{"key": "value"},
+					Values: []*loadersCommonModels.MapEntry{
+						{
+							Key:           "key",
+							Value:         "value",
+							FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+						},
+					},
 					FileReference: testutils.CreateFileReference(111, 222, 333, 444),
 				},
 			},
@@ -273,7 +286,7 @@ func TestParseJobStep(t *testing.T) {
 					Name:        utils.GetPtr("actions/checkout"),
 					Version:     utils.GetPtr("1.2.3"),
 					VersionType: models.TagVersion,
-					Inputs: &[]models.Parameter{
+					Inputs: []*models.Parameter{
 						{
 							Name:          utils.GetPtr("key"),
 							Value:         "value",
@@ -348,58 +361,6 @@ func TestParseActionHeader(t *testing.T) {
 			assert.Equal(t, testCase.expectedActionName, actionName, testCase.name)
 			assert.Equal(t, testCase.expectedVersion, version, testCase.name)
 			assert.Equal(t, testCase.expectedVersionType, versionType, testCase.name)
-		})
-	}
-}
-
-func TestParseActionInput(t *testing.T) {
-	testCases := []struct {
-		name               string
-		with               *githubModels.With
-		expectedParameters *[]models.Parameter
-	}{
-		{
-			name:               "with nil",
-			with:               nil,
-			expectedParameters: nil,
-		},
-		// {
-		// 	name: "with values",
-		// 	with: &githubModels.With{
-		// 		Inputs: map[string]any{
-		// 			"string": "string",
-		// 			"int":    1,
-		// 			"bool":   true,
-		// 		},
-		// 		FileReference: testutils.CreateFileReference(111, 222, 333, 444),
-		// 	},
-		// 	expectedParameters: &[]models.Parameter{
-		// 		{
-		// 			Name:          utils.GetPtr("string"),
-		// 			Value:         "string",
-		// 			FileReference: testutils.CreateFileReference(112, 224, 112, 238),
-		// 		},
-		// 		{
-		// 			Name:          utils.GetPtr("int"),
-		// 			Value:         1,
-		// 			FileReference: testutils.CreateFileReference(113, 224, 113, 230),
-		// 		},
-		// 		{
-		// 			Name:          utils.GetPtr("bool"),
-		// 			Value:         true,
-		// 			FileReference: testutils.CreateFileReference(114, 224, 114, 234),
-		// 		},
-		// 	},
-		// },
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			got := parseActionInput(testCase.with)
-
-			changeLog, err := diff.Diff(testCase.expectedParameters, got)
-			assert.NoError(t, err)
-			assert.Len(t, changeLog, 0)
 		})
 	}
 }

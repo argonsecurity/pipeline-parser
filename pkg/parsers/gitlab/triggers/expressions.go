@@ -12,10 +12,8 @@ import (
 
 var (
 	// Operators
-	equals    Operator = "=="
-	notEquals Operator = "!="
-	match     Operator = "=~"
-	notMatch  Operator = "!~"
+	equals Operator = "=="
+	match  Operator = "=~"
 
 	// Regexes
 	comparisonRegex = regexp.MustCompile(`(\$\w+)\s*(==|!=|=~|!~)\s*(["/].*?["/]|\$\w+)`)

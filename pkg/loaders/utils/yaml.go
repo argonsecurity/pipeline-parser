@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
@@ -136,4 +137,21 @@ func ParseSequenceOrOne[T any](node *yaml.Node, v *[]T) error {
 
 	*v = []T{t}
 	return nil
+}
+
+func GetNodeValue(node *yaml.Node) any {
+	if node.Tag == consts.StringTag {
+		return node.Value
+	}
+
+	if node.Tag == consts.IntTag {
+		value, _ := strconv.Atoi(node.Value)
+		return value
+	}
+
+	if node.Tag == consts.BooleanTag {
+		return strings.ToLower(node.Value) == "true"
+	}
+
+	return node.Value
 }

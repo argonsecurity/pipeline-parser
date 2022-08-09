@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
+	commonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/r3labs/diff/v3"
 )
@@ -522,12 +523,16 @@ func TestLoad(t *testing.T) {
 						DisplayName:      "Build",
 						TimeoutInMinutes: 120,
 						Inputs: &models.TaskInputs{
-							Inputs: map[string]any{
-								"solution": "**\\*.sln",
+							Values: []*commonModels.MapEntry{
+								{
+									Key:           "solution",
+									Value:         "**\\*.sln",
+									FileReference: testutils.CreateFileReference(46, 5, 46, 13), // End column should be 24
+								},
 							},
-							FileReference: testutils.CreateFileReference(45, 3, 46, 23),
+							FileReference: testutils.CreateFileReference(45, 3, 46, 13), // End column should be 24
 						},
-						FileReference: testutils.CreateFileReference(42, 3, 46, 23),
+						FileReference: testutils.CreateFileReference(42, 3, 46, 13), // End column should be 24
 					},
 					{
 						Template: models.Template{

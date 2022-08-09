@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
-	"github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
@@ -154,12 +153,12 @@ func (jc *JobContainer) UnmarshalYAML(node *yaml.Node) error {
 		case "options":
 			jc.Options = value.Value
 		case "ports":
-			jc.Ports, err = utils.ParseYamlStringSequenceToSlice(value, "Ports")
+			jc.Ports, err = loadersUtils.ParseYamlStringSequenceToSlice(value, "Ports")
 			if err != nil {
 				return err
 			}
 		case "volumes":
-			jc.Volumes, err = utils.ParseYamlStringSequenceToSlice(value, "Volumes")
+			jc.Volumes, err = loadersUtils.ParseYamlStringSequenceToSlice(value, "Volumes")
 			if err != nil {
 				return err
 			}
