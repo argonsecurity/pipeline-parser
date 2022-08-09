@@ -3,6 +3,7 @@ package github
 import (
 	"testing"
 
+	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
@@ -108,8 +109,14 @@ func TestParseJobSteps(t *testing.T) {
 					TimeoutMinutes:   1,
 					WorkingDirectory: "dir",
 					Uses:             "actions/checkout@1.2.3",
-					With: &githubModels.With{
-						Inputs:        map[string]any{"key": "value"},
+					With: &loadersCommonModels.Map{
+						Values: []*loadersCommonModels.MapEntry{
+							{
+								Key:           "key",
+								Value:         "value",
+								FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+							},
+						},
 						FileReference: testutils.CreateFileReference(111, 222, 333, 444),
 					},
 				},
@@ -250,8 +257,14 @@ func TestParseJobStep(t *testing.T) {
 				TimeoutMinutes:   1,
 				WorkingDirectory: "dir",
 				Uses:             "actions/checkout@1.2.3",
-				With: &githubModels.With{
-					Inputs:        map[string]any{"key": "value"},
+				With: &loadersCommonModels.Map{
+					Values: []*loadersCommonModels.MapEntry{
+						{
+							Key:           "key",
+							Value:         "value",
+							FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+						},
+					},
 					FileReference: testutils.CreateFileReference(111, 222, 333, 444),
 				},
 			},
@@ -355,7 +368,7 @@ func TestParseActionHeader(t *testing.T) {
 func TestParseActionInput(t *testing.T) {
 	testCases := []struct {
 		name               string
-		with               *githubModels.With
+		with               githubModels.With
 		expectedParameters *[]models.Parameter
 	}{
 		{

@@ -4,7 +4,6 @@ import (
 	"regexp"
 
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
-	loaderUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
@@ -97,29 +96,19 @@ func parseActionHeader(header string) (string, string, models.VersionType) {
 	return actionName, version, versionType
 }
 
-func parseActionInput(with *githubModels.With) *[]models.Parameter {
+func parseActionInput(with githubModels.With) *[]models.Parameter {
 	if with == nil {
 		return nil
 	}
 
 	parameters := make([]models.Parameter, 0)
-	currentLine := -1
-	startColumn := -1
-
-	if with.FileReference != nil {
-		currentLine = with.FileReference.StartRef.Line + 1
-		startColumn = with.FileReference.StartRef.Column + 2
-	}
-
-	for key, value := range with.Inputs {
-		name := key
-		parameter := models.Parameter{
-			Name:          &name,
-			Value:         value,
-			FileReference: loaderUtils.CalculateParameterFileReference(currentLine, startColumn, key, value),
-		}
-		currentLine = parameter.FileReference.EndRef.Line + 1
-		parameters = append(parameters, parameter)
+	for _, entry := range with.Values {
+		var key = entry.Key // define key here so the pointer won't change in the loop
+		parameters = append(parameters, models.Parameter{
+			Name:          &key,
+			Value:         entry.Value,
+			FileReference: entry.FileReference,
+		})
 	}
 
 	return &parameters

@@ -4,8 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
-	commonModels "github.com/argonsecurity/pipeline-parser/pkg/models"
+	commonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
+	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
+	pipelineModels "github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/r3labs/diff/v3"
@@ -16,36 +17,36 @@ func TestLoad(t *testing.T) {
 		name             string
 		filename         string
 		expectedError    error
-		expectedWorkflow *models.Workflow
+		expectedWorkflow *githubModels.Workflow
 	}{
 		{
 			name:     "All triggers",
 			filename: "../../../test/fixtures/github/all-triggers.yaml",
-			expectedWorkflow: &models.Workflow{
+			expectedWorkflow: &githubModels.Workflow{
 				Name: "all-triggers",
-				On: &models.On{
-					Schedule: &models.Schedule{
-						Crons: &[]models.Cron{
+				On: &githubModels.On{
+					Schedule: &githubModels.Schedule{
+						Crons: &[]githubModels.Cron{
 							{
 								Cron: "30 2 * * *",
 							},
 						},
 						FileReference: testutils.CreateFileReference(3, 3, 4, 23),
 					},
-					Push: &models.Ref{
+					Push: &githubModels.Ref{
 						Branches:      []string{"master"},
 						FileReference: testutils.CreateFileReference(5, 3, 7, 15),
 					},
-					PullRequest: &models.Ref{
+					PullRequest: &githubModels.Ref{
 						PathsIgnore:   []string{"*/test/*"},
 						FileReference: testutils.CreateFileReference(8, 3, 10, 17),
 					},
-					PullRequestTarget: &models.Ref{
+					PullRequestTarget: &githubModels.Ref{
 						Paths:         []string{"*/test/*"},
 						FileReference: testutils.CreateFileReference(11, 3, 13, 17),
 					},
-					WorkflowDispatch: &models.WorkflowDispatch{
-						Inputs: models.Inputs{
+					WorkflowDispatch: &githubModels.WorkflowDispatch{
+						Inputs: githubModels.Inputs{
 							"workflow-input": struct {
 								Description string
 								Default     interface{}
@@ -60,8 +61,8 @@ func TestLoad(t *testing.T) {
 						},
 						FileReference: testutils.CreateFileReference(14, 3, 19, 23),
 					},
-					WorkflowCall: &models.WorkflowCall{
-						Inputs: models.Inputs{
+					WorkflowCall: &githubModels.WorkflowCall{
+						Inputs: githubModels.Inputs{
 							"workflow-input": struct {
 								Description string
 								Default     interface{}
@@ -76,14 +77,14 @@ func TestLoad(t *testing.T) {
 						},
 						FileReference: testutils.CreateFileReference(20, 3, 25, 23),
 					},
-					WorkflowRun: &models.WorkflowRun{
-						Ref: models.Ref{
+					WorkflowRun: &githubModels.WorkflowRun{
+						Ref: githubModels.Ref{
 							BranchesIgnore: []string{"master"},
 						},
 						FileReference: testutils.CreateFileReference(26, 3, 28, 15),
 					},
-					Events: models.Events{
-						"label": models.Event{
+					Events: githubModels.Events{
+						"label": githubModels.Event{
 							Types:         []string{"created"},
 							FileReference: testutils.CreateFileReference(29, 3, 30, 20),
 						},
@@ -95,14 +96,14 @@ func TestLoad(t *testing.T) {
 		{
 			name:     "concurrent-jobs",
 			filename: "../../../test/fixtures/github/concurrent-jobs.yaml",
-			expectedWorkflow: &models.Workflow{
+			expectedWorkflow: &githubModels.Workflow{
 				Name: "concurrent-jobs",
-				Jobs: &models.Jobs{
-					CIJobs: map[string]*models.Job{
+				Jobs: &githubModels.Jobs{
+					CIJobs: map[string]*githubModels.Job{
 						"job1": {
 							ID:   utils.GetPtr("job1"),
 							Name: "Job 1",
-							Concurrency: &models.Concurrency{
+							Concurrency: &githubModels.Concurrency{
 								Group: utils.GetPtr("ci"),
 							},
 							FileReference: testutils.CreateFileReference(3, 3, 5, 20),
@@ -110,7 +111,7 @@ func TestLoad(t *testing.T) {
 						"job2": {
 							ID:   utils.GetPtr("job2"),
 							Name: "Job 2",
-							Concurrency: &models.Concurrency{
+							Concurrency: &githubModels.Concurrency{
 								Group: utils.GetPtr("ci"),
 							},
 							FileReference: testutils.CreateFileReference(7, 3, 9, 20),
@@ -122,10 +123,10 @@ func TestLoad(t *testing.T) {
 		{
 			name:     "dependant-jobs.yaml",
 			filename: "../../../test/fixtures/github/dependant-jobs.yaml",
-			expectedWorkflow: &models.Workflow{
+			expectedWorkflow: &githubModels.Workflow{
 				Name: "dependable jobs",
-				Jobs: &models.Jobs{
-					CIJobs: map[string]*models.Job{
+				Jobs: &githubModels.Jobs{
+					CIJobs: map[string]*githubModels.Job{
 						"dependable-job": {
 							ID:            utils.GetPtr("dependable-job"),
 							Name:          "Dependable Job",
@@ -134,7 +135,7 @@ func TestLoad(t *testing.T) {
 						"dependant-job": {
 							ID:            utils.GetPtr("dependant-job"),
 							Name:          "Dependant Job",
-							Needs:         &models.Needs{"dependable-job"},
+							Needs:         &githubModels.Needs{"dependable-job"},
 							FileReference: testutils.CreateFileReference(7, 3, 9, 27),
 						},
 					},
@@ -144,36 +145,36 @@ func TestLoad(t *testing.T) {
 		{
 			name:     "environment-variables",
 			filename: "../../../test/fixtures/github/environment-variables.yaml",
-			expectedWorkflow: &models.Workflow{
+			expectedWorkflow: &githubModels.Workflow{
 				Name: "environment-variables",
-				Env: &models.EnvironmentVariablesRef{
-					EnvironmentVariables: commonModels.EnvironmentVariables{
+				Env: &githubModels.EnvironmentVariablesRef{
+					EnvironmentVariables: pipelineModels.EnvironmentVariables{
 						"STRING": "string",
 						"NUMBER": 1,
 					},
 					FileReference: testutils.CreateFileReference(3, 3, 5, 12),
 				},
-				Jobs: &models.Jobs{
-					CIJobs: map[string]*models.Job{
+				Jobs: &githubModels.Jobs{
+					CIJobs: map[string]*githubModels.Job{
 						"job1": {
 							ID:   utils.GetPtr("job1"),
 							Name: "Job 1",
-							Env: &models.EnvironmentVariablesRef{
-								EnvironmentVariables: commonModels.EnvironmentVariables{
+							Env: &githubModels.EnvironmentVariablesRef{
+								EnvironmentVariables: pipelineModels.EnvironmentVariables{
 									"STRING": "string",
 									"NUMBER": 1,
 								},
 								FileReference: testutils.CreateFileReference(10, 7, 12, 16),
 							},
-							Steps: &models.Steps{
+							Steps: &githubModels.Steps{
 								{
 									Name: "Step 1",
-									Run: &models.ShellCommand{
+									Run: &githubModels.ShellCommand{
 										Script:        "command line",
 										FileReference: testutils.CreateFileReference(15, 14, 15, 26),
 									},
-									Env: &models.EnvironmentVariablesRef{
-										EnvironmentVariables: commonModels.EnvironmentVariables{
+									Env: &githubModels.EnvironmentVariablesRef{
+										EnvironmentVariables: pipelineModels.EnvironmentVariables{
 											"STRING": "string",
 											"NUMBER": 1,
 										},
@@ -191,14 +192,14 @@ func TestLoad(t *testing.T) {
 		{
 			name:     "runners",
 			filename: "../../../test/fixtures/github/runners.yaml",
-			expectedWorkflow: &models.Workflow{
+			expectedWorkflow: &githubModels.Workflow{
 				Name: "runners",
-				Jobs: &models.Jobs{
-					CIJobs: map[string]*models.Job{
+				Jobs: &githubModels.Jobs{
+					CIJobs: map[string]*githubModels.Job{
 						"job1": {
 							ID:   utils.GetPtr("job1"),
 							Name: "Job 1",
-							RunsOn: &models.RunsOn{
+							RunsOn: &githubModels.RunsOn{
 								OS:            utils.GetPtr("linux"),
 								SelfHosted:    false,
 								Tags:          []string{"ubuntu-latest"},
@@ -209,7 +210,7 @@ func TestLoad(t *testing.T) {
 						"job2": {
 							ID:   utils.GetPtr("job2"),
 							Name: "Job 2",
-							RunsOn: &models.RunsOn{
+							RunsOn: &githubModels.RunsOn{
 								OS:            utils.GetPtr("windows"),
 								SelfHosted:    true,
 								Tags:          []string{"self-hosted", "windows-latest"},
@@ -220,7 +221,7 @@ func TestLoad(t *testing.T) {
 						"job3": {
 							ID:   utils.GetPtr("job3"),
 							Name: "Job 3",
-							RunsOn: &models.RunsOn{
+							RunsOn: &githubModels.RunsOn{
 								Arch:          utils.GetPtr("x64"),
 								OS:            utils.GetPtr("linux"),
 								SelfHosted:    true,
@@ -236,14 +237,14 @@ func TestLoad(t *testing.T) {
 		{
 			name:     "steps",
 			filename: "../../../test/fixtures/github/steps.yaml",
-			expectedWorkflow: &models.Workflow{
+			expectedWorkflow: &githubModels.Workflow{
 				Name: "steps",
-				Jobs: &models.Jobs{
-					CIJobs: map[string]*models.Job{
+				Jobs: &githubModels.Jobs{
+					CIJobs: map[string]*githubModels.Job{
 						"job1": {
 							ID:   utils.GetPtr("job1"),
 							Name: "Job 1",
-							Steps: &models.Steps{
+							Steps: &githubModels.Steps{
 								{
 									Name:          "task without params",
 									Uses:          "actions/checkout@v1",
@@ -252,25 +253,38 @@ func TestLoad(t *testing.T) {
 								{
 									Name: "task with params",
 									Uses: "actions/checkout@v1",
-									With: &models.With{
-										Inputs:        map[string]any{"repo": "repository"},
-										FileReference: testutils.CreateFileReference(12, 9, 13, 27),
+									With: &commonModels.Map{
+										Values: []*commonModels.MapEntry{
+											{
+												Key:           "repo",
+												Value:         "repository",
+												FileReference: testutils.CreateFileReference(13, 11, 13, 21), // End column is supposed to be 27
+											},
+										},
+										FileReference: testutils.CreateFileReference(12, 9, 13, 21), // End column is supposed to be 27
 									},
-
-									FileReference: testutils.CreateFileReference(10, 9, 13, 27),
+									FileReference: testutils.CreateFileReference(10, 9, 13, 21), // End column is supposed to be 27
 								},
 								{
 									Name: "task with multiline params",
 									Uses: "actions/checkout@v1",
-									With: &models.With{
-										Inputs: map[string]any{
-											"repos": "repository1\nrepository2\n",
-											"input": "value",
+									With: &commonModels.Map{
+										Values: []*commonModels.MapEntry{
+											{
+												Key:           "repos",
+												Value:         "repository1\nrepository2\n",
+												FileReference: testutils.CreateFileReference(18, 11, 20, 11), // End column is supposed to be 24
+											},
+											{
+												Key:           "input",
+												Value:         "value",
+												FileReference: testutils.CreateFileReference(21, 11, 21, 16), // End column is supposed to be 23
+											},
 										},
-										FileReference: testutils.CreateFileReference(17, 9, 21, 23),
+										FileReference: testutils.CreateFileReference(17, 9, 21, 16), // End column is supposed to be 23
 									},
 
-									FileReference: testutils.CreateFileReference(15, 9, 21, 23),
+									FileReference: testutils.CreateFileReference(15, 9, 21, 16), // End column is supposed to be 23
 								},
 								{
 									Name:          "task with commit ID version",
@@ -289,7 +303,7 @@ func TestLoad(t *testing.T) {
 								},
 								{
 									Name: "shell",
-									Run: &models.ShellCommand{
+									Run: &githubModels.ShellCommand{
 										Script:        "command line",
 										FileReference: testutils.CreateFileReference(33, 14, 33, 26),
 									},
@@ -298,7 +312,7 @@ func TestLoad(t *testing.T) {
 								{
 									Name:  "custom shell",
 									Shell: "cmd",
-									Run: &models.ShellCommand{
+									Run: &githubModels.ShellCommand{
 										Script:        "command line",
 										FileReference: testutils.CreateFileReference(37, 14, 37, 26),
 									},
@@ -306,7 +320,7 @@ func TestLoad(t *testing.T) {
 								},
 								{
 									Name: "shell with break rows",
-									Run: &models.ShellCommand{
+									Run: &githubModels.ShellCommand{
 										Script:        "echo 1\necho 2\necho 3\n",
 										FileReference: testutils.CreateFileReference(40, 14, 43, 14),
 									},
@@ -322,20 +336,20 @@ func TestLoad(t *testing.T) {
 		{
 			name:     "token-permissions",
 			filename: "../../../test/fixtures/github/token-permissions.yaml",
-			expectedWorkflow: &models.Workflow{
+			expectedWorkflow: &githubModels.Workflow{
 				Name: "permissions",
-				Permissions: &models.PermissionsEvent{
+				Permissions: &githubModels.PermissionsEvent{
 					Actions:       "read",
 					Statuses:      "write",
 					PullRequests:  "read",
 					FileReference: testutils.CreateFileReference(2, 3, 5, 22),
 				},
-				Jobs: &models.Jobs{
-					CIJobs: map[string]*models.Job{
+				Jobs: &githubModels.Jobs{
+					CIJobs: map[string]*githubModels.Job{
 						"job1": {
 							ID:   utils.GetPtr("job1"),
 							Name: "Job 1",
-							Permissions: &models.PermissionsEvent{
+							Permissions: &githubModels.PermissionsEvent{
 								Actions:            "read",
 								Checks:             "read",
 								Contents:           "read",

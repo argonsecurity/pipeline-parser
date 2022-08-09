@@ -137,3 +137,8 @@ func ParseSequenceOrOne[T any](node *yaml.Node, v *[]T) error {
 	*v = []T{t}
 	return nil
 }
+
+// TODO: Implement type casting to the node value
+func GetNodeValue(node *yaml.Node) any {
+	return node.Value
+}
