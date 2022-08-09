@@ -6,6 +6,7 @@ import (
 	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	parserUtils "github.com/argonsecurity/pipeline-parser/pkg/parsers/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/r3labs/diff/v3"
@@ -161,7 +162,7 @@ func TestParseJobSteps(t *testing.T) {
 						Name:        utils.GetPtr("actions/checkout"),
 						Version:     utils.GetPtr("1.2.3"),
 						VersionType: models.TagVersion,
-						Inputs: &[]models.Parameter{
+						Inputs: []*models.Parameter{
 							{
 								Name:          utils.GetPtr("key"),
 								Value:         "value",
@@ -286,7 +287,7 @@ func TestParseJobStep(t *testing.T) {
 					Name:        utils.GetPtr("actions/checkout"),
 					Version:     utils.GetPtr("1.2.3"),
 					VersionType: models.TagVersion,
-					Inputs: &[]models.Parameter{
+					Inputs: []*models.Parameter{
 						{
 							Name:          utils.GetPtr("key"),
 							Value:         "value",
@@ -369,7 +370,7 @@ func TestParseActionInput(t *testing.T) {
 	testCases := []struct {
 		name               string
 		with               githubModels.With
-		expectedParameters *[]models.Parameter
+		expectedParameters []*models.Parameter
 	}{
 		{
 			name:               "with nil",
@@ -398,7 +399,7 @@ func TestParseActionInput(t *testing.T) {
 				},
 				FileReference: testutils.CreateFileReference(111, 222, 333, 444),
 			},
-			expectedParameters: &[]models.Parameter{
+			expectedParameters: []*models.Parameter{
 				{
 					Name:          utils.GetPtr("string"),
 					Value:         "string",
@@ -420,7 +421,7 @@ func TestParseActionInput(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			got := parseActionInput(testCase.with)
+			got := parserUtils.ParseMapToParameters(testCase.with)
 
 			changeLog, err := diff.Diff(testCase.expectedParameters, got)
 			assert.NoError(t, err)

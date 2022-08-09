@@ -39,7 +39,7 @@ type Step struct {
 type Task struct {
 	ID          *string      `json:"id,omitempty"`
 	Name        *string      `json:"name,omitempty"`
-	Inputs      *[]Parameter `json:"inputs,omitempty"`
+	Inputs      []*Parameter `json:"inputs,omitempty"`
 	Version     *string      `json:"version,omitempty"`
 	VersionType VersionType  `json:"version_type,omitempty"`
 }

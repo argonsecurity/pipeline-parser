@@ -4,7 +4,9 @@ import (
 	"testing"
 
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
+	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	parserUtils "github.com/argonsecurity/pipeline-parser/pkg/parsers/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/r3labs/diff/v3"
@@ -99,9 +101,14 @@ func TestParseSteps(t *testing.T) {
 					TimeoutInMinutes: 1,
 					WorkingDirectory: "dir",
 					Task:             "Task@2",
-					Inputs: &azureModels.TaskInputs{
-						Inputs:        map[string]any{"key": "value"},
-						FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+					Inputs: &loadersCommonModels.Map{
+						Values: []*loadersCommonModels.MapEntry{
+							{
+								Key:           "key",
+								Value:         "value",
+								FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+							},
+						},
 					},
 				},
 			},
@@ -144,7 +151,7 @@ func TestParseSteps(t *testing.T) {
 						Name:        utils.GetPtr("Task"),
 						Version:     utils.GetPtr("2"),
 						VersionType: models.TagVersion,
-						Inputs: &[]models.Parameter{
+						Inputs: []*models.Parameter{
 							{
 								Name:          utils.GetPtr("key"),
 								Value:         "value",
@@ -360,9 +367,14 @@ func TestParseStep(t *testing.T) {
 				TimeoutInMinutes: 1,
 				WorkingDirectory: "dir",
 				Task:             "Task@2",
-				Inputs: &azureModels.TaskInputs{
-					Inputs:        map[string]any{"key": "value"},
-					FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+				Inputs: &loadersCommonModels.Map{
+					Values: []*loadersCommonModels.MapEntry{
+						{
+							Key:           "key",
+							Value:         "value",
+							FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+						},
+					},
 				},
 			},
 			expectedStep: &models.Step{
@@ -383,7 +395,7 @@ func TestParseStep(t *testing.T) {
 					Name:        utils.GetPtr("Task"),
 					Version:     utils.GetPtr("2"),
 					VersionType: models.TagVersion,
-					Inputs: &[]models.Parameter{
+					Inputs: []*models.Parameter{
 						{
 							Name:          utils.GetPtr("key"),
 							Value:         "value",
@@ -522,47 +534,58 @@ func TestParseActionHeader(t *testing.T) {
 func TestParseTaskInput(t *testing.T) {
 	testCases := []struct {
 		name               string
-		taskInputs         *azureModels.TaskInputs
-		expectedParameters *[]models.Parameter
+		taskInputs         azureModels.TaskInputs
+		expectedParameters []*models.Parameter
 	}{
 		{
 			name:               "Task inputs are nil",
 			taskInputs:         nil,
 			expectedParameters: nil,
 		},
-		// {
-		// 	name: "Task inputs with values",
-		// 	taskInputs: &azureModels.TaskInputs{
-		// 		Inputs: map[string]any{
-		// 			"string": "string",
-		// 			"int":    1,
-		// 			"bool":   true,
-		// 		},
-		// 		FileReference: testutils.CreateFileReference(111, 222, 333, 444),
-		// 	},
-		// 	expectedParameters: &[]models.Parameter{
-		// 		{
-		// 			Name:          utils.GetPtr("string"),
-		// 			Value:         "string",
-		// 			FileReference: testutils.CreateFileReference(112, 224, 112, 238),
-		// 		},
-		// 		{
-		// 			Name:          utils.GetPtr("int"),
-		// 			Value:         1,
-		// 			FileReference: testutils.CreateFileReference(113, 224, 113, 230),
-		// 		},
-		// 		{
-		// 			Name:          utils.GetPtr("bool"),
-		// 			Value:         true,
-		// 			FileReference: testutils.CreateFileReference(114, 224, 114, 234),
-		// 		},
-		// 	},
-		// },
+		{
+			name: "Task inputs with values",
+			taskInputs: &loadersCommonModels.Map{
+				Values: []*loadersCommonModels.MapEntry{
+					{
+						Key:           "string",
+						Value:         "string",
+						FileReference: testutils.CreateFileReference(112, 224, 112, 238),
+					},
+					{
+						Key:           "int",
+						Value:         1,
+						FileReference: testutils.CreateFileReference(113, 224, 113, 230),
+					},
+					{
+						Key:           "bool",
+						Value:         true,
+						FileReference: testutils.CreateFileReference(114, 224, 114, 234),
+					},
+				},
+			},
+			expectedParameters: []*models.Parameter{
+				{
+					Name:          utils.GetPtr("string"),
+					Value:         "string",
+					FileReference: testutils.CreateFileReference(112, 224, 112, 238),
+				},
+				{
+					Name:          utils.GetPtr("int"),
+					Value:         1,
+					FileReference: testutils.CreateFileReference(113, 224, 113, 230),
+				},
+				{
+					Name:          utils.GetPtr("bool"),
+					Value:         true,
+					FileReference: testutils.CreateFileReference(114, 224, 114, 234),
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			got := parseTaskInput(testCase.taskInputs)
+			got := parserUtils.ParseMapToParameters(testCase.taskInputs)
 
 			// assert.ElementsMatch(t, testCase.expectedParameters, got, testCase.name)
 			changelog, err := diff.Diff(testCase.expectedParameters, got)

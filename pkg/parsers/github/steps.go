@@ -5,6 +5,7 @@ import (
 
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	parserUtils "github.com/argonsecurity/pipeline-parser/pkg/parsers/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
@@ -66,7 +67,7 @@ func parseJobStep(step githubModels.Step) *models.Step {
 			Name:        &actionName,
 			Version:     &version,
 			VersionType: versionType,
-			Inputs:      parseActionInput(step.With),
+			Inputs:      parserUtils.ParseMapToParameters(step.With),
 		}
 		parsedStep.Type = models.TaskStepType
 	}
@@ -94,22 +95,4 @@ func parseActionHeader(header string) (string, string, models.VersionType) {
 	}
 
 	return actionName, version, versionType
-}
-
-func parseActionInput(with githubModels.With) *[]models.Parameter {
-	if with == nil {
-		return nil
-	}
-
-	parameters := make([]models.Parameter, 0)
-	for _, entry := range with.Values {
-		var key = entry.Key // define key here so the pointer won't change in the loop
-		parameters = append(parameters, models.Parameter{
-			Name:          &key,
-			Value:         entry.Value,
-			FileReference: entry.FileReference,
-		})
-	}
-
-	return &parameters
 }

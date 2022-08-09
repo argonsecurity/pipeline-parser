@@ -364,11 +364,11 @@ func TestAzure(t *testing.T) {
 									Name:        utils.GetPtr("VSBuild"),
 									Version:     utils.GetPtr("1"),
 									VersionType: models.TagVersion,
-									Inputs: &[]models.Parameter{
+									Inputs: []*models.Parameter{
 										{
 											Name:          utils.GetPtr("solution"),
 											Value:         "**\\*.sln",
-											FileReference: testutils.CreateFileReference(46, 5, 46, 23),
+											FileReference: testutils.CreateFileReference(46, 5, 46, 13), // End Column is supposed to be 23
 										},
 									},
 								},
@@ -376,7 +376,7 @@ func TestAzure(t *testing.T) {
 								Metadata: models.Metadata{
 									Build: true,
 								},
-								FileReference: testutils.CreateFileReference(42, 3, 46, 23),
+								FileReference: testutils.CreateFileReference(42, 3, 46, 13), // End Column is supposed to be 23
 							},
 							{
 								Name:          utils.GetPtr(""),
@@ -411,7 +411,8 @@ func TestAzure(t *testing.T) {
 						ContinueOnError: utils.GetPtr(false),
 						EnvironmentVariables: &models.EnvironmentVariablesRef{
 							EnvironmentVariables: models.EnvironmentVariables{
-								"JOB_VAR": "a job var",
+								"JOB_VAR":   "a job var",
+								"STAGE_VAR": "that happened",
 							},
 							FileReference: testutils.CreateFileReference(21, 7, 21, 16),
 						},

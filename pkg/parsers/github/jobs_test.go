@@ -133,7 +133,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 								Name:        utils.GetPtr("actions/checkout"),
 								Version:     utils.GetPtr("1.2.3"),
 								VersionType: models.TagVersion,
-								Inputs: &[]models.Parameter{
+								Inputs: []*models.Parameter{
 									{
 										Name:          utils.GetPtr("key"),
 										Value:         "value",
@@ -295,7 +295,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 								Name:        utils.GetPtr("actions/checkout"),
 								Version:     utils.GetPtr("1.2.3"),
 								VersionType: models.TagVersion,
-								Inputs: &[]models.Parameter{
+								Inputs: []*models.Parameter{
 									{
 										Name:          utils.GetPtr("key"),
 										Value:         "value",
@@ -481,7 +481,7 @@ func TestParseJob(t *testing.T) {
 							Name:        utils.GetPtr("actions/checkout"),
 							Version:     utils.GetPtr("1.2.3"),
 							VersionType: models.TagVersion,
-							Inputs: &[]models.Parameter{
+							Inputs: []*models.Parameter{
 								{
 									Name:          utils.GetPtr("key"),
 									Value:         "value",

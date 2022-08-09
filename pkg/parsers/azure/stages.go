@@ -14,7 +14,7 @@ func parseStages(stages *azureModels.Stages) []*models.Job {
 
 	for _, stage := range stages.Stages {
 		if stage.Jobs != nil {
-			jobs = append(jobs, parseJobs(stage.Jobs)...)
+			jobs = append(jobs, parseStage(stage)...)
 		}
 	}
 

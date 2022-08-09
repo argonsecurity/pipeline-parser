@@ -19,8 +19,10 @@ run:
 
 .PHONY: test
 test:
-	go test -v ./...
+	go clean -testcache
+	go test ./...
 
 .PHONY: test-coverage
 test-coverage:
+	go clean -testcache
 	go test -coverprofile=coverage.out -covermode=atomic -v ./...

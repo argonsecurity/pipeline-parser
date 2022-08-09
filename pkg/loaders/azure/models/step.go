@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
+	commonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
@@ -16,10 +17,7 @@ type StepTarget struct {
 	FileReference     *models.FileReference
 }
 
-type TaskInputs struct {
-	Inputs        map[string]any
-	FileReference *models.FileReference
-}
+type TaskInputs *commonModels.Map
 
 type Step struct {
 	Name                    string                   `yaml:"name,omitempty"`
@@ -56,7 +54,7 @@ type Step struct {
 	SaveCache               string                   `yaml:"saveCache,omitempty"`
 	Script                  string                   `yaml:"script,omitempty"`
 	Task                    string                   `yaml:"task,omitempty"`
-	Inputs                  *TaskInputs              `yaml:"inputs,omitempty"`
+	Inputs                  TaskInputs               `yaml:"inputs,omitempty"`
 	Template                `yaml:",inline"`
 
 	FileReference *models.FileReference
@@ -85,19 +83,6 @@ func (t *StepTarget) UnmarshalYAML(node *yaml.Node) error {
 
 		return nil
 	}, "StepTarget")
-}
-
-func (ti *TaskInputs) UnmarshalYAML(node *yaml.Node) error {
-	ti.FileReference = loadersUtils.GetFileReference(node)
-	// The with block looks like this
-	// with:
-	//   key1: value1
-	//   key2: value2
-	// The node refers to the first input
-	// We want to include the "with" in the File Reference so we have to subtract 1 from the line number and 2 from the column number
-	ti.FileReference.StartRef.Line--
-	ti.FileReference.StartRef.Column -= 2
-	return node.Decode(&ti.Inputs)
 }
 
 func (s *Steps) UnmarshalYAML(node *yaml.Node) error {

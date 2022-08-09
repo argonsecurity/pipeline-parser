@@ -58,7 +58,7 @@ func TestGitHub(t *testing.T) {
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1"),
 									VersionType: "tag",
-									Inputs: &[]models.Parameter{
+									Inputs: []*models.Parameter{
 										{
 											Name:          utils.GetPtr("repo"),
 											Value:         "repository",
@@ -75,7 +75,7 @@ func TestGitHub(t *testing.T) {
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1"),
 									VersionType: "tag",
-									Inputs: &[]models.Parameter{
+									Inputs: []*models.Parameter{
 										{
 											Name:          utils.GetPtr("repos"),
 											Value:         "repository1\nrepository2\n",
