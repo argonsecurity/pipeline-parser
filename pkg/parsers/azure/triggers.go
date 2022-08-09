@@ -99,27 +99,17 @@ func parsePR(ref *azureModels.PRRef) *models.Trigger {
 	}
 
 	if len(ref.PR.Branches.Include)+len(ref.PR.Branches.Exclude) > 0 {
-		trigger.Branches = &models.Filter{}
+		trigger.Branches = &models.Filter{
+			AllowList: ref.PR.Branches.Include,
+			DenyList:  ref.PR.Branches.Exclude,
+		}
 	}
 
 	if len(ref.PR.Paths.Include)+len(ref.PR.Paths.Exclude) > 0 {
-		trigger.Paths = &models.Filter{}
-	}
-
-	for _, branch := range ref.PR.Branches.Include {
-		trigger.Branches.AllowList = append(trigger.Branches.AllowList, branch)
-	}
-
-	for _, branch := range ref.PR.Branches.Exclude {
-		trigger.Branches.DenyList = append(trigger.Branches.DenyList, branch)
-	}
-
-	for _, path := range ref.PR.Paths.Include {
-		trigger.Paths.AllowList = append(trigger.Paths.AllowList, path)
-	}
-
-	for _, path := range ref.PR.Paths.Exclude {
-		trigger.Paths.DenyList = append(trigger.Paths.DenyList, path)
+		trigger.Paths = &models.Filter{
+			AllowList: ref.PR.Paths.Include,
+			DenyList:  ref.PR.Paths.Exclude,
+		}
 	}
 
 	return trigger
