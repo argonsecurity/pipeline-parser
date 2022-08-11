@@ -356,6 +356,9 @@ func TestParseWorkflowJobs(t *testing.T) {
 			got, err := parseWorkflowJobs(testCase.workflow)
 			assert.NoError(t, err, testCase.name)
 
+			testutils.SortJobs(got)
+			testutils.SortJobs(testCase.expectedJobs)
+
 			testutils.DeepCompare(t, testCase.expectedJobs, got)
 		})
 	}
