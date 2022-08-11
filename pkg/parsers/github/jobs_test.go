@@ -253,7 +253,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 							},
 						},
 						"job-2": {
-							ID: utils.GetPtr("jobid-1"),
+							ID: utils.GetPtr("jobid-2"),
 						},
 					},
 				},
@@ -342,8 +342,8 @@ func TestParseWorkflowJobs(t *testing.T) {
 					},
 				},
 				{
-					ID:              utils.GetPtr("jobid-1"),
-					Name:            utils.GetPtr("jobid-1"),
+					ID:              utils.GetPtr("jobid-2"),
+					Name:            utils.GetPtr("jobid-2"),
 					ContinueOnError: utils.GetPtr(false),
 					TimeoutMS:       utils.GetPtr(21600000),
 				},

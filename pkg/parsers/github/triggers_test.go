@@ -1,7 +1,6 @@
 package github
 
 import (
-	"sort"
 	"testing"
 
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
@@ -222,6 +221,14 @@ func TestParseWorkflowTriggers(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowTriggers(testCase.workflow)
 
+			if got != nil {
+				testutils.SortTriggers(got.Triggers)
+			}
+
+			if testCase.expectedTriggers != nil {
+				testutils.SortTriggers(testCase.expectedTriggers.Triggers)
+			}
+
 			testutils.DeepCompare(t, testCase.expectedTriggers, got)
 		})
 	}
@@ -291,6 +298,8 @@ func TestParseEvents(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseEvents(testCase.events)
 
+			testutils.SortTriggers(got)
+			testutils.SortTriggers(testCase.expectedTriggers)
 			testutils.DeepCompare(t, testCase.expectedTriggers, got)
 		})
 	}
@@ -373,13 +382,8 @@ func TestParseWorkflowCall(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowCall(testCase.workflowCall)
 
-			sort.Slice(got.Parameters, func(i, j int) bool {
-				return *got.Parameters[i].Name < *got.Parameters[j].Name
-			})
-
-			sort.Slice(got.Parameters, func(i, j int) bool {
-				return *got.Parameters[i].Name < *got.Parameters[j].Name
-			})
+			testutils.SortTrigger(got)
+			testutils.SortTrigger(testCase.expectedTrigger)
 
 			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
@@ -416,6 +420,8 @@ func TestParseWorkflowDispatch(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowDispatch(testCase.workflowDispatch)
+			testutils.SortTrigger(got)
+			testutils.SortTrigger(testCase.expectedTrigger)
 
 			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
@@ -448,6 +454,9 @@ func TestParseInputs(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseInputs(testCase.inputs)
+
+			testutils.SortParameters(got)
+			testutils.SortParameters(testCase.expectedParameters)
 
 			testutils.DeepCompare(t, testCase.expectedParameters, got)
 		})
