@@ -474,9 +474,7 @@ func TestParseWorkflowDefaults(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 
-				changelog, err := diff.Diff(testCase.expectedDefaults, got)
-				assert.NoError(t, err)
-				assert.Len(t, changelog, 0)
+				testutils.DeepCompare(t, testCase.expectedDefaults, got)
 			}
 		})
 	}

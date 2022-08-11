@@ -5,9 +5,8 @@ import (
 
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestParseRunner(t *testing.T) {
@@ -74,10 +73,7 @@ func TestParseRunner(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseRunner(testCase.job)
-
-			changelog, err := diff.Diff(testCase.expectedRunner, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedRunner, got)
 		})
 	}
 }
@@ -139,9 +135,7 @@ func TestParsePool(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parsePool(testCase.pool, testCase.runner)
 
-			changelog, err := diff.Diff(testCase.expectedRunner, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedRunner, got)
 		})
 	}
 
@@ -206,9 +200,7 @@ func TestParseContainer(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseContainer(testCase.container, testCase.runner)
 
-			changelog, err := diff.Diff(testCase.expectedRunner, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedRunner, got)
 		})
 	}
 }

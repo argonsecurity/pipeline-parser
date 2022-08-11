@@ -8,7 +8,6 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/r3labs/diff/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -178,7 +177,7 @@ func TestParseJobSteps(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseJobSteps(testCase.steps)
-			assert.ElementsMatch(t, testCase.expectedSteps, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedSteps, got)
 		})
 	}
 }
@@ -303,9 +302,7 @@ func TestParseJobStep(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseJobStep(testCase.step)
 
-			changelog, err := diff.Diff(testCase.expectedStep, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedStep, got)
 		})
 	}
 }

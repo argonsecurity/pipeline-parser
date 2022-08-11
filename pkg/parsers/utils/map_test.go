@@ -7,24 +7,22 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestParseMapToParameters(t *testing.T) {
 	testCases := []struct {
 		name               string
-		with               *loadersCommonModels.Map
+		with               loadersCommonModels.Map
 		expectedParameters []*models.Parameter
 	}{
 		{
 			name:               "with nil",
-			with:               nil,
-			expectedParameters: nil,
+			with:               loadersCommonModels.Map{},
+			expectedParameters: []*models.Parameter{},
 		},
 		{
 			name: "with values",
-			with: &loadersCommonModels.Map{
+			with: loadersCommonModels.Map{
 				Values: []*loadersCommonModels.MapEntry{
 					{
 						Key:           "string",
@@ -66,15 +64,8 @@ func TestParseMapToParameters(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			var m loadersCommonModels.Map
-			if testCase.with != nil {
-				m = loadersCommonModels.Map(*testCase.with)
-			}
-
-			got := ParseMapToParameters(m)
-			changeLog, err := diff.Diff(testCase.expectedParameters, got)
-			assert.NoError(t, err)
-			assert.Len(t, changeLog, 0)
+			got := ParseMapToParameters(testCase.with)
+			testutils.DeepCompare(t, testCase.expectedParameters, got)
 		})
 	}
 }

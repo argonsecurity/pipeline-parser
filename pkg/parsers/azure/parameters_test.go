@@ -7,8 +7,6 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestParseParameters(t *testing.T) {
@@ -67,10 +65,7 @@ func TestParseParameters(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseParameters(testCase.parameters)
-
-			changelog, err := diff.Diff(testCase.expectedParameters, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedParameters, got)
 		})
 	}
 }

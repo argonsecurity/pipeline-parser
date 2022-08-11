@@ -8,7 +8,6 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/r3labs/diff/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -533,10 +532,7 @@ func TestParse(t *testing.T) {
 
 			pipeline, err := parser.Parse(testCase.azurePipeline)
 			assert.NoError(t, err)
-
-			changelog, err := diff.Diff(testCase.expectedPipeline, pipeline)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedPipeline, pipeline)
 		})
 	}
 }
@@ -589,12 +585,8 @@ func TestParsePipelineDefaults(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-
 			got := parsePipelineDefaults(testCase.azurePipeline)
-
-			changelog, err := diff.Diff(testCase.expectedDefaults, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedDefaults, got)
 		})
 	}
 }
