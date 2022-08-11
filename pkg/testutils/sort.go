@@ -19,7 +19,17 @@ func SortTrigger(trigger *models.Trigger) {
 }
 
 func SortTriggers(triggers []*models.Trigger) {
+	sort.Slice(triggers, func(i, j int) bool {
+		return triggers[i].Event < triggers[j].Event
+	})
+
 	SortMany(triggers, SortTrigger)
+}
+
+func SortJobs(jobs []*models.Job) {
+	sort.Slice(jobs, func(i, j int) bool {
+		return *jobs[i].ID < *jobs[j].ID
+	})
 }
 
 func SortMany[T any](s []T, sortFunc func(T)) {
