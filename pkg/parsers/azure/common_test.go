@@ -5,8 +5,7 @@ import (
 
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
+	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 )
 
 func TestParseEnvironmentVariablesRef(t *testing.T) {
@@ -60,10 +59,7 @@ func TestParseEnvironmentVariablesRef(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseEnvironmentVariablesRef(testCase.envRef)
-
-			changelog, err := diff.Diff(testCase.expectedEnv, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedEnv, got)
 		})
 	}
 }
@@ -93,10 +89,7 @@ func TestParseExtends(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseExtends(testCase.extends)
-
-			changelog, err := diff.Diff(testCase.expectedImports, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedImports, got)
 		})
 	}
 }

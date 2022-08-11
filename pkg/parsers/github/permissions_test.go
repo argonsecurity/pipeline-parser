@@ -6,7 +6,6 @@ import (
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
-	"github.com/r3labs/diff/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -67,12 +66,9 @@ func TestParseTokenPermissions(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got, err := parseTokenPermissions(testCase.permissions)
-
 			assert.NoError(t, err)
 
-			changelog, err := diff.Diff(testCase.expectedPermissions, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedPermissions, got)
 		})
 	}
 }
@@ -108,9 +104,7 @@ func TestParsePermissionValue(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parsePermissionValue(testCase.permission)
 
-			changelog, err := diff.Diff(testCase.expectedVal, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedVal, got)
 		})
 	}
 }

@@ -7,8 +7,6 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestParseJobs(t *testing.T) {
@@ -213,9 +211,7 @@ func TestParseJobs(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseJobs(testCase.jobs)
 
-			changelog, err := diff.Diff(testCase.expectedJobs, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedJobs, got)
 		})
 	}
 }
@@ -324,10 +320,7 @@ func TestParseCIJob(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseCIJob(testCase.ciJob)
-
-			changelog, err := diff.Diff(testCase.expectedJob, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedJob, got)
 		})
 	}
 }
@@ -436,10 +429,7 @@ func TestParseDeploymentJob(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseDeploymentJob(testCase.deploymentJob)
-
-			changelog, err := diff.Diff(testCase.expectedJob, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedJob, got)
 		})
 	}
 }
@@ -541,10 +531,7 @@ func TestParseBaseJob(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseBaseJob(testCase.baseJob)
-
-			changelog, err := diff.Diff(testCase.expectedJob, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedJob, got)
 		})
 	}
 }
@@ -600,10 +587,7 @@ func TestParseDependencies(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseDependencies(testCase.dependsOn)
-
-			changelog, err := diff.Diff(testCase.expectedDependencies, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedDependencies, got)
 		})
 	}
 }

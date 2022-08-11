@@ -6,8 +6,6 @@ import (
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestParseVariables(t *testing.T) {
@@ -58,9 +56,7 @@ func TestParseVariables(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseVariables(testCase.variables)
 
-			changelog, err := diff.Diff(testCase.expected, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expected, got)
 		})
 	}
 }

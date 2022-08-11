@@ -7,8 +7,6 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestParsePipelineTriggers(t *testing.T) {
@@ -160,7 +158,7 @@ func TestParsePipelineTriggers(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parsePipelineTriggers(testCase.pipeline)
-			assert.Equal(t, testCase.expectedTrigger, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -331,9 +329,7 @@ func TestParseTrigger(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseTrigger(testCase.ref)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -467,9 +463,7 @@ func TestParsePR(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parsePR(testCase.ref)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -527,9 +521,7 @@ func TestParseSchedules(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseSchedules(testCase.schedule)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }

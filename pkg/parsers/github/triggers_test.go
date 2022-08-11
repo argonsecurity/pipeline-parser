@@ -1,14 +1,13 @@
 package github
 
 import (
+	"sort"
 	"testing"
 
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -223,9 +222,7 @@ func TestParseWorkflowTriggers(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowTriggers(testCase.workflow)
 
-			changelog, err := diff.Diff(testCase.expectedTriggers, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTriggers, got)
 		})
 	}
 }
@@ -294,9 +291,7 @@ func TestParseEvents(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseEvents(testCase.events)
 
-			changelog, err := diff.Diff(testCase.expectedTriggers, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTriggers, got)
 		})
 	}
 }
@@ -341,9 +336,7 @@ func TestParseWorkflowRun(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowRun(testCase.workflowRun)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -380,9 +373,15 @@ func TestParseWorkflowCall(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowCall(testCase.workflowCall)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			sort.Slice(got.Parameters, func(i, j int) bool {
+				return *got.Parameters[i].Name < *got.Parameters[j].Name
+			})
+
+			sort.Slice(got.Parameters, func(i, j int) bool {
+				return *got.Parameters[i].Name < *got.Parameters[j].Name
+			})
+
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -418,9 +417,7 @@ func TestParseWorkflowDispatch(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowDispatch(testCase.workflowDispatch)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -452,7 +449,7 @@ func TestParseInputs(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseInputs(testCase.inputs)
 
-			assert.ElementsMatch(t, testCase.expectedParameters, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedParameters, got)
 		})
 	}
 }
@@ -557,9 +554,7 @@ func TestParseRef(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseRef(testCase.ref, testCase.event)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -613,9 +608,7 @@ func TestParseSchedule(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseSchedule(testCase.schedule)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -655,9 +648,7 @@ func TestGenerateTriggersFromEvents(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := generateTriggersFromEvents(testCase.events)
 
-			changelog, err := diff.Diff(testCase.expectedTriggers, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTriggers, got)
 		})
 	}
 }
@@ -688,9 +679,7 @@ func TestGenerateTriggerFromEvent(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := generateTriggerFromEvent(testCase.event)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }

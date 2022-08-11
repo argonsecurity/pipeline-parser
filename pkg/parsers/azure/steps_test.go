@@ -8,7 +8,6 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/r3labs/diff/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -167,7 +166,7 @@ func TestParseSteps(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseSteps(testCase.steps)
-			assert.ElementsMatch(t, testCase.expectedSteps, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedSteps, got)
 		})
 	}
 }
@@ -411,9 +410,7 @@ func TestParseStep(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseStep(testCase.step)
 
-			changelog, err := diff.Diff(testCase.expectedStep, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedStep, got)
 		})
 	}
 }
@@ -482,9 +479,7 @@ func TestParseStepScript(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseStepScript(testCase.step)
 
-			changelog, err := diff.Diff(testCase.expectedShell, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedShell, got)
 		})
 	}
 }
