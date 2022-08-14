@@ -37,7 +37,7 @@ func (e *EnvironmentVariablesRef) UnmarshalYAML(node *yaml.Node) error {
 
 func (e *Extends) UnmarshalYAML(node *yaml.Node) error {
 	e.FileReference = loadersUtils.GetFileReference(node)
-	return node.Decode(e)
+	return node.Decode(&e.Template)
 }
 
 func (n *DependsOn) UnmarshalYAML(node *yaml.Node) error {
