@@ -57,7 +57,7 @@ func TestMapLoader(t *testing.T) {
 						},
 						{
 							Key:           "list",
-							Value:         []interface{}{1, 2, 3},
+							Value:         []any{1, 2, 3},
 							FileReference: testutils.CreateFileReference(5, 3, 5, 18),
 						},
 					},
