@@ -3,8 +3,10 @@ package github
 import (
 	"regexp"
 
+	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	parserUtils "github.com/argonsecurity/pipeline-parser/pkg/parsers/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
@@ -13,11 +15,6 @@ var (
 	semverRegex = regexp.MustCompile(`v?([0-9]+)(\.[0-9]+)?(\.[0-9]+)?(-([0-9A-Za-z\-]+(\.[0-9A-Za-z\-]+)*))?(\+([0-9A-Za-z\-]+(\.[0-9A-Za-z\-]+)*))?`)
 
 	githubActionNameRegex = regexp.MustCompile(`(.+?)(?:@(.+)|$)`)
-
-	regexToType = map[*regexp.Regexp]models.VersionType{
-		sha1Regex:   models.CommitSHA,
-		semverRegex: models.TagVersion,
-	}
 )
 
 func parseJobSteps(steps *githubModels.Steps) []*models.Step {
@@ -71,8 +68,12 @@ func parseJobStep(step githubModels.Step) *models.Step {
 			Name:        &actionName,
 			Version:     &version,
 			VersionType: versionType,
-			Inputs:      parseActionInput(step.With),
 		}
+
+		if step.With != nil {
+			parsedStep.Task.Inputs = parserUtils.ParseMapToParameters(loadersCommonModels.Map(*step.With))
+		}
+
 		parsedStep.Type = models.TaskStepType
 	}
 
@@ -99,20 +100,4 @@ func parseActionHeader(header string) (string, string, models.VersionType) {
 	}
 
 	return actionName, version, versionType
-}
-
-func parseActionInput(with map[string]any) *[]models.Parameter {
-	if with == nil {
-		return nil
-	}
-
-	parsedInputs := utils.MapToSlice(with, parseActionInputItem)
-	return &parsedInputs
-}
-
-func parseActionInputItem(k string, val any) models.Parameter {
-	return models.Parameter{
-		Name:  &k,
-		Value: val,
-	}
 }

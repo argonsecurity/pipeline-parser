@@ -31,10 +31,12 @@ type Variable struct {
 }
 
 type Parameter struct {
-	Name        *string `json:"name,omitempty"`
-	Value       any     `json:"value,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Default     any     `json:"default,omitempty"`
+	Name          *string        `json:"name,omitempty"`
+	Value         any            `json:"value,omitempty"`
+	Description   *string        `json:"description,omitempty"`
+	Default       any            `json:"default,omitempty"`
+	Options       []string       `json:"options,omitempty"`
+	FileReference *FileReference `json:"file_reference,omitempty"`
 }
 
 type Entity struct {

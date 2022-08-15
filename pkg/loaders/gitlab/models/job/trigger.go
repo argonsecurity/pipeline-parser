@@ -33,5 +33,5 @@ func (t *Trigger) UnmarshalYAML(node *yaml.Node) error {
 			value.Decode(&t.Forward)
 		}
 		return nil
-	})
+	}, "Trigger")
 }

@@ -7,8 +7,6 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -223,9 +221,15 @@ func TestParseWorkflowTriggers(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowTriggers(testCase.workflow)
 
-			changelog, err := diff.Diff(testCase.expectedTriggers, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			if got != nil {
+				testutils.SortTriggers(got.Triggers)
+			}
+
+			if testCase.expectedTriggers != nil {
+				testutils.SortTriggers(testCase.expectedTriggers.Triggers)
+			}
+
+			testutils.DeepCompare(t, testCase.expectedTriggers, got)
 		})
 	}
 }
@@ -294,9 +298,9 @@ func TestParseEvents(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseEvents(testCase.events)
 
-			changelog, err := diff.Diff(testCase.expectedTriggers, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.SortTriggers(got)
+			testutils.SortTriggers(testCase.expectedTriggers)
+			testutils.DeepCompare(t, testCase.expectedTriggers, got)
 		})
 	}
 }
@@ -341,9 +345,7 @@ func TestParseWorkflowRun(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowRun(testCase.workflowRun)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -380,9 +382,10 @@ func TestParseWorkflowCall(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowCall(testCase.workflowCall)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.SortTrigger(got)
+			testutils.SortTrigger(testCase.expectedTrigger)
+
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -417,10 +420,10 @@ func TestParseWorkflowDispatch(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseWorkflowDispatch(testCase.workflowDispatch)
+			testutils.SortTrigger(got)
+			testutils.SortTrigger(testCase.expectedTrigger)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -452,7 +455,10 @@ func TestParseInputs(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseInputs(testCase.inputs)
 
-			assert.ElementsMatch(t, testCase.expectedParameters, got, testCase.name)
+			testutils.SortParameters(got)
+			testutils.SortParameters(testCase.expectedParameters)
+
+			testutils.DeepCompare(t, testCase.expectedParameters, got)
 		})
 	}
 }
@@ -557,9 +563,7 @@ func TestParseRef(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseRef(testCase.ref, testCase.event)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -613,9 +617,7 @@ func TestParseSchedule(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseSchedule(testCase.schedule)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }
@@ -655,9 +657,7 @@ func TestGenerateTriggersFromEvents(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := generateTriggersFromEvents(testCase.events)
 
-			changelog, err := diff.Diff(testCase.expectedTriggers, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTriggers, got)
 		})
 	}
 }
@@ -688,9 +688,7 @@ func TestGenerateTriggerFromEvent(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := generateTriggerFromEvent(testCase.event)
 
-			changelog, err := diff.Diff(testCase.expectedTrigger, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
 		})
 	}
 }

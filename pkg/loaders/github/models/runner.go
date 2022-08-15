@@ -10,38 +10,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const (
-	macos1015     = "macos-10.15"
-	macos11       = "macos-11"
-	macosLatest   = "macos-latest"
-	selfHosted    = "self-hosted"
-	ubuntu1804    = "ubuntu-18.04"
-	ubuntu2004    = "ubuntu-20.04"
-	ubuntuLatest  = "ubuntu-latest"
-	windows2016   = "windows-2016"
-	windows2019   = "windows-2019"
-	windows2022   = "windows-2022"
-	windowsLatest = "windows-latest"
-
-	armArch = "arm32"
-	x64Arch = "x64"
-	x32Arch = "x32"
-)
-
-var (
-	windowsKeywords = []string{"windows", windows2016, windows2019, windows2022, windowsLatest}
-	linuxKeywords   = []string{"linux", "ubuntu", "debian", ubuntu1804, ubuntu2004, ubuntuLatest}
-	macKeywords     = []string{"macos", "darwin", "osx", macos1015, macos11, macosLatest}
-
-	archKeywords = []string{armArch, x64Arch, x32Arch}
-
-	osToKeywords = map[models.OS][]string{
-		models.WindowsOS: windowsKeywords,
-		models.LinuxOS:   linuxKeywords,
-		models.MacOS:     macKeywords,
-	}
-)
-
 type RunsOn struct {
 	OS            *string
 	Arch          *string
@@ -56,11 +24,11 @@ func (r *RunsOn) UnmarshalYAML(node *yaml.Node) error {
 	if node.Tag == consts.StringTag {
 		tags = []string{node.Value}
 	} else if node.Tag == consts.SequenceTag {
-		if tags, err = loadersUtils.ParseYamlStringSequenceToSlice(node); err != nil {
+		if tags, err = loadersUtils.ParseYamlStringSequenceToSlice(node, "RunsOn"); err != nil {
 			return err
 		}
 	} else {
-		return consts.NewErrInvalidYamlTag(node.Tag)
+		return consts.NewErrInvalidYamlTag(node.Tag, "RunsOn")
 	}
 
 	*r = *generateRunsOnFromTags(tags)
@@ -78,11 +46,11 @@ func generateRunsOnFromTags(tags []string) *RunsOn {
 }
 
 func parseTag(r *RunsOn, tag string) *RunsOn {
-	if tag == selfHosted {
+	if tag == consts.SelfHosted {
 		r.SelfHosted = true
 	}
 
-	for os, keywords := range osToKeywords {
+	for os, keywords := range consts.OsToKeywords {
 		didFind := false
 		for _, keyword := range keywords {
 			if strings.Contains(strings.ToLower(tag), keyword) {
@@ -96,7 +64,7 @@ func parseTag(r *RunsOn, tag string) *RunsOn {
 		}
 	}
 
-	for _, arch := range archKeywords {
+	for _, arch := range consts.ArchKeywords {
 		if strings.Contains(strings.ToLower(tag), arch) {
 			r.Arch = utils.GetPtr(arch)
 			break

@@ -20,7 +20,7 @@ type Controls struct {
 func (c *Controls) UnmarshalYAML(node *yaml.Node) error {
 	c.FileReference = utils.GetFileReference(node)
 	if node.Tag == consts.SequenceTag {
-		refs, err := utils.ParseYamlStringSequenceToSlice(node)
+		refs, err := utils.ParseYamlStringSequenceToSlice(node, "Controls")
 		if err != nil {
 			return err
 		}
@@ -31,19 +31,19 @@ func (c *Controls) UnmarshalYAML(node *yaml.Node) error {
 	return utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		switch key {
 		case "refs":
-			refs, err := utils.ParseYamlStringSequenceToSlice(value)
+			refs, err := utils.ParseYamlStringSequenceToSlice(value, "Controls.refs")
 			if err != nil {
 				return err
 			}
 			c.Refs = refs
 		case "variables":
-			variables, err := utils.ParseYamlStringSequenceToSlice(value)
+			variables, err := utils.ParseYamlStringSequenceToSlice(value, "Controls.variables")
 			if err != nil {
 				return err
 			}
 			c.Variables = variables
 		case "changes":
-			changes, err := utils.ParseYamlStringSequenceToSlice(value)
+			changes, err := utils.ParseYamlStringSequenceToSlice(value, "Controls.changes")
 			if err != nil {
 				return err
 			}
@@ -52,5 +52,5 @@ func (c *Controls) UnmarshalYAML(node *yaml.Node) error {
 			c.Kubernetes = value.Value
 		}
 		return nil
-	})
+	}, "Controls")
 }

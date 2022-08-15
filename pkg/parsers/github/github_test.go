@@ -3,6 +3,7 @@ package github
 import (
 	"testing"
 
+	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
@@ -65,7 +66,16 @@ func TestParse(t *testing.T) {
 									TimeoutMinutes:   1,
 									WorkingDirectory: "dir",
 									Uses:             "actions/checkout@1.2.3",
-									With:             map[string]any{"key": "value"},
+									With: &githubModels.With{
+										Values: []*loadersCommonModels.MapEntry{
+											{
+												Key:           "key",
+												Value:         "value",
+												FileReference: testutils.CreateFileReference(112, 212, 112, 234),
+											},
+										},
+										FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+									},
 								},
 							},
 							RunsOn: &githubModels.RunsOn{
@@ -159,10 +169,11 @@ func TestParse(t *testing.T) {
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("1.2.3"),
 									VersionType: models.TagVersion,
-									Inputs: &[]models.Parameter{
+									Inputs: []*models.Parameter{
 										{
-											Name:  utils.GetPtr("key"),
-											Value: "value",
+											Name:          utils.GetPtr("key"),
+											Value:         "value",
+											FileReference: testutils.CreateFileReference(112, 212, 112, 234),
 										},
 									},
 								},
@@ -463,9 +474,7 @@ func TestParseWorkflowDefaults(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 
-				changelog, err := diff.Diff(testCase.expectedDefaults, got)
-				assert.NoError(t, err)
-				assert.Len(t, changelog, 0)
+				testutils.DeepCompare(t, testCase.expectedDefaults, got)
 			}
 		})
 	}

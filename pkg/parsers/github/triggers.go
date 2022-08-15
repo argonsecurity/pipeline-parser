@@ -131,16 +131,14 @@ func parseWorkflowDispatch(workflowDispatch *githubModels.WorkflowDispatch) *mod
 
 func parseInputs(inputs githubModels.Inputs) []models.Parameter {
 	parameters := []models.Parameter{}
-	if inputs != nil {
-		for k, v := range inputs {
-			name := k
-			desc := v.Description
-			parameters = append(parameters, models.Parameter{
-				Name:        &name,
-				Description: &desc,
-				Default:     v.Default,
-			})
-		}
+	for k, v := range inputs {
+		name := k
+		desc := v.Description
+		parameters = append(parameters, models.Parameter{
+			Name:        &name,
+			Description: &desc,
+			Default:     v.Default,
+		})
 	}
 	return parameters
 }
@@ -152,24 +150,17 @@ func parseRef(ref *githubModels.Ref, event models.EventType) *models.Trigger {
 	}
 
 	if len(ref.Paths)+len(ref.PathsIgnore) > 0 {
-		trigger.Paths = &models.Filter{}
+		trigger.Paths = &models.Filter{
+			AllowList: ref.Paths,
+			DenyList:  ref.PathsIgnore,
+		}
 	}
 
 	if len(ref.Branches)+len(ref.BranchesIgnore) > 0 {
-		trigger.Branches = &models.Filter{}
-	}
-
-	for _, path := range ref.Paths {
-		trigger.Paths.AllowList = append(trigger.Paths.AllowList, path)
-	}
-	for _, path := range ref.PathsIgnore {
-		trigger.Paths.DenyList = append(trigger.Paths.DenyList, path)
-	}
-	for _, branch := range ref.Branches {
-		trigger.Branches.AllowList = append(trigger.Branches.AllowList, branch)
-	}
-	for _, branch := range ref.BranchesIgnore {
-		trigger.Branches.DenyList = append(trigger.Branches.DenyList, branch)
+		trigger.Branches = &models.Filter{
+			AllowList: ref.Branches,
+			DenyList:  ref.BranchesIgnore,
+		}
 	}
 
 	return trigger

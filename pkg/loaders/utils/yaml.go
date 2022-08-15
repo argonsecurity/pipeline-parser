@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
@@ -47,25 +48,44 @@ func calculateValueNodeEndFileLocation(node *yaml.Node) *models.FileLocation {
 	}
 }
 
-func GetMapKeyFileReference(jobIDNode, jobNode *yaml.Node) *models.FileReference {
+func CalculateParameterFileReference(startLine int, startColumn int, key string, val any) *models.FileReference {
+	if startLine == -1 || startColumn == -1 {
+		return nil
+	}
+
+	splitValue := strings.Split(strings.TrimRight(fmt.Sprint(val), "\n"), "\n")
+
 	return &models.FileReference{
 		StartRef: &models.FileLocation{
-			Line:   jobIDNode.Line,
-			Column: jobIDNode.Column,
+			Line:   startLine,
+			Column: startColumn, // for the tab after the inputs
 		},
-		EndRef: GetEndFileLocation(jobNode),
+		EndRef: &models.FileLocation{
+			Line:   startLine + strings.Count(fmt.Sprint(val), "\n"),
+			Column: startColumn + len(key) + 2 + len(splitValue[len(splitValue)-1]), // for the key: val. len(key) for the key, 2 for the ": " + len(splitValue[len(splitValue)-1]) for the value
+		},
 	}
 }
 
-func ParseYamlStringSequenceToSlice(node *yaml.Node) ([]string, error) {
+func GetMapKeyFileReference(keyNode, valueNode *yaml.Node) *models.FileReference {
+	return &models.FileReference{
+		StartRef: &models.FileLocation{
+			Line:   keyNode.Line,
+			Column: keyNode.Column,
+		},
+		EndRef: GetEndFileLocation(valueNode),
+	}
+}
+
+func ParseYamlStringSequenceToSlice(node *yaml.Node, structType string) ([]string, error) {
 	if node.Tag != consts.SequenceTag {
-		return nil, consts.NewErrInvalidYamlTag(node.Tag)
+		return nil, consts.NewErrInvalidYamlTag(node.Tag, structType)
 	}
 
 	strings := make([]string, len(node.Content))
 	for i, n := range node.Content {
 		if n.Tag != consts.StringTag {
-			return nil, consts.NewErrInvalidYamlTag(node.Tag)
+			return nil, consts.NewErrInvalidYamlTag(node.Tag, structType)
 		}
 
 		strings[i] = n.Value
@@ -87,9 +107,9 @@ func MustParseYamlBooleanValue(node *yaml.Node) *bool {
 
 // A Map YAML node is very messy to iterate on
 // This function wraps the messy part for cleaner code
-func IterateOnMap(node *yaml.Node, cb func(key string, value *yaml.Node) error) error {
+func IterateOnMap(node *yaml.Node, cb func(key string, value *yaml.Node) error, structType string) error {
 	if node.Tag != consts.MapTag {
-		return consts.NewErrInvalidYamlTag(node.Tag)
+		return consts.NewErrInvalidYamlTag(node.Tag, structType)
 	}
 
 	for i := 0; i < len(node.Content); i += 2 {
@@ -117,4 +137,27 @@ func ParseSequenceOrOne[T any](node *yaml.Node, v *[]T) error {
 
 	*v = []T{t}
 	return nil
+}
+
+func GetNodeValue(node *yaml.Node) any {
+	if node.Tag == consts.StringTag {
+		return node.Value
+	}
+
+	if node.Tag == consts.IntTag {
+		value, _ := strconv.Atoi(node.Value)
+		return value
+	}
+
+	if node.Tag == consts.BooleanTag {
+		return strings.ToLower(node.Value) == "true"
+	}
+
+	if node.Tag == consts.SequenceTag {
+		var seq []any
+		node.Decode(&seq)
+		return seq
+	}
+
+	return node.Value
 }

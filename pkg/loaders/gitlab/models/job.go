@@ -1,9 +1,9 @@
 package models
 
 import (
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/job"
-	jobModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/job"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"gopkg.in/yaml.v3"
@@ -13,7 +13,7 @@ type Job struct {
 	AfterScript  *common.Script `yaml:"after_script"`
 	BeforeScript *common.Script `yaml:"before_script"`
 
-	AllowFailure  *jobModels.AllowFailure         `yaml:"allow_failure"`
+	AllowFailure  *job.AllowFailure               `yaml:"allow_failure"`
 	Artifacts     *Artifacts                      `yaml:"artifacts"`
 	Cache         *common.Cache                   `yaml:"cache"`
 	Coverage      string                          `yaml:"coverage"`
@@ -21,10 +21,10 @@ type Job struct {
 	Environment   any                             `yaml:"environment"` // TODO: implement
 	Extends       any                             `yaml:"extends"`
 	Image         *common.Image                   `yaml:"image"`
-	Inherit       *jobModels.Inherit              `yaml:"inherit"`
+	Inherit       *job.Inherit                    `yaml:"inherit"`
 	Interruptible bool                            `yaml:"interruptible"`
 	Needs         *job.Needs                      `yaml:"needs"`
-	Parallel      *jobModels.Parallel             `yaml:"parallel"`
+	Parallel      *job.Parallel                   `yaml:"parallel"`
 	Release       *Release                        `yaml:"release"`
 	ResourceGroup string                          `yaml:"resource_group"`
 	Retry         *common.Retry                   `yaml:"retry"`
@@ -36,12 +36,12 @@ type Job struct {
 	StartIn       string                          `yaml:"start_in"`
 	Tags          []string                        `yaml:"tags"`
 	Timeout       string                          `yaml:"timeout"`
-	Trigger       *jobModels.Trigger              `yaml:"trigger"`
+	Trigger       *job.Trigger                    `yaml:"trigger"`
 	Variables     *common.EnvironmentVariablesRef `yaml:"variables"`
 	When          string                          `yaml:"when"`
 
-	Except *jobModels.Controls `yaml:"except"`
-	Only   *jobModels.Controls `yaml:"only"`
+	Except *job.Controls `yaml:"except"`
+	Only   *job.Controls `yaml:"only"`
 
 	FileReference *models.FileReference
 }
@@ -79,6 +79,10 @@ type SecretsItem struct {
 // while keeping the job's file reference.
 // Without overcomplicating, the bug won't allow us to both implement UnmarshalYAML and parse Job inline (as in, without a separate internal field)
 func (j *Job) UnmarshalYAML(node *yaml.Node) error {
+	if node.Tag != consts.MapTag {
+		return nil
+	}
+
 	j.FileReference = &models.FileReference{
 		StartRef: &models.FileLocation{
 			Line:   node.Line - 1, // We don't have access to the key node, and therefor we assume it's one line higher
@@ -150,5 +154,5 @@ func (j *Job) UnmarshalYAML(node *yaml.Node) error {
 			return value.Decode(&j.Only)
 		}
 		return nil
-	})
+	}, "Job")
 }

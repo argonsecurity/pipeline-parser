@@ -14,16 +14,41 @@ func NewErrInvalidPlatform(platform Platform) error {
 	return &ErrInvalidPlatform{Platform: platform}
 }
 
+type ErrInvalidOutputTarget struct {
+	OutputTarget OutputTarget
+}
+
+func (e *ErrInvalidOutputTarget) Error() string {
+	return fmt.Sprintf("invalid output target: %s. Supported output targets: %v", e.OutputTarget, OutputTargets)
+}
+
+func NewErrInvalidOutputTarget(outputTarget OutputTarget) error {
+	return &ErrInvalidOutputTarget{OutputTarget: outputTarget}
+}
+
+type ErrInvalidYaml struct {
+	Message string
+}
+
+func (e *ErrInvalidYaml) Error() string {
+	return fmt.Sprintf("invalid yaml: %s", e.Message)
+}
+
+func NewErrInvalidYaml(message string) error {
+	return &ErrInvalidYaml{Message: message}
+}
+
 type ErrInvalidYamlTag struct {
-	Tag string
+	Tag  string
+	Type string
 }
 
 func (e *ErrInvalidYamlTag) Error() string {
-	return fmt.Sprintf("invalid yaml tag: %s", e.Tag)
+	return fmt.Sprintf("invalid yaml tag '%s' for type '%s'", e.Tag, e.Type)
 }
 
-func NewErrInvalidYamlTag(tag string) error {
-	return &ErrInvalidYamlTag{Tag: tag}
+func NewErrInvalidYamlTag(tag string, structType string) error {
+	return &ErrInvalidYamlTag{Tag: tag, Type: structType}
 }
 
 type ErrInvalidArgumentsCount struct {

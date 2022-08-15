@@ -43,7 +43,7 @@ func TestGitHub(t *testing.T) {
 						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("task without params"),
-								Type: "task",
+								Type: models.TaskStepType,
 								Task: &models.Task{
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1"),
@@ -53,81 +53,104 @@ func TestGitHub(t *testing.T) {
 							},
 							{
 								Name: utils.GetPtr("task with params"),
-								Type: "task",
+								Type: models.TaskStepType,
 								Task: &models.Task{
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1"),
 									VersionType: "tag",
-									Inputs: &[]models.Parameter{
+									Inputs: []*models.Parameter{
 										{
-											Name:  utils.GetPtr("repo"),
-											Value: "repository",
+											Name:          utils.GetPtr("repo"),
+											Value:         "repository",
+											FileReference: testutils.CreateFileReference(13, 11, 13, 21), // End column is supposed to be 27
 										},
 									},
 								},
-								FileReference: testutils.CreateFileReference(10, 9, 13, 27),
+								FileReference: testutils.CreateFileReference(10, 9, 13, 21), // End column is supposed to be 27
+							},
+							{
+								Name: utils.GetPtr("task with multiline params"),
+								Type: models.TaskStepType,
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("v1"),
+									VersionType: "tag",
+									Inputs: []*models.Parameter{
+										{
+											Name:          utils.GetPtr("repos"),
+											Value:         "repository1\nrepository2\n",
+											FileReference: testutils.CreateFileReference(18, 11, 20, 11), // End column is supposed to be 29
+										},
+										{
+											Name:          utils.GetPtr("input"),
+											Value:         "value",
+											FileReference: testutils.CreateFileReference(21, 11, 21, 16), // End column is supposed to be 23
+										},
+									},
+								},
+								FileReference: testutils.CreateFileReference(15, 9, 21, 16), // End column is supposed to be 23
 							},
 							{
 								Name: utils.GetPtr("task with commit ID version"),
-								Type: "task",
+								Type: models.TaskStepType,
 								Task: &models.Task{
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("c44948622e1b6bb0eb0cec5b813c1ac561158e1e"),
 									VersionType: "commit",
 								},
-								FileReference: testutils.CreateFileReference(15, 9, 16, 72),
+								FileReference: testutils.CreateFileReference(23, 9, 24, 72),
 							},
 							{
 								Name: utils.GetPtr("task with branch version"),
-								Type: "task",
+								Type: models.TaskStepType,
 								Task: &models.Task{
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("master"),
 									VersionType: "branch",
 								},
-								FileReference: testutils.CreateFileReference(18, 9, 19, 38),
+								FileReference: testutils.CreateFileReference(26, 9, 27, 38),
 							},
 							{
 								Name: utils.GetPtr("task with tag version"),
-								Type: "task",
+								Type: models.TaskStepType,
 								Task: &models.Task{
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1.1.1"),
 									VersionType: "tag",
 								},
-								FileReference: testutils.CreateFileReference(21, 9, 22, 38),
+								FileReference: testutils.CreateFileReference(29, 9, 30, 38),
 							},
 							{
 								Name: utils.GetPtr("shell"),
-								Type: "shell",
+								Type: models.ShellStepType,
 								Shell: &models.Shell{
 									Script:        utils.GetPtr("command line"),
-									FileReference: testutils.CreateFileReference(25, 14, 25, 26),
+									FileReference: testutils.CreateFileReference(33, 14, 33, 26),
 								},
-								FileReference: testutils.CreateFileReference(24, 9, 25, 26),
+								FileReference: testutils.CreateFileReference(32, 9, 33, 26),
 							},
 							{
 								Name: utils.GetPtr("custom shell"),
-								Type: "shell",
+								Type: models.ShellStepType,
 								Shell: &models.Shell{
 									Script:        utils.GetPtr("command line"),
-									FileReference: testutils.CreateFileReference(29, 14, 29, 26),
+									FileReference: testutils.CreateFileReference(37, 14, 37, 26),
 									Type:          utils.GetPtr("cmd"),
 								},
-								FileReference: testutils.CreateFileReference(27, 9, 29, 26),
+								FileReference: testutils.CreateFileReference(35, 9, 37, 26),
 							}, {
 								Name: utils.GetPtr("shell with break rows"),
-								Type: "shell",
+								Type: models.ShellStepType,
 								Shell: &models.Shell{
 									Script:        utils.GetPtr("echo 1\necho 2\necho 3\n"),
-									FileReference: testutils.CreateFileReference(32, 14, 35, 14),
+									FileReference: testutils.CreateFileReference(40, 14, 43, 14),
 								},
-								FileReference: testutils.CreateFileReference(31, 9, 35, 14),
+								FileReference: testutils.CreateFileReference(39, 9, 43, 14),
 							},
 						},
 						TimeoutMS:       utils.GetPtr(21600000),
 						ContinueOnError: utils.GetPtr(false),
-						FileReference:   testutils.CreateFileReference(4, 3, 35, 14),
+						FileReference:   testutils.CreateFileReference(4, 3, 43, 14),
 					},
 				}),
 			},

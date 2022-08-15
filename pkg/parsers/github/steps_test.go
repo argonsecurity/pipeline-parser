@@ -3,11 +3,11 @@ package github
 import (
 	"testing"
 
+	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/r3labs/diff/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -108,7 +108,16 @@ func TestParseJobSteps(t *testing.T) {
 					TimeoutMinutes:   1,
 					WorkingDirectory: "dir",
 					Uses:             "actions/checkout@1.2.3",
-					With:             map[string]any{"key": "value"},
+					With: &githubModels.With{
+						Values: []*loadersCommonModels.MapEntry{
+							{
+								Key:           "key",
+								Value:         "value",
+								FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+							},
+						},
+						FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+					},
 				},
 			},
 			expectedSteps: []*models.Step{
@@ -151,10 +160,11 @@ func TestParseJobSteps(t *testing.T) {
 						Name:        utils.GetPtr("actions/checkout"),
 						Version:     utils.GetPtr("1.2.3"),
 						VersionType: models.TagVersion,
-						Inputs: &[]models.Parameter{
+						Inputs: []*models.Parameter{
 							{
-								Name:  utils.GetPtr("key"),
-								Value: "value",
+								Name:          utils.GetPtr("key"),
+								Value:         "value",
+								FileReference: testutils.CreateFileReference(112, 224, 112, 234),
 							},
 						},
 					},
@@ -167,7 +177,7 @@ func TestParseJobSteps(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseJobSteps(testCase.steps)
-			assert.ElementsMatch(t, testCase.expectedSteps, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedSteps, got)
 		})
 	}
 }
@@ -246,7 +256,16 @@ func TestParseJobStep(t *testing.T) {
 				TimeoutMinutes:   1,
 				WorkingDirectory: "dir",
 				Uses:             "actions/checkout@1.2.3",
-				With:             map[string]any{"key": "value"},
+				With: &githubModels.With{
+					Values: []*loadersCommonModels.MapEntry{
+						{
+							Key:           "key",
+							Value:         "value",
+							FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+						},
+					},
+					FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+				},
 			},
 			expectedStep: &models.Step{
 				ID:   utils.GetPtr("1"),
@@ -266,10 +285,11 @@ func TestParseJobStep(t *testing.T) {
 					Name:        utils.GetPtr("actions/checkout"),
 					Version:     utils.GetPtr("1.2.3"),
 					VersionType: models.TagVersion,
-					Inputs: &[]models.Parameter{
+					Inputs: []*models.Parameter{
 						{
-							Name:  utils.GetPtr("key"),
-							Value: "value",
+							Name:          utils.GetPtr("key"),
+							Value:         "value",
+							FileReference: testutils.CreateFileReference(112, 224, 112, 234),
 						},
 					},
 				},
@@ -282,9 +302,7 @@ func TestParseJobStep(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseJobStep(testCase.step)
 
-			changelog, err := diff.Diff(testCase.expectedStep, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedStep, got)
 		})
 	}
 }
@@ -340,99 +358,6 @@ func TestParseActionHeader(t *testing.T) {
 			assert.Equal(t, testCase.expectedActionName, actionName, testCase.name)
 			assert.Equal(t, testCase.expectedVersion, version, testCase.name)
 			assert.Equal(t, testCase.expectedVersionType, versionType, testCase.name)
-		})
-	}
-}
-
-func TestParseActionInput(t *testing.T) {
-	testCases := []struct {
-		name              string
-		with              map[string]any
-		expectedParameter *[]models.Parameter
-	}{
-		{
-			name:              "with nil",
-			with:              nil,
-			expectedParameter: nil,
-		},
-		{
-			name: "with values",
-			with: map[string]any{
-				"string": "string",
-				"int":    1,
-				"bool":   true,
-			},
-			expectedParameter: &[]models.Parameter{
-				{
-					Name:  utils.GetPtr("string"),
-					Value: "string",
-				},
-				{
-					Name:  utils.GetPtr("int"),
-					Value: 1,
-				},
-				{
-					Name:  utils.GetPtr("bool"),
-					Value: true,
-				},
-			},
-		},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			got := parseActionInput(testCase.with)
-
-			changelog, err := diff.Diff(testCase.expectedParameter, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
-		})
-	}
-}
-
-func TestParseActionInputItem(t *testing.T) {
-	testCases := []struct {
-		name              string
-		k                 string
-		val               any
-		expectedParameter models.Parameter
-	}{
-		{
-			name: "string value",
-			k:    "string",
-			val:  "value",
-			expectedParameter: models.Parameter{
-				Name:  utils.GetPtr("string"),
-				Value: "value",
-			},
-		},
-		{
-			name: "int value",
-			k:    "int",
-			val:  1,
-			expectedParameter: models.Parameter{
-				Name:  utils.GetPtr("int"),
-				Value: 1,
-			},
-		},
-		{
-			name: "boolean value",
-			k:    "boolean",
-			val:  true,
-			expectedParameter: models.Parameter{
-				Name:  utils.GetPtr("boolean"),
-				Value: true,
-			},
-		},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			got := parseActionInputItem(testCase.k, testCase.val)
-
-			changelog, err := diff.Diff(testCase.expectedParameter, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
 		})
 	}
 }

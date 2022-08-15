@@ -1,0 +1,23 @@
+name: variables
+variables:      # pipeline-level
+- name: var1
+  value: value1
+- name: var2
+  value: value2
+  readonly: true
+- group: my-group
+- template: variables/var.yml  # Template reference
+  parameters:
+    param: value
+
+stages:
+- stage: Build
+  variables:    # stage-level
+    STAGE_VAR: 'that happened'
+
+  jobs:
+  - job: FirstJob
+    variables:  # job-level
+      JOB_VAR: 'a job var'
+    steps:
+    - script: echo $(MY_VAR) $(STAGE_VAR) $(JOB_VAR)

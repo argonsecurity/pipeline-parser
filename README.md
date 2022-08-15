@@ -1,11 +1,11 @@
 # Pipeline Parser
 
 [![Test Pipeline Parser](https://github.com/argonsecurity/pipeline-parser/actions/workflows/test.yml/badge.svg)](https://github.com/argonsecurity/pipeline-parser/actions/workflows/test.yml)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://github.com/argonsecurity/pipeline-parser/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/argonsecurity/pipeline-parser/blob/main/LICENSE)
 [![go-report-card][go-report-card]](https://goreportcard.com/report/github.com/argonsecurity/pipeline-parser)
-![coverage report](https://img.shields.io/codecov/c/github/argonsecurity/pipeline-parser?style=flat-square)
+![coverage report](https://img.shields.io/codecov/c/github/argonsecurity/pipeline-parser)
 
-[go-report-card]: https://goreportcard.com/badge/github.com/argonsecurity/pipeline-parser?style=flat-square
+[go-report-card]: https://goreportcard.com/badge/github.com/argonsecurity/pipeline-parser
 
 ## Description
 
@@ -17,6 +17,7 @@ Pipeline Parser is Argon's solution for parsing and analyzing pipeline files of 
 | :---:
 | GitHub Workflows
 | GitLab CI
+| Azure Pipelines
 
 ## Usage
 
@@ -47,6 +48,12 @@ pipeline-parser -p github workflow.yml
 
 ```bash
 pipeline-parser -p gitlab .gitlab-ci.yml
+```
+
+#### Parse Azure Pipelines yaml
+
+```bash
+pipeline-parser -p azure .azure-pipelines.yml
 ```
 
 #### Parse multiple files in one execution

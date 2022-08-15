@@ -1,0 +1,7 @@
+name: branch-list-trigger
+trigger:
+  - main
+  - development
+pr:
+- main
+- develop

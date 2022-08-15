@@ -19,7 +19,7 @@ type GitlabCIConfiguration struct {
 	Stages    []string                        `yaml:"stages"`
 	Variables *common.EnvironmentVariablesRef `yaml:"variables"`
 	Workflow  *Workflow                       `yaml:"workflow"`
-	Jobs      map[string]*Job                 `yaml:",inline"`
+	Jobs      map[string]*Job                 `yaml:",inline,omitempty"`
 }
 
 type Default struct {
