@@ -19,7 +19,7 @@ func TestParseDependencies(t *testing.T) {
 		{
 			name:                    "Job is empty",
 			job:                     &gitlabModels.Job{},
-			expectedJobDependencies: []*models.JobDependency{},
+			expectedJobDependencies: nil,
 		},
 		{
 			name: "Job with dependencies and no needs",
@@ -118,7 +118,7 @@ func TestParseJobDependencies(t *testing.T) {
 		{
 			name:                    "Job is empty",
 			job:                     &gitlabModels.Job{},
-			expectedJobDependencies: []*models.JobDependency{},
+			expectedJobDependencies: nil,
 		},
 		{
 			name: "Job dependencies has one element",
@@ -168,7 +168,7 @@ func TestParseJobNeeds(t *testing.T) {
 		{
 			name:                    "Job is empty",
 			job:                     &gitlabModels.Job{},
-			expectedJobDependencies: []*models.JobDependency{},
+			expectedJobDependencies: nil,
 		},
 		{
 			name: "Job needs has one element with job and pipeline",
