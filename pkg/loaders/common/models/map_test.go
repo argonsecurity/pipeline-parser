@@ -34,7 +34,8 @@ func TestMapLoader(t *testing.T) {
 			yamlBuffer: []byte(`map:
   string: "string"
   int: 1
-  bool: true`,
+  bool: true
+  list: [1, 2, 3]`,
 			),
 			expectedMap: &testMap{
 				Map: &Map{
@@ -54,8 +55,13 @@ func TestMapLoader(t *testing.T) {
 							Value:         true,
 							FileReference: testutils.CreateFileReference(4, 3, 4, 7),
 						},
+						{
+							Key:           "list",
+							Value:         []interface{}{1, 2, 3},
+							FileReference: testutils.CreateFileReference(5, 3, 5, 18),
+						},
 					},
-					FileReference: testutils.CreateFileReference(1, 1, 4, 7),
+					FileReference: testutils.CreateFileReference(1, 1, 5, 17),
 				},
 			},
 		},
