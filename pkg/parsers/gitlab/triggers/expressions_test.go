@@ -3,7 +3,7 @@ package triggers
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 )
 
 func TestIsPositive(t *testing.T) {
@@ -22,28 +22,29 @@ func TestIsPositive(t *testing.T) {
 			comparison: &Comparison{Operator: equals},
 			expected:   true,
 		},
-		{
-			name:       "Comparison is notEquals",
-			comparison: &Comparison{Operator: notEquals},
-			expected:   false,
-		},
+		// {
+		// 	name:       "Comparison is notEquals",
+		// 	comparison: &Comparison{Operator: notEquals},
+		// 	expected:   false,
+		// },
 		{
 			name:       "Comparison is match",
 			comparison: &Comparison{Operator: match},
 			expected:   true,
 		},
-		{
-			name:       "Comparison is notMatch",
-			comparison: &Comparison{Operator: notMatch},
-			expected:   false,
-		},
+		// {
+		// 	name:       "Comparison is notMatch",
+		// 	comparison: &Comparison{Operator: notMatch},
+		// 	expected:   false,
+		// },
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := testCase.comparison.IsPositive()
 
-			assert.Equal(t, testCase.expected, got)
+			testutils.DeepCompare(t, testCase.expected, got)
+
 		})
 	}
 }

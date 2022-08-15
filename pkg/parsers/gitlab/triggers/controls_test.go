@@ -4,8 +4,7 @@ import (
 	"testing"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
+	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 )
 
 func TestParseVariables(t *testing.T) {
@@ -35,9 +34,8 @@ func TestParseVariables(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseVariables(testCase.expressions)
 
-			changelog, err := diff.Diff(testCase.expectedVariables, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedVariables, got)
+
 		})
 	}
 }
@@ -128,13 +126,8 @@ func TestGetBranchesAndEvents(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			gotBranches, gotEvents := getBranchesAndEvents(testCase.refs)
 
-			changelog, err := diff.Diff(testCase.expectedBranches, gotBranches)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
-
-			changelog, err = diff.Diff(testCase.expectedEvents, gotEvents)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedBranches, gotBranches)
+			testutils.DeepCompare(t, testCase.expectedEvents, gotEvents)
 
 		})
 	}
@@ -174,9 +167,8 @@ func TestGenerateFilter(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := generateFilter(testCase.list, testCase.isDeny)
 
-			changelog, err := diff.Diff(testCase.expectedFilter, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedFilter, got)
+
 		})
 	}
 }

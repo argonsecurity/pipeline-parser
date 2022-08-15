@@ -6,8 +6,6 @@ import (
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestParseEnvironmentVariables(t *testing.T) {
@@ -46,9 +44,7 @@ func TestParseEnvironmentVariables(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := ParseEnvironmentVariables(testCase.environmentVariables)
 
-			changelog, err := diff.Diff(testCase.expectedEnvs, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedEnvs, got)
 		})
 	}
 }

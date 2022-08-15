@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
-	"github.com/stretchr/testify/assert"
+	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 )
 
 func TestParseImports(t *testing.T) {
@@ -89,7 +89,7 @@ func TestParseImports(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseImports(testCase.include)
 
-			assert.ElementsMatch(t, testCase.expectedImports, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedImports, got)
 		})
 	}
 }

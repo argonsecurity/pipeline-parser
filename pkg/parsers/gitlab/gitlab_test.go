@@ -5,8 +5,7 @@ import (
 
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
+	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 )
 
 func TestParseDefaults(t *testing.T) {
@@ -35,9 +34,7 @@ func TestParseDefaults(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseDefaults(testCase.gitlabCIConfiguration)
 
-			changelog, err := diff.Diff(testCase.expectedDefaults, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedDefaults, got)
 		})
 	}
 

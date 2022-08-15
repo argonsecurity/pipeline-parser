@@ -5,8 +5,8 @@ import (
 
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestParseConditionRules(t *testing.T) {
@@ -133,7 +133,8 @@ func TestParseConditionRules(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := ParseConditionRules(testCase.rules)
 
-			assert.ElementsMatch(t, testCase.expectedConditions, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedConditions, got)
+
 		})
 	}
 }
@@ -223,7 +224,8 @@ func TestParseConditionRule(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseConditionRule(testCase.rule)
 
-			assert.Equal(t, testCase.expectedCondition, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedCondition, got)
+
 		})
 	}
 }
@@ -308,7 +310,7 @@ func TestGenerateRuleFileFilter(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := generateRuleFileFilter(testCase.rule)
 
-			assert.Equal(t, testCase.expectedFilter, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedFilter, got)
 		})
 	}
 }
@@ -359,7 +361,7 @@ func TestGenerateRuleExistsFilter(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := generateRuleExistsFilter(testCase.rule)
 
-			assert.Equal(t, testCase.expectedFilter, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedFilter, got)
 		})
 	}
 }
@@ -398,7 +400,7 @@ func TestGenerateRuleVariables(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := generateRuleVariables(testCase.rule)
 
-			assert.Equal(t, testCase.expectedVariables, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedVariables, got)
 		})
 	}
 }

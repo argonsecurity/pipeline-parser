@@ -6,8 +6,8 @@ import (
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/job"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/r3labs/diff/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,9 +25,8 @@ func TestParseJob(t *testing.T) {
 
 			assert.NoError(t, err)
 
-			changelog, err := diff.Diff(testCase.expectedJob, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedJob, got)
+
 		})
 	}
 }
@@ -67,7 +66,7 @@ func TestGetJobContinueOnError(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := getJobContinueOnError(testCase.job)
 
-			assert.Equal(t, testCase.expectedContinue, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedContinue, got)
 		})
 	}
 }
@@ -96,7 +95,7 @@ func TestGetJobConcurrencyGroup(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := getJobConcurrencyGroup(testCase.job)
 
-			assert.Equal(t, testCase.expectedConcurrencyGroup, got)
+			testutils.DeepCompare(t, testCase.expectedConcurrencyGroup, got)
 		})
 	}
 }
@@ -112,7 +111,7 @@ func TestGetJobConditions(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := getJobConditions(testCase.job)
 
-			assert.ElementsMatch(t, testCase.expectedConditions, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedConditions, got)
 		})
 	}
 }

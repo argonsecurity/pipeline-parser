@@ -8,8 +8,6 @@ import (
 
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
-	"github.com/r3labs/diff/v3"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestParseScript(t *testing.T) {
@@ -78,9 +76,9 @@ func TestParseScript(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			actualSteps := ParseScript(testCase.script)
+			got := ParseScript(testCase.script)
 
-			assert.ElementsMatch(t, testCase.expectedSteps, actualSteps, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedSteps, got)
 		})
 	}
 }
@@ -116,9 +114,7 @@ func TestParseCommandFileReference(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseCommandFileReference(testCase.script, testCase.commandIndex)
 
-			changelog, err := diff.Diff(testCase.expectedFileReference, got)
-			assert.NoError(t, err)
-			assert.Len(t, changelog, 0)
+			testutils.DeepCompare(t, testCase.expectedFileReference, got)
 		})
 	}
 }

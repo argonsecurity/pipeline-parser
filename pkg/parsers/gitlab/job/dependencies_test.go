@@ -6,8 +6,8 @@ import (
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/job"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestParseDependencies(t *testing.T) {
@@ -104,7 +104,7 @@ func TestParseDependencies(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseDependencies(testCase.job)
 
-			assert.ElementsMatch(t, testCase.expectedJobDependencies, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedJobDependencies, got)
 		})
 	}
 }
@@ -154,7 +154,7 @@ func TestParseJobDependencies(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseJobDependencies(testCase.job)
 
-			assert.ElementsMatch(t, testCase.expectedJobDependencies, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedJobDependencies, got)
 		})
 	}
 }
@@ -252,7 +252,7 @@ func TestParseJobNeeds(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			got := parseJobNeeds(testCase.job)
 
-			assert.ElementsMatch(t, testCase.expectedJobDependencies, got, testCase.name)
+			testutils.DeepCompare(t, testCase.expectedJobDependencies, got)
 		})
 	}
 }
