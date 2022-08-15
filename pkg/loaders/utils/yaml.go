@@ -153,5 +153,11 @@ func GetNodeValue(node *yaml.Node) any {
 		return strings.ToLower(node.Value) == "true"
 	}
 
+	if node.Tag == consts.SequenceTag {
+		var seq []any
+		node.Decode(&seq)
+		return seq
+	}
+
 	return node.Value
 }
