@@ -85,11 +85,11 @@ func generateTriggerFromRule(rule *common.Rule, event models.EventType) *models.
 		Event:         event,
 		FileReference: rule.FileReference,
 		Paths:         generateRuleFileFilter(rule),
-		Branches:      generateRuleBranchFilters(rule),
+		Branches:      generateRuleBranchFilter(rule),
 	}
 }
 
-func generateRuleBranchFilters(rule *common.Rule) *models.Filter {
+func generateRuleBranchFilter(rule *common.Rule) *models.Filter {
 	denyList := []string{}
 	allowList := []string{}
 	for _, comparison := range getComparisons(rule.If) {

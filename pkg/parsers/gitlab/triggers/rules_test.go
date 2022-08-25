@@ -1,6 +1,7 @@
 package triggers
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
@@ -8,6 +9,41 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
+
+func TestParseRules(t *testing.T) {
+	testCases := []struct {
+		name               string
+		rules              *common.Rules
+		expectedTriggers   *models.Triggers
+		expectedConditions []*models.Condition
+	}{
+		{
+			name:  "Rules are empty",
+			rules: &common.Rules{},
+			expectedTriggers: &models.Triggers{
+				Triggers: []*models.Trigger{},
+			},
+			expectedConditions: []*models.Condition{},
+		},
+		{
+			name:  "Rules are empty",
+			rules: &common.Rules{},
+			expectedTriggers: &models.Triggers{
+				Triggers: []*models.Trigger{},
+			},
+			expectedConditions: []*models.Condition{},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			gotTriggers, gotConditions := ParseRules(testCase.rules)
+
+			testutils.DeepCompare(t, testCase.expectedTriggers, gotTriggers)
+			testutils.DeepCompare(t, testCase.expectedConditions, gotConditions)
+		})
+	}
+}
 
 func TestParseConditionRules(t *testing.T) {
 	testCases := []struct {
@@ -230,39 +266,205 @@ func TestParseConditionRule(t *testing.T) {
 	}
 }
 
-// func TestGenerateRuleBranchFilters(t *testing.T) {
-// 	testCases := []struct {
-// 		name            string
-// 		rule            *common.Rule
-// 		expectedFilters []*models.Filter
-// 	}{
-// 		{
-// 			name:            "Rule is empty",
-// 			rule:            &common.Rule{},
-// 			expectedFilters: nil,
-// 		},
-// 		// {
-// 		// 	name: "Rule with branch filters",
-// 		// 	rule: &common.Rule{},
-// 		// 	expectedFilters: []*models.Filter{
-// 		// 		{
-// 		// 			AllowList: []string{"a", "b", "c"},
-// 		// 		},
-// 		// 		{
-// 		// 			DenyList: []string{"d", "e", "f"},
-// 		// 		},
-// 		// 	},
-// 		// },
-// 	}
+func TestParseTriggerRules(t *testing.T) {
+	testCases := []struct {
+		name             string
+		rule             *common.Rule
+		expectedTriggers []*models.Trigger
+	}{
+		{
+			name:             "Rule is empty",
+			rule:             &common.Rule{},
+			expectedTriggers: []*models.Trigger{},
+		},
+		{
+			name: "Rule with data, condition == and always",
+			rule: &common.Rule{
+				If:            `$CI_PIPELINE_SOURCE == "merge_request_event"`,
+				When:          always,
+				Changes:       []string{"a", "b", "c"},
+				Exists:        []string{"d", "e", "f"},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+			expectedTriggers: []*models.Trigger{
+				{
+					Event: models.PullRequestEvent,
+					Paths: &models.Filter{
+						AllowList: []string{"a", "b", "c"},
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+			},
+		},
+		{
+			name: "Rule with data, condition == and never",
+			rule: &common.Rule{
+				If:            `$CI_PIPELINE_SOURCE == "merge_request_event"`,
+				When:          never,
+				Changes:       []string{"a", "b", "c"},
+				Exists:        []string{"d", "e", "f"},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+			expectedTriggers: []*models.Trigger{},
+		},
+		{
+			name: "Rule with data, condition != and never",
+			rule: &common.Rule{
+				If:            `$CI_PIPELINE_SOURCE != "merge_request_event"`,
+				When:          never,
+				Changes:       []string{"a", "b", "c"},
+				Exists:        []string{"d", "e", "f"},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+			expectedTriggers: []*models.Trigger{
+				{
+					Event: models.PullRequestEvent,
+					Paths: &models.Filter{
+						DenyList: []string{"a", "b", "c"},
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+			},
+		},
+		{
+			name: "Rule with data, condition != and always",
+			rule: &common.Rule{
+				If:            `$CI_PIPELINE_SOURCE != "merge_request_event"`,
+				When:          always,
+				Changes:       []string{"a", "b", "c"},
+				Exists:        []string{"d", "e", "f"},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+			expectedTriggers: []*models.Trigger{},
+		},
+	}
 
-// 	for _, testCase := range testCases {
-// 		t.Run(testCase.name, func(t *testing.T) {
-// 			got := generateRuleBranchFilters(testCase.rule)
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := parseTriggerRules(testCase.rule)
 
-// 			assert.Equal(t, testCase.expectedFilters, got, testCase.name)
-// 		})
-// 	}
-// }
+			testutils.DeepCompare(t, testCase.expectedTriggers, got)
+		})
+	}
+}
+
+func TestGenerateTriggerFromRule(t *testing.T) {
+	testCases := []struct {
+		name            string
+		rule            *common.Rule
+		event           models.EventType
+		expectedTrigger *models.Trigger
+	}{
+		{
+			name:            "Rule is empty",
+			rule:            &common.Rule{},
+			expectedTrigger: &models.Trigger{},
+		},
+		{
+			name:  "Rule with data",
+			event: models.PullRequestEvent,
+			rule: &common.Rule{
+				If:            fmt.Sprintf(`%s == "a"`, branchVariable),
+				When:          always,
+				Changes:       []string{"a", "b", "c"},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+			expectedTrigger: &models.Trigger{
+				Event: models.PullRequestEvent,
+				Branches: &models.Filter{
+					AllowList: []string{`"a"`},
+					DenyList:  []string{},
+				},
+				Paths: &models.Filter{
+					AllowList: []string{"a", "b", "c"},
+				},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := generateTriggerFromRule(testCase.rule, testCase.event)
+
+			testutils.DeepCompare(t, testCase.expectedTrigger, got)
+
+		})
+	}
+}
+
+func TestGenerateRuleBranchFilters(t *testing.T) {
+	testCases := []struct {
+		name           string
+		rule           *common.Rule
+		expectedFilter *models.Filter
+	}{
+		{
+			name:           "Rule is empty",
+			rule:           &common.Rule{},
+			expectedFilter: nil,
+		},
+		{
+			name: "Rule with if with no branch variable",
+			rule: &common.Rule{
+				If: `$var == "value"`,
+			},
+			expectedFilter: nil,
+		},
+		{
+			name: "Rule with positive if, branch variable and when is always",
+			rule: &common.Rule{
+				When: always,
+				If:   fmt.Sprintf(`%s == "a"`, branchVariable),
+			},
+			expectedFilter: &models.Filter{
+				AllowList: []string{`"a"`},
+				DenyList:  []string{},
+			},
+		},
+		{
+			name: "Rule with negative if, branch variable and when is always",
+			rule: &common.Rule{
+				When: always,
+				If:   fmt.Sprintf(`%s != "a"`, branchVariable),
+			},
+			expectedFilter: &models.Filter{
+				AllowList: []string{},
+				DenyList:  []string{`"a"`},
+			},
+		},
+		{
+			name: "Rule with positive if, branch variable and when is never",
+			rule: &common.Rule{
+				When: never,
+				If:   fmt.Sprintf(`%s == "a"`, branchVariable),
+			},
+			expectedFilter: &models.Filter{
+				AllowList: []string{},
+				DenyList:  []string{`"a"`},
+			},
+		},
+		{
+			name: "Rule with negative if, branch variable and when is never",
+			rule: &common.Rule{
+				When: never,
+				If:   fmt.Sprintf(`%s != "a"`, branchVariable),
+			},
+			expectedFilter: &models.Filter{
+				AllowList: []string{`"a"`},
+				DenyList:  []string{},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := generateRuleBranchFilter(testCase.rule)
+
+			testutils.DeepCompare(t, testCase.expectedFilter, got)
+		})
+	}
+}
 
 func TestGenerateRuleFileFilter(t *testing.T) {
 	testCases := []struct {
