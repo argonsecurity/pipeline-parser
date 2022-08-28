@@ -348,7 +348,14 @@ func TestLoad(t *testing.T) {
 									},
 								},
 							},
-							FileReference: testutils.CreateFileReference(4, 3, 12, 30),
+							Strategy: &models.JobStrategy{
+								MaxParallel: 2,
+								Matrix: &models.Matrix{
+									"${{ if in(parameters.artifactType,'*', 'docker/image') }}": map[string]any{"docker": map[string]string{"ArtifactType": "docker/image"}},
+									"${{ if in(parameters.artifactType,'*', 'docker/tar') }}":   map[string]any{"tar": "tar"},
+								},
+							},
+							FileReference: testutils.CreateFileReference(4, 3, 20, 19),
 						},
 					},
 					DeploymentJobs: []*models.DeploymentJob{
@@ -359,14 +366,14 @@ func TestLoad(t *testing.T) {
 								DependsOn:   &models.DependsOn{"job1", "job2"},
 								Pool: &models.Pool{
 									VmImage:       "ubuntu-latest",
-									FileReference: testutils.CreateFileReference(16, 5, 17, 27),
+									FileReference: testutils.CreateFileReference(24, 5, 25, 27),
 								},
 							},
 							Environment: &models.DeploymentEnvironmentRef{
 								DeploymentEnvironment: &models.DeploymentEnvironment{
 									Name: "smarthotel-dev",
 								},
-								FileReference: testutils.CreateFileReference(19, 16, 19, 30),
+								FileReference: testutils.CreateFileReference(27, 16, 27, 30),
 							},
 							Strategy: &models.DeploymentStrategy{
 								RunOnce: &models.BaseDeploymentStrategy{
@@ -380,7 +387,7 @@ func TestLoad(t *testing.T) {
 									},
 								},
 							},
-							FileReference: testutils.CreateFileReference(13, 3, 25, 43),
+							FileReference: testutils.CreateFileReference(21, 3, 33, 43),
 						},
 					},
 					TemplateJobs: []*models.TemplateJob{
@@ -394,7 +401,7 @@ func TestLoad(t *testing.T) {
 									},
 								},
 							},
-							FileReference: testutils.CreateFileReference(26, 3, 30, 28),
+							FileReference: testutils.CreateFileReference(34, 3, 38, 28),
 						},
 						{
 							Template: models.Template{
@@ -406,7 +413,7 @@ func TestLoad(t *testing.T) {
 									},
 								},
 							},
-							FileReference: testutils.CreateFileReference(32, 3, 36, 29),
+							FileReference: testutils.CreateFileReference(40, 3, 44, 29),
 						},
 						{
 							Template: models.Template{
@@ -419,10 +426,10 @@ func TestLoad(t *testing.T) {
 									"sign": true,
 								},
 							},
-							FileReference: testutils.CreateFileReference(37, 3, 42, 15),
+							FileReference: testutils.CreateFileReference(45, 3, 46, 15),
 						},
 					},
-					FileReference: testutils.CreateFileReference(3, -1, 42, 15),
+					FileReference: testutils.CreateFileReference(3, -1, 50, 15),
 				},
 			},
 		},

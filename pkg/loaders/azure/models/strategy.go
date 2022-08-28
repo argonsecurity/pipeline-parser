@@ -1,6 +1,6 @@
 package models
 
-type Matrix map[string]map[string]string
+type Matrix map[string]any
 
 type JobStrategy struct {
 	Matrix      *Matrix `yaml:"matrix,omitempty"`
