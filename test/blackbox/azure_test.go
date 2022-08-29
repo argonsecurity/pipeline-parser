@@ -126,7 +126,7 @@ func TestAzure(t *testing.T) {
 							{JobID: utils.GetPtr("job1")},
 							{JobID: utils.GetPtr("job2")},
 						},
-						FileReference: testutils.CreateFileReference(13, 3, 25, 43),
+						FileReference: testutils.CreateFileReference(21, 3, 33, 43),
 					},
 					{
 						ID:              utils.GetPtr("MyJob"),
@@ -151,7 +151,7 @@ func TestAzure(t *testing.T) {
 								FileReference: testutils.CreateFileReference(12, 5, 12, 30),
 							},
 						},
-						FileReference: testutils.CreateFileReference(4, 3, 12, 30),
+						FileReference: testutils.CreateFileReference(4, 3, 20, 19),
 					},
 				},
 			},

@@ -10,6 +10,14 @@ jobs:
     clean: outputs
   steps:
   - script: echo My first job
+  strategy:
+      maxParallel: 2
+      matrix:
+        ${{ if in(parameters.artifactType,'*', 'docker/image') }}:
+          docker:
+            ArtifactType: docker/image
+        ${{ if in(parameters.artifactType,'*', 'docker/tar') }}:
+          tar: tar
 - deployment: DeployWeb
   displayName: deploy Web App
   dependsOn: [job1, job2]
