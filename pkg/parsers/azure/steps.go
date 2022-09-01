@@ -3,11 +3,13 @@ package azure
 import (
 	"strings"
 
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
 	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	parserUtils "github.com/argonsecurity/pipeline-parser/pkg/parsers/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
+	"golang.org/x/exp/slices"
 )
 
 func parseSteps(steps *azureModels.Steps) []*models.Step {
@@ -66,7 +68,7 @@ func parseStep(step azureModels.Step) *models.Step {
 	}
 
 	if step.Enabled != nil {
-		parsedStep.Disabled = utils.GetPtr(!*step.Enabled)
+		parsedStep.Disabled = utils.GetPtr(!slices.Contains(consts.TrueValues, *step.Enabled))
 	}
 
 	return parsedStep

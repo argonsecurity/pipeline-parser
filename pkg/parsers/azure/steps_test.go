@@ -201,7 +201,7 @@ func TestParseStep(t *testing.T) {
 				TimeoutInMinutes: 1,
 				WorkingDirectory: "dir",
 				Script:           "script",
-				Enabled:          utils.GetPtr(true),
+				Enabled:          utils.GetPtr("true"),
 			},
 			expectedStep: &models.Step{
 				ID:   utils.GetPtr("1"),
@@ -242,7 +242,7 @@ func TestParseStep(t *testing.T) {
 				TimeoutInMinutes: 1,
 				WorkingDirectory: "dir",
 				Bash:             "script",
-				Enabled:          utils.GetPtr(true),
+				Enabled:          utils.GetPtr("true"),
 			},
 			expectedStep: &models.Step{
 				ID:   utils.GetPtr("1"),
@@ -283,7 +283,7 @@ func TestParseStep(t *testing.T) {
 				TimeoutInMinutes: 1,
 				WorkingDirectory: "dir",
 				Powershell:       "script",
-				Enabled:          utils.GetPtr(true),
+				Enabled:          utils.GetPtr("true"),
 			},
 			expectedStep: &models.Step{
 				ID:   utils.GetPtr("1"),
@@ -324,7 +324,7 @@ func TestParseStep(t *testing.T) {
 				TimeoutInMinutes: 1,
 				WorkingDirectory: "dir",
 				Pwsh:             "script",
-				Enabled:          utils.GetPtr(true),
+				Enabled:          utils.GetPtr("true"),
 			},
 			expectedStep: &models.Step{
 				ID:   utils.GetPtr("1"),
