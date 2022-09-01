@@ -25,7 +25,7 @@ type Step struct {
 	ContinueOnError         *bool                    `yaml:"continueOnError,omitempty"`
 	DisplayName             string                   `yaml:"displayName,omitempty"`
 	Target                  *StepTarget              `yaml:"target,omitempty"`
-	Enabled                 *bool                    `yaml:"enabled,omitempty"`
+	Enabled                 *string                  `yaml:"enabled,omitempty"`
 	Env                     *EnvironmentVariablesRef `yaml:"env,omitempty"`
 	TimeoutInMinutes        int                      `yaml:"timeoutInMinutes,omitempty"`
 	RetryCountOnTaskFailure int                      `yaml:"retryCountOnTaskFailure,omitempty"`
