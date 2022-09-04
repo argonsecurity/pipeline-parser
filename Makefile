@@ -17,6 +17,10 @@ build:
 run:
 	go run $(LDFLAGS) ./cmd/pipeline-parser $(RUN_ARGS)
 
+.PHONY: tag
+tag:
+	@LEVEL=$(LEVEL) ./scripts/tag.sh
+
 .PHONY: test
 test:
 	go clean -testcache
