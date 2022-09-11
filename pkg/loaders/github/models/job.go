@@ -72,6 +72,7 @@ type ReusableWorkflowCallJob struct {
 	Name          string            `yaml:"name,omitempty"`
 	Needs         *Needs            `yaml:"needs,omitempty"`
 	Permissions   *PermissionsEvent `yaml:"permissions,omitempty"`
+	Strategy      *Strategy         `yaml:"strategy,omitempty"`
 	Secrets       interface{}       `yaml:"secrets,omitempty"`
 	Uses          string            `yaml:"uses"`
 	With          map[string]any

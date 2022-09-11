@@ -1,0 +1,31 @@
+name: matrix
+
+jobs:
+  matrix-job:
+    strategy:
+      matrix:
+        artifact:
+          [
+            docker/image,
+            docker/tar,
+            go,
+            java,
+            node,
+            php,
+            python/tar,
+            python/wheel,
+            ruby/gemspec,
+          ]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            artifact: docker/image
+        exclude:
+          - os: ubuntu-latest
+            artifact: docker/tar
+
+    uses: ./.github/workflows/local.yml
+    with:
+      artifact: ${{ matrix.artifact }}
+    secrets:
+      DD_API_KEY: ${{ secrets.DD_API_KEY }}

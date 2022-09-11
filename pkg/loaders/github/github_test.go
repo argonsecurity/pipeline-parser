@@ -370,6 +370,49 @@ func TestLoad(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:     "matrix",
+			filename: "../../../test/fixtures/github/matrix.yaml",
+			expectedWorkflow: &githubModels.Workflow{
+				Name: "matrix",
+				Jobs: &githubModels.Jobs{
+					CIJobs: map[string]*githubModels.Job{},
+					ReusableWorkflowCallJobs: map[string]*githubModels.ReusableWorkflowCallJob{
+						"matrix-job": {
+							ID: utils.GetPtr("matrix-job"),
+							Strategy: &githubModels.Strategy{
+								Matrix: &githubModels.Matrix{
+									Values: map[string][]any{
+										"artifact": {"docker/image", "docker/tar", "go", "java", "node", "php", "python/tar", "python/wheel", "ruby/gemspec"},
+										"os":       {"ubuntu-latest", "macos-latest", "windows-latest"},
+									},
+									Include: []map[string]any{
+										{
+											"os":       "ubuntu-latest",
+											"artifact": "docker/image",
+										},
+									},
+									Exclude: []map[string]any{
+										{
+											"os":       "ubuntu-latest",
+											"artifact": "docker/tar",
+										},
+									},
+								},
+							},
+							Uses: "./.github/workflows/local.yml",
+							With: map[string]interface{}{
+								"artifact": "${{ matrix.artifact }}",
+							},
+							Secrets: map[string]string{
+								"DD_API_KEY": "${{ secrets.DD_API_KEY }}",
+							},
+							FileReference: testutils.CreateFileReference(4, 3, 31, 44),
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
