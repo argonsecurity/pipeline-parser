@@ -33,6 +33,48 @@ func (n *Needs) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
+type Strategy struct {
+	FailFast    *bool    `yaml:"fail-fast,omitempty"`
+	Matrix      *Matrix  `yaml:"matrix"`
+	MaxParallel *float64 `yaml:"max-parallel,omitempty"`
+}
+
+type Matrix struct {
+	Include       []map[string]any `yaml:"include"`
+	Exclude       []map[string]any `yaml:"exclude"`
+	Values        map[string][]any `yaml:"values"`
+	FileReference *models.FileReference
+}
+
+func (m *Matrix) UnmarshalYAML(node *yaml.Node) error {
+	values := make(map[string][]any)
+	if err := loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+		if key == "include" {
+			return value.Decode(&m.Include)
+		}
+
+		if key == "exclude" {
+			return value.Decode(&m.Exclude)
+		}
+
+		var valuesArray []any
+		if err := value.Decode(&valuesArray); err != nil {
+			return err
+		}
+
+		values[key] = valuesArray
+		return nil
+	}, "matrix"); err != nil {
+		return err
+	}
+
+	m.FileReference = loadersUtils.GetFileReference(node)
+	m.FileReference.StartRef.Line-- // matrix is one line above the actual start of the matrix
+
+	m.Values = values
+	return nil
+}
+
 type Concurrency struct {
 	CancelInProgress *bool   `yaml:"cancel-in-progress,omitempty"`
 	Group            *string `yaml:"group"`
@@ -72,6 +114,7 @@ type ReusableWorkflowCallJob struct {
 	Name          string            `yaml:"name,omitempty"`
 	Needs         *Needs            `yaml:"needs,omitempty"`
 	Permissions   *PermissionsEvent `yaml:"permissions,omitempty"`
+	Strategy      *Strategy         `yaml:"strategy,omitempty"`
 	Secrets       interface{}       `yaml:"secrets,omitempty"`
 	Uses          string            `yaml:"uses"`
 	With          map[string]any

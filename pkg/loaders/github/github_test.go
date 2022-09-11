@@ -370,6 +370,64 @@ func TestLoad(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:     "matrix",
+			filename: "../../../test/fixtures/github/matrix.yaml",
+			expectedWorkflow: &githubModels.Workflow{
+				Name: "matrix",
+				Jobs: &githubModels.Jobs{
+					CIJobs: map[string]*githubModels.Job{
+						"matrix-job": {
+							ID: utils.GetPtr("matrix-job"),
+							Strategy: &githubModels.Strategy{
+								Matrix: &githubModels.Matrix{
+									Values: map[string][]any{
+										"artifact": {"docker/image", "docker/tar", "go", "java", "node", "php", "python/tar", "python/wheel", "ruby/gemspec"},
+										"os":       {"ubuntu-latest", "macos-latest", "windows-latest"},
+									},
+									Include: []map[string]any{
+										{
+											"os":       "ubuntu-latest",
+											"artifact": "docker/image",
+										},
+									},
+									Exclude: []map[string]any{
+										{
+											"os":       "ubuntu-latest",
+											"artifact": "docker/tar",
+										},
+									},
+									FileReference: testutils.CreateFileReference(6, 9, 25, 33),
+								},
+							},
+							Steps: &githubModels.Steps{
+								{
+									Name:          "task without params",
+									Uses:          "actions/checkout@v1",
+									FileReference: testutils.CreateFileReference(28, 9, 29, 34),
+								},
+								{
+									Name: "task with params",
+									Uses: "actions/checkout@v1",
+									With: &githubModels.With{
+										Values: []*commonModels.MapEntry{
+											{
+												Key:           "repo",
+												Value:         "${{ matrix.artifact }}",
+												FileReference: testutils.CreateFileReference(34, 11, 34, 33), // End column is supposed to be 27
+											},
+										},
+										FileReference: testutils.CreateFileReference(33, 9, 34, 33), // End column is supposed to be 27
+									},
+									FileReference: testutils.CreateFileReference(31, 9, 34, 33), // End column is supposed to be 27
+								},
+							},
+							FileReference: testutils.CreateFileReference(4, 3, 34, 33),
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

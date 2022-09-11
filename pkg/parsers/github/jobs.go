@@ -69,7 +69,32 @@ func parseJob(jobName string, job *githubModels.Job) (*models.Job, error) {
 		parsedJob.TokenPermissions = permissions
 	}
 
+	if job.Strategy != nil && job.Strategy.Matrix != nil {
+		parsedJob.Matrix = parseMatrix(job.Strategy.Matrix)
+	}
+
 	return parsedJob, nil
+}
+
+func parseMatrix(matrix *githubModels.Matrix) *models.Matrix {
+	if matrix == nil {
+		return nil
+	}
+
+	return &models.Matrix{
+		Matrix:        convertMatrixMap(matrix.Values),
+		Include:       matrix.Include,
+		Exclude:       matrix.Exclude,
+		FileReference: matrix.FileReference,
+	}
+}
+
+func convertMatrixMap(matrix map[string][]any) map[any]any {
+	convertedMatrix := map[any]any{}
+	for key, value := range matrix {
+		convertedMatrix[key] = value
+	}
+	return convertedMatrix
 }
 
 func parseDependencies(needs *githubModels.Needs) []*models.JobDependency {

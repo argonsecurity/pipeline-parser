@@ -42,12 +42,6 @@ type Run struct {
 	WorkingDirectory string      `yaml:"working-directory,omitempty"`
 }
 
-type Strategy struct {
-	FailFast    bool        `yaml:"fail-fast,omitempty"`
-	Matrix      interface{} `yaml:"matrix"`
-	MaxParallel float64     `yaml:"max-parallel,omitempty"`
-}
-
 type Workflow struct {
 	Concurrency *Concurrency             `yaml:"concurrency,omitempty"`
 	Defaults    *Defaults                `yaml:"defaults,omitempty"`

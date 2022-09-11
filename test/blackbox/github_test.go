@@ -408,6 +408,69 @@ func TestGitHub(t *testing.T) {
 				}),
 			},
 		},
+		{
+			Filename: "matrix.yaml",
+			Expected: &models.Pipeline{
+				Name: utils.GetPtr("matrix"),
+				Jobs: SortJobs([]*models.Job{
+					{
+						ID:              utils.GetPtr("matrix-job"),
+						Name:            utils.GetPtr("matrix-job"),
+						ContinueOnError: utils.GetPtr(false),
+						TimeoutMS:       utils.GetPtr(21600000),
+						Matrix: &models.Matrix{
+							Matrix: map[any]any{
+								"artifact": []any{"docker/image", "docker/tar", "go", "java", "node", "php", "python/tar", "python/wheel", "ruby/gemspec"},
+								"os":       []any{"ubuntu-latest", "macos-latest", "windows-latest"},
+							},
+							Include: []map[string]any{
+								{
+									"os":       "ubuntu-latest",
+									"artifact": "docker/image",
+								},
+							},
+							Exclude: []map[string]any{
+								{
+									"os":       "ubuntu-latest",
+									"artifact": "docker/tar",
+								},
+							},
+							FileReference: testutils.CreateFileReference(6, 9, 25, 33),
+						},
+						Steps: []*models.Step{
+							{
+								Name: utils.GetPtr("task without params"),
+								Type: models.TaskStepType,
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("v1"),
+									VersionType: "tag",
+								},
+								FileReference: testutils.CreateFileReference(28, 9, 29, 34),
+							},
+							{
+								Name: utils.GetPtr("task with params"),
+								Type: models.TaskStepType,
+								Task: &models.Task{
+									Name:        utils.GetPtr("actions/checkout"),
+									Version:     utils.GetPtr("v1"),
+									VersionType: "tag",
+									Inputs: []*models.Parameter{
+										{
+											Name:          utils.GetPtr("repo"),
+											Value:         "${{ matrix.artifact }}",
+											FileReference: testutils.CreateFileReference(34, 11, 34, 33), // End column is supposed to be 27
+										},
+									},
+								},
+								FileReference: testutils.CreateFileReference(31, 9, 34, 33), // End column is supposed to be 27
+							},
+						},
+						FileReference: testutils.CreateFileReference(4, 3, 34, 33),
+					},
+				}),
+			},
+		},
 	}
 	executeTestCases(t, testCases, "github", consts.GitHubPlatform)
 }
