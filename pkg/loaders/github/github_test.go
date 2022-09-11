@@ -397,7 +397,7 @@ func TestLoad(t *testing.T) {
 											"artifact": "docker/tar",
 										},
 									},
-									FileReference: testutils.CreateFileReference(6, 5, 25, 22),
+									FileReference: testutils.CreateFileReference(6, 9, 25, 33),
 								},
 							},
 							Steps: &githubModels.Steps{

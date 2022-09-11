@@ -1,9 +1,7 @@
 package models
 
 import (
-	loadersUtils "github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
-	"gopkg.in/yaml.v3"
 )
 
 type Container struct {
@@ -44,19 +42,6 @@ type Run struct {
 	WorkingDirectory string      `yaml:"working-directory,omitempty"`
 }
 
-type Strategy struct {
-	FailFast    *bool       `yaml:"fail-fast,omitempty"`
-	Matrix      interface{} `yaml:"matrix"`
-	MaxParallel *float64    `yaml:"max-parallel,omitempty"`
-}
-
-type Matrix struct {
-	Include       []map[string]any `yaml:"include"`
-	Exclude       []map[string]any `yaml:"exclude"`
-	Values        map[string][]any `yaml:"values"`
-	FileReference *models.FileReference
-}
-
 type Workflow struct {
 	Concurrency *Concurrency             `yaml:"concurrency,omitempty"`
 	Defaults    *Defaults                `yaml:"defaults,omitempty"`
@@ -65,30 +50,4 @@ type Workflow struct {
 	Name        string                   `yaml:"name,omitempty"`
 	On          *On                      `yaml:"on"`
 	Permissions *PermissionsEvent        `yaml:"permissions,omitempty"`
-}
-
-func (m *Matrix) UnmarshalYAML(node *yaml.Node) error {
-	values := make(map[string][]any)
-	if err := loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
-		if key == "include" {
-			return value.Decode(&m.Include)
-		}
-
-		if key == "exclude" {
-			return value.Decode(&m.Exclude)
-		}
-
-		var valuesArray []any
-		if err := value.Decode(&valuesArray); err != nil {
-			return err
-		}
-
-		values[key] = valuesArray
-		return nil
-	}, "matrix"); err != nil {
-		return err
-	}
-
-	m.FileReference = loadersUtils.GetFileReference(node)
-	return nil
 }

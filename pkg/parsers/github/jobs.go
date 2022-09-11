@@ -69,7 +69,20 @@ func parseJob(jobName string, job *githubModels.Job) (*models.Job, error) {
 		parsedJob.TokenPermissions = permissions
 	}
 
+	if job.Strategy != nil && job.Strategy.Matrix != nil {
+		parsedJob.Matrix = parseMatrix(job.Strategy.Matrix)
+	}
+
 	return parsedJob, nil
+}
+
+func parseMatrix(matrix *githubModels.Matrix) *models.Matrix {
+	return &models.Matrix{
+		// Matrix:        matrix.Values,
+		Include:       matrix.Include,
+		Exclude:       matrix.Exclude,
+		FileReference: matrix.FileReference,
+	}
 }
 
 func parseDependencies(needs *githubModels.Needs) []*models.JobDependency {
