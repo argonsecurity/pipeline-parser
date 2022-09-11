@@ -77,6 +77,10 @@ func parseJob(jobName string, job *githubModels.Job) (*models.Job, error) {
 }
 
 func parseMatrix(matrix *githubModels.Matrix) *models.Matrix {
+	if matrix == nil {
+		return nil
+	}
+
 	return &models.Matrix{
 		Matrix:        convertMatrixMap(matrix.Values),
 		Include:       matrix.Include,
