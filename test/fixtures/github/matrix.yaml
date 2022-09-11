@@ -24,8 +24,11 @@ jobs:
           - os: ubuntu-latest
             artifact: docker/tar
 
-    uses: ./.github/workflows/local.yml
-    with:
-      artifact: ${{ matrix.artifact }}
-    secrets:
-      DD_API_KEY: ${{ secrets.DD_API_KEY }}
+    steps:
+      - name: task without params
+        uses: actions/checkout@v1
+
+      - name: task with params
+        uses: actions/checkout@v1
+        with:
+          repo: ${{ matrix.artifact }}

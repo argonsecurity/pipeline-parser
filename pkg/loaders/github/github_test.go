@@ -376,8 +376,7 @@ func TestLoad(t *testing.T) {
 			expectedWorkflow: &githubModels.Workflow{
 				Name: "matrix",
 				Jobs: &githubModels.Jobs{
-					CIJobs: map[string]*githubModels.Job{},
-					ReusableWorkflowCallJobs: map[string]*githubModels.ReusableWorkflowCallJob{
+					CIJobs: map[string]*githubModels.Job{
 						"matrix-job": {
 							ID: utils.GetPtr("matrix-job"),
 							Strategy: &githubModels.Strategy{
@@ -398,16 +397,32 @@ func TestLoad(t *testing.T) {
 											"artifact": "docker/tar",
 										},
 									},
+									FileReference: testutils.CreateFileReference(6, 5, 25, 22),
 								},
 							},
-							Uses: "./.github/workflows/local.yml",
-							With: map[string]interface{}{
-								"artifact": "${{ matrix.artifact }}",
+							Steps: &githubModels.Steps{
+								{
+									Name:          "task without params",
+									Uses:          "actions/checkout@v1",
+									FileReference: testutils.CreateFileReference(28, 9, 29, 34),
+								},
+								{
+									Name: "task with params",
+									Uses: "actions/checkout@v1",
+									With: &githubModels.With{
+										Values: []*commonModels.MapEntry{
+											{
+												Key:           "repo",
+												Value:         "${{ matrix.artifact }}",
+												FileReference: testutils.CreateFileReference(34, 11, 34, 33), // End column is supposed to be 27
+											},
+										},
+										FileReference: testutils.CreateFileReference(33, 9, 34, 33), // End column is supposed to be 27
+									},
+									FileReference: testutils.CreateFileReference(31, 9, 34, 33), // End column is supposed to be 27
+								},
 							},
-							Secrets: map[string]string{
-								"DD_API_KEY": "${{ secrets.DD_API_KEY }}",
-							},
-							FileReference: testutils.CreateFileReference(4, 3, 31, 44),
+							FileReference: testutils.CreateFileReference(4, 3, 34, 33),
 						},
 					},
 				},
