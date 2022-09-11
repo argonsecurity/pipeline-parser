@@ -78,11 +78,19 @@ func parseJob(jobName string, job *githubModels.Job) (*models.Job, error) {
 
 func parseMatrix(matrix *githubModels.Matrix) *models.Matrix {
 	return &models.Matrix{
-		// Matrix:        matrix.Values,
+		Matrix:        convertMatrixMap(matrix.Values),
 		Include:       matrix.Include,
 		Exclude:       matrix.Exclude,
 		FileReference: matrix.FileReference,
 	}
+}
+
+func convertMatrixMap(matrix map[string][]any) map[any]any {
+	convertedMatrix := map[any]any{}
+	for key, value := range matrix {
+		convertedMatrix[key] = value
+	}
+	return convertedMatrix
 }
 
 func parseDependencies(needs *githubModels.Needs) []*models.JobDependency {
