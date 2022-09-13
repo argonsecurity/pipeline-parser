@@ -63,7 +63,6 @@ git pull
 LATEST_TAG=$(git describe --tags --abbrev=0)
 TAG=$(incr_semver ${LATEST_TAG} ${LEVEL})
 echo "Using tag: ${TAG}"
-exit 0
 
 git tag -a ${TAG} -m ${TAG}
 git push --tag
