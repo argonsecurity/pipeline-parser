@@ -189,6 +189,7 @@ func TestLoad(t *testing.T) {
 			},
 		},
 		{
+			Name:     "Baserow",
 			Filename: "../../../test/fixtures/gitlab/baserow.yaml",
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
 				Include: &models.Include{
@@ -243,7 +244,17 @@ func TestLoad(t *testing.T) {
 							},
 							FileReference: testutils.CreateFileReference(223, 3, 226, 13),
 						},
-						FileReference: testutils.CreateFileReference(203, 1, 226, 13),
+						Parallel: &job.Parallel{
+							Matrix: &job.Matrix{
+								job.MatrixItem{
+									"key1": []string{"value1", "value2"},
+								},
+								job.MatrixItem{
+									"key2": []string{"value"},
+								},
+							},
+						},
+						FileReference: testutils.CreateFileReference(203, 1, 230, 20),
 					},
 				},
 				Variables: &common.EnvironmentVariablesRef{

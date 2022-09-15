@@ -224,3 +224,8 @@ build-ci-util-image:
     refs:
       - pipelines
       - tags
+  parallel:
+    matrix:
+      - key1: [value1, value2]
+      - key2: value
+

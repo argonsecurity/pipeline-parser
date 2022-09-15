@@ -1,6 +1,7 @@
 package github
 
 import (
+	"reflect"
 	"testing"
 
 	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
@@ -602,6 +603,155 @@ func TestParseDependencies(t *testing.T) {
 			got := parseDependencies(testCase.needs)
 
 			testutils.DeepCompare(t, testCase.expectedDependencies, got)
+		})
+	}
+}
+
+func Test_convertMatrixMap(t *testing.T) {
+	type args struct {
+		matrix map[string][]any
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[any]any
+	}{
+		{
+			name: "empty matrix",
+			args: args{
+				matrix: map[string][]any{},
+			},
+			want: map[any]any{},
+		},
+		{
+			name: "matrix with one key",
+			args: args{
+				matrix: map[string][]any{
+					"key": {"value"},
+				},
+			},
+			want: map[any]any{
+				"key": []any{"value"},
+			},
+		},
+		{
+			name: "matrix with list",
+			args: args{
+				matrix: map[string][]any{
+					"key1": {"value1", "value2"},
+					"key2": {"value2"},
+				},
+			},
+			want: map[any]any{
+				"key1": []any{"value1", "value2"},
+				"key2": []any{"value2"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := convertMatrixMap(tt.args.matrix); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("convertMatrixMap() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_parseMatrix(t *testing.T) {
+	type args struct {
+		matrix *githubModels.Matrix
+	}
+	tests := []struct {
+		name string
+		args args
+		want *models.Matrix
+	}{
+		{
+			name: "empty matrix",
+			args: args{
+				matrix: nil,
+			},
+			want: nil,
+		},
+		{
+			name: "matrix with one key",
+			args: args{
+				matrix: &githubModels.Matrix{
+					Values: map[string][]any{
+						"key": {"value"},
+					},
+				},
+			},
+			want: &models.Matrix{
+				Matrix: map[any]any{
+					"key": []any{"value"},
+				},
+			},
+		},
+		{
+			name: "matrix with include",
+			args: args{
+				matrix: &githubModels.Matrix{
+					Include: []map[string]any{
+						{
+							"key1": "value1",
+							"key2": "value2",
+						},
+					},
+					Values: map[string][]any{
+						"key1": {"value1"},
+						"key2": {"value2"},
+					},
+				},
+			},
+			want: &models.Matrix{
+				Matrix: map[any]any{
+					"key1": []any{"value1"},
+					"key2": []any{"value2"},
+				},
+				Include: []map[string]any{
+					{
+						"key1": "value1",
+						"key2": "value2",
+					},
+				},
+			},
+		},
+		{
+			name: "matrix with exclude",
+			args: args{
+				matrix: &githubModels.Matrix{
+					Exclude: []map[string]any{
+						{
+							"key1": "value1",
+							"key2": "value2",
+						},
+					},
+					Values: map[string][]any{
+						"key1": {"value1"},
+						"key2": {"value2"},
+					},
+				},
+			},
+			want: &models.Matrix{
+				Matrix: map[any]any{
+					"key1": []any{"value1"},
+					"key2": []any{"value2"},
+				},
+				Exclude: []map[string]any{
+					{
+						"key1": "value1",
+						"key2": "value2",
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := parseMatrix(tt.args.matrix); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("parseMatrix() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }

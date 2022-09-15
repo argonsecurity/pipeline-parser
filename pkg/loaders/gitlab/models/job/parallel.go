@@ -13,7 +13,9 @@ type Parallel struct {
 	Matrix *Matrix `yaml:"matrix,omitempty"`
 }
 
-type Matrix map[string][]string
+type Matrix []MatrixItem
+
+type MatrixItem map[string][]string
 
 func (p *Parallel) UnmarshalYAML(node *yaml.Node) error {
 	if node.Tag == consts.IntTag {
@@ -41,13 +43,27 @@ func (p *Parallel) UnmarshalYAML(node *yaml.Node) error {
 }
 
 func (m *Matrix) UnmarshalYAML(node *yaml.Node) error {
-	if node.Tag != consts.MapTag {
+	if node.Tag != consts.SequenceTag {
 		return consts.NewErrInvalidYamlTag(node.Tag, "Matrix")
 	}
 
+	for _, matrixNode := range node.Content {
+		var matrixItem MatrixItem
+		if err := matrixNode.Decode(&matrixItem); err != nil {
+			return err
+		}
+
+		*m = append(*m, matrixItem)
+	}
+
+	return nil
+}
+
+func (mi *MatrixItem) UnmarshalYAML(node *yaml.Node) error {
+	*mi = make(MatrixItem, 0)
 	return utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		if value.Tag == consts.StringTag {
-			(*m)[key] = []string{value.Value}
+			(*mi)[key] = []string{value.Value}
 		}
 
 		if value.Tag == consts.SequenceTag {
@@ -55,7 +71,7 @@ func (m *Matrix) UnmarshalYAML(node *yaml.Node) error {
 			if err != nil {
 				return err
 			}
-			(*m)[key] = parsedStrings
+			(*mi)[key] = parsedStrings
 		}
 		return nil
 	}, "Matrix")

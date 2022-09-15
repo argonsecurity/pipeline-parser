@@ -24,7 +24,15 @@ type Job struct {
 	TokenPermissions     *TokenPermissions        `json:"token_permissions,omitempty"`
 	Dependencies         []*JobDependency         `json:"dependencies,omitempty"`
 	Metadata             Metadata                 `json:"metadata,omitempty"`
+	Matrix               *Matrix                  `json:"matrix,omitempty"`
 	FileReference        *FileReference           `json:"file_reference,omitempty"`
+}
+
+type Matrix struct {
+	Matrix        map[any]any
+	Include       []map[string]any
+	Exclude       []map[string]any
+	FileReference *FileReference
 }
 
 type JobDependency struct {
