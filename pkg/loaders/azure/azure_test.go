@@ -349,7 +349,7 @@ func TestLoad(t *testing.T) {
 								},
 							},
 							Strategy: &models.JobStrategy{
-								MaxParallel: 2,
+								MaxParallel: "2",
 								Matrix: &models.Matrix{
 									"${{ if in(parameters.artifactType,'*', 'docker/image') }}": map[string]any{"docker": map[string]string{"ArtifactType": "docker/image"}},
 									"${{ if in(parameters.artifactType,'*', 'docker/tar') }}":   map[string]any{"tar": "tar"},
