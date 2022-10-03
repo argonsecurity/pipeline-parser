@@ -4,7 +4,7 @@ type Matrix map[string]any
 
 type JobStrategy struct {
 	Matrix      *Matrix `yaml:"matrix,omitempty"`
-	MaxParallel int     `yaml:"maxParallel,omitempty"`
+	MaxParallel string  `yaml:"maxParallel,omitempty"`
 	Parallel    string  `yaml:"parallel,omitempty"`
 }
 
