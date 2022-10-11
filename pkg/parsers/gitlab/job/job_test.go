@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/job"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
@@ -105,7 +106,205 @@ func TestGetJobConditions(t *testing.T) {
 		name               string
 		job                *gitlabModels.Job
 		expectedConditions []*models.Condition
-	}{}
+	}{
+		{
+			name:               "Job is empty",
+			job:                &gitlabModels.Job{},
+			expectedConditions: nil,
+		},
+		{
+			name: "Job with rule",
+			job: &gitlabModels.Job{
+				Rules: &common.Rules{
+					RulesList: []*common.Rule{
+						{
+							If:      "condition",
+							When:    "never",
+							Changes: []string{"a", "b", "c"},
+							Exists:  []string{"d", "e", "f"},
+							Variables: &common.EnvironmentVariablesRef{
+								Variables: &common.Variables{
+									"string": "string",
+									"number": 1,
+									"bool":   true,
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedConditions: []*models.Condition{
+				{
+					Statement: "condition",
+					Allow:     utils.GetPtr(false),
+					Paths: &models.Filter{
+						DenyList: []string{"a", "b", "c"},
+					},
+					Exists: &models.Filter{
+						DenyList: []string{"d", "e", "f"},
+					},
+					Variables: map[string]string{
+						"string": "string",
+						"number": "1",
+						"bool":   "true",
+					},
+				},
+			},
+		},
+		{
+			name: "Job with except",
+			job: &gitlabModels.Job{
+				Rules: &common.Rules{
+					RulesList: []*common.Rule{
+						{
+							If:      "condition",
+							When:    "never",
+							Changes: []string{"a", "b", "c"},
+							Exists:  []string{"d", "e", "f"},
+							Variables: &common.EnvironmentVariablesRef{
+								Variables: &common.Variables{
+									"string": "string",
+									"number": 1,
+									"bool":   true,
+								},
+							},
+						},
+					},
+				},
+				Except: &job.Controls{
+					Refs: []string{
+						"master",
+						"test",
+					},
+					Changes: []string{
+						"/path/to/file",
+					},
+				},
+			},
+			expectedConditions: []*models.Condition{
+				{
+					Statement: "condition",
+					Allow:     utils.GetPtr(false),
+					Paths: &models.Filter{
+						DenyList: []string{"a", "b", "c"},
+					},
+					Exists: &models.Filter{
+						DenyList: []string{"d", "e", "f"},
+					},
+					Variables: map[string]string{
+						"string": "string",
+						"number": "1",
+						"bool":   "true",
+					},
+				},
+				{
+					Allow: utils.GetPtr(false),
+					Branches: &models.Filter{
+						DenyList: []string{
+							"master",
+							"test",
+						},
+					},
+					Paths: &models.Filter{
+						DenyList: []string{
+							"/path/to/file",
+						},
+					},
+					Events:    []models.EventType{},
+					Variables: nil,
+				},
+			},
+		},
+		{
+			name: "Job with except and only",
+			job: &gitlabModels.Job{
+				Rules: &common.Rules{
+					RulesList: []*common.Rule{
+						{
+							If:      "condition",
+							When:    "never",
+							Changes: []string{"a", "b", "c"},
+							Exists:  []string{"d", "e", "f"},
+							Variables: &common.EnvironmentVariablesRef{
+								Variables: &common.Variables{
+									"string": "string",
+									"number": 1,
+									"bool":   true,
+								},
+							},
+						},
+					},
+				},
+				Except: &job.Controls{
+					Refs: []string{
+						"master",
+						"test",
+					},
+					Changes: []string{
+						"/path/to/file",
+					},
+				},
+				Only: &job.Controls{
+					Refs: []string{
+						"master",
+						"test",
+					},
+					Changes: []string{
+						"/path/to/file",
+					},
+				},
+			},
+			expectedConditions: []*models.Condition{
+				{
+					Statement: "condition",
+					Allow:     utils.GetPtr(false),
+					Paths: &models.Filter{
+						DenyList: []string{"a", "b", "c"},
+					},
+					Exists: &models.Filter{
+						DenyList: []string{"d", "e", "f"},
+					},
+					Variables: map[string]string{
+						"string": "string",
+						"number": "1",
+						"bool":   "true",
+					},
+				},
+				{
+					Allow: utils.GetPtr(false),
+					Branches: &models.Filter{
+						DenyList: []string{
+							"master",
+							"test",
+						},
+					},
+					Paths: &models.Filter{
+						DenyList: []string{
+							"/path/to/file",
+						},
+					},
+					Events:    []models.EventType{},
+					Variables: nil,
+				},
+				{
+					Allow: utils.GetPtr(true),
+					Branches: &models.Filter{
+						AllowList: []string{
+							"master",
+							"test",
+						},
+					},
+					Paths: &models.Filter{
+						AllowList: []string{
+							"/path/to/file",
+						},
+					},
+					Events:    []models.EventType{},
+					Variables: nil,
+				},
+			},
+		},
+	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {

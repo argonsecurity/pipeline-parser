@@ -32,7 +32,7 @@ func TestParseRunner(t *testing.T) {
 			},
 		},
 		{
-			name: "Image with data",
+			name: "Image with full data",
 			image: &gitlabModels.Image{
 				Name:          "registry/namespace/image:tag",
 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
@@ -42,6 +42,34 @@ func TestParseRunner(t *testing.T) {
 					Image:       utils.GetPtr("namespace/image"),
 					Label:       utils.GetPtr("tag"),
 					RegistryURL: utils.GetPtr("registry"),
+				},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+		},
+		{
+			name: "Image without registry",
+			image: &gitlabModels.Image{
+				Name:          "namespace/image:tag",
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+			expectedRunner: &models.Runner{
+				DockerMetadata: &models.DockerMetadata{
+					Image:       utils.GetPtr("namespace/image"),
+					Label:       utils.GetPtr("tag"),
+				},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+		},
+		{
+			name: "Image without namespace",
+			image: &gitlabModels.Image{
+				Name:          "image:tag",
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+			expectedRunner: &models.Runner{
+				DockerMetadata: &models.DockerMetadata{
+					Image:       utils.GetPtr("image"),
+					Label:       utils.GetPtr("tag"),
 				},
 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 			},

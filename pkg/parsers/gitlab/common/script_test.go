@@ -43,7 +43,7 @@ func TestParseScript(t *testing.T) {
 			},
 		},
 		{
-			name: "Script with some command",
+			name: "Script with some commands",
 			script: &common.Script{
 				Commands:      []string{"command1", "command2", "echo"},
 				FileReference: testutils.CreateFileReference(1, 2, 1, 10),
@@ -107,6 +107,15 @@ func TestParseCommandFileReference(t *testing.T) {
 			},
 			commandIndex:          2,
 			expectedFileReference: testutils.CreateFileReference(4, 4, 4, 18),
+		},
+		{
+			name: "Script with multiline commands",
+			script: &common.Script{
+				Commands:      []string{"command1", "command2\ncommand3"},
+				FileReference: testutils.CreateFileReference(1, 2, 1, 10),
+			},
+			commandIndex:          1,
+			expectedFileReference: testutils.CreateFileReference(3, 4, 3, 27),
 		},
 	}
 
