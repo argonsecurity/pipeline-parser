@@ -1,6 +1,8 @@
 package common
 
 import (
+	"strings"
+
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -40,6 +42,13 @@ func ParseScript(script *common.Script) []*models.Step {
 
 func parseCommandFileReference(script *common.Script, commandIndex int) *models.FileReference {
 	scriptLine := script.FileReference.StartRef.Line + commandIndex + 1
+	lastCommand := script.Commands[commandIndex]
+
+	if strings.Contains(lastCommand, "\n") {
+		splitValue := strings.Split(lastCommand, "\n")
+		lastCommand = splitValue[len(splitValue)-1]
+	}
+
 	return &models.FileReference{
 		StartRef: &models.FileLocation{
 			Line:   scriptLine,                               // +1 for the script header
@@ -47,7 +56,7 @@ func parseCommandFileReference(script *common.Script, commandIndex int) *models.
 		},
 		EndRef: &models.FileLocation{
 			Line:   scriptLine,
-			Column: script.FileReference.EndRef.Column + len(script.Commands[commandIndex]), // start column + the length of the last command
+			Column: script.FileReference.EndRef.Column + len(lastCommand), // start column + the length of the last command
 		},
 	}
 

@@ -115,7 +115,7 @@ func TestParseCommandFileReference(t *testing.T) {
 				FileReference: testutils.CreateFileReference(1, 2, 1, 10),
 			},
 			commandIndex:          1,
-			expectedFileReference: testutils.CreateFileReference(3, 4, 3, 27),
+			expectedFileReference: testutils.CreateFileReference(3, 4, 3, 18),
 		},
 	}
 

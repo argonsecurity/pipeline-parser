@@ -18,7 +18,79 @@ func TestParseJob(t *testing.T) {
 		jobID       string
 		job         *gitlabModels.Job
 		expectedJob *models.Job
-	}{}
+	}{
+		{
+			name:  "Job is empty",
+			jobID: "1",
+			job:   &gitlabModels.Job{},
+			expectedJob: &models.Job{
+				ID:   utils.GetPtr("1"),
+				Name: utils.GetPtr("1"),
+			},
+		},
+		{
+			name:  "Job with data",
+			jobID: "1",
+			job: &gitlabModels.Job{
+				AllowFailure: &job.AllowFailure{
+					Enabled: utils.GetPtr(true),
+				},
+				Stage:        "stage",
+				Tags:         []string{"1", "2"},
+				Image:        &common.Image{Name: "image:tag"},
+				BeforeScript: &common.Script{Commands: []string{"before"}},
+				AfterScript:  &common.Script{Commands: []string{"after"}},
+				Script:       &common.Script{Commands: []string{"script"}},
+				Variables: &common.EnvironmentVariablesRef{
+					Variables: &common.Variables{
+						"key": "value",
+					},
+				},
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+			expectedJob: &models.Job{
+				ID:               utils.GetPtr("1"),
+				Name:             utils.GetPtr("1"),
+				ContinueOnError:  utils.GetPtr(true),
+				ConcurrencyGroup: utils.GetPtr(models.ConcurrencyGroup("stage")),
+				Tags:             []string{"1", "2"},
+				PreSteps: []*models.Step{
+					{Type: models.ShellStepType,
+						Shell: &models.Shell{
+							Script: utils.GetPtr("before"),
+						},
+					},
+				},
+				PostSteps: []*models.Step{
+					{Type: models.ShellStepType,
+						Shell: &models.Shell{
+							Script: utils.GetPtr("after"),
+						},
+					},
+				},
+				Steps: []*models.Step{
+					{Type: models.ShellStepType,
+						Shell: &models.Shell{
+							Script: utils.GetPtr("script"),
+						},
+					},
+				},
+				EnvironmentVariables: &models.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"key": "value",
+					},
+				},
+				Runner: &models.Runner{
+					DockerMetadata: &models.DockerMetadata{
+						Image: utils.GetPtr("image"),
+						Label: utils.GetPtr("tag"),
+					},
+				},
+
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+		},
+	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
