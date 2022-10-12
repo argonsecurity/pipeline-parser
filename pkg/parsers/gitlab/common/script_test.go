@@ -54,21 +54,21 @@ func TestParseScript(t *testing.T) {
 					Shell: &models.Shell{
 						Script: utils.GetPtr("command1"),
 					},
-					FileReference: testutils.CreateFileReference(2, 4, 2, 18),
+					FileReference: testutils.CreateFileReference(1, 4, 1, 18),
 				},
 				{
 					Type: models.ShellStepType,
 					Shell: &models.Shell{
 						Script: utils.GetPtr("command2"),
 					},
-					FileReference: testutils.CreateFileReference(3, 4, 3, 18),
+					FileReference: testutils.CreateFileReference(2, 4, 2, 18),
 				},
 				{
 					Type: models.ShellStepType,
 					Shell: &models.Shell{
 						Script: utils.GetPtr("echo"),
 					},
-					FileReference: testutils.CreateFileReference(4, 4, 4, 14),
+					FileReference: testutils.CreateFileReference(3, 4, 3, 14),
 				},
 			},
 		},
@@ -97,7 +97,7 @@ func TestParseCommandFileReference(t *testing.T) {
 				FileReference: testutils.CreateFileReference(1, 2, 1, 10),
 			},
 			commandIndex:          0,
-			expectedFileReference: testutils.CreateFileReference(2, 4, 2, 18),
+			expectedFileReference: testutils.CreateFileReference(1, 4, 1, 18),
 		},
 		{
 			name: "Script with some commands",
@@ -106,7 +106,7 @@ func TestParseCommandFileReference(t *testing.T) {
 				FileReference: testutils.CreateFileReference(1, 2, 1, 10),
 			},
 			commandIndex:          2,
-			expectedFileReference: testutils.CreateFileReference(4, 4, 4, 18),
+			expectedFileReference: testutils.CreateFileReference(3, 4, 3, 18),
 		},
 		{
 			name: "Script with multiline commands",
@@ -115,7 +115,16 @@ func TestParseCommandFileReference(t *testing.T) {
 				FileReference: testutils.CreateFileReference(1, 2, 1, 10),
 			},
 			commandIndex:          1,
-			expectedFileReference: testutils.CreateFileReference(3, 4, 3, 18),
+			expectedFileReference: testutils.CreateFileReference(2, 4, 3, 18),
+		},
+		{
+			name: "Script with some multiline commands",
+			script: &common.Script{
+				Commands:      []string{"command1\ncommand2", "command3", "command4\ncommand5"},
+				FileReference: testutils.CreateFileReference(1, 2, 1, 10),
+			},
+			commandIndex:          2,
+			expectedFileReference: testutils.CreateFileReference(4, 4, 5, 18),
 		},
 	}
 

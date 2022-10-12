@@ -83,14 +83,14 @@ func TestParseDefaults(t *testing.T) {
 						Shell: &models.Shell{
 							Script: utils.GetPtr("command-1"),
 						},
-						FileReference: testutils.CreateFileReference(2, 4, 2, 19),
+						FileReference: testutils.CreateFileReference(1, 4, 1, 19),
 					},
 					{
 						Type: "shell",
 						Shell: &models.Shell{
 							Script: utils.GetPtr("command-2"),
 						},
-						FileReference: testutils.CreateFileReference(3, 4, 3, 19),
+						FileReference: testutils.CreateFileReference(2, 4, 2, 19),
 					},
 				},
 				PreSteps: []*models.Step{
@@ -99,14 +99,14 @@ func TestParseDefaults(t *testing.T) {
 						Shell: &models.Shell{
 							Script: utils.GetPtr("command-1"),
 						},
-						FileReference: testutils.CreateFileReference(3, 5, 3, 29),
+						FileReference: testutils.CreateFileReference(2, 5, 2, 29),
 					},
 					{
 						Type: "shell",
 						Shell: &models.Shell{
 							Script: utils.GetPtr("command-2"),
 						},
-						FileReference: testutils.CreateFileReference(4, 5, 4, 29),
+						FileReference: testutils.CreateFileReference(3, 5, 3, 29),
 					},
 				},
 			},
