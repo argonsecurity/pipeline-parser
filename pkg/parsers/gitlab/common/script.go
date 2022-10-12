@@ -1,6 +1,8 @@
 package common
 
 import (
+	"strings"
+
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -39,16 +41,36 @@ func ParseScript(script *common.Script) []*models.Step {
 }
 
 func parseCommandFileReference(script *common.Script, commandIndex int) *models.FileReference {
-	scriptLine := script.FileReference.StartRef.Line + commandIndex + 1
+	command := script.Commands[commandIndex]
+	
+	firstLine := script.FileReference.StartRef.Line + countLines(script, commandIndex)
+	endLine := firstLine
+
+	// handle multiline command
+	if strings.Contains(command, "\n") {
+		splitValue := strings.Split(command, "\n")
+		command = splitValue[len(splitValue)-1]
+		endLine = firstLine + len(splitValue) - 1
+	}
+
 	return &models.FileReference{
 		StartRef: &models.FileLocation{
-			Line:   scriptLine,                               // +1 for the script header
+			Line:   firstLine,                               // +1 for the script header
 			Column: script.FileReference.StartRef.Column + 2, // +2 for the "- " section
 		},
 		EndRef: &models.FileLocation{
-			Line:   scriptLine,
-			Column: script.FileReference.EndRef.Column + len(script.Commands[commandIndex]), // start column + the length of the last command
+			Line:   endLine,
+			Column: script.FileReference.EndRef.Column + len(command), // start column + the length of the last command
 		},
 	}
+}
 
+func countLines(script *common.Script, commandIndex int) int {
+	lines := 0
+	for i := 0; i < commandIndex; i++ {
+		splitCommand := strings.Split(script.Commands[i], "\n")
+		lines += len(splitCommand)
+	}
+
+	return lines
 }

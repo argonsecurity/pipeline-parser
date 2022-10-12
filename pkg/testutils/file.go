@@ -1,11 +1,11 @@
 package testutils
 
 import (
-	"io/ioutil"
+	"os"
 )
 
 func ReadFile(filepath string) []byte {
-	data, err := ioutil.ReadFile(filepath)
+	data, err := os.ReadFile(filepath)
 	if err != nil {
 		panic(err)
 	}

@@ -24,10 +24,15 @@ Pipeline Parser is Argon's solution for parsing and analyzing pipeline files of 
 ### Package Usage
 
 ```golang
-import "github/argonsecurity/pipeline-parser/pkg/handler"
+import (
+    "os"
+
+    "github.com/argonsecurity/pipeline-parser/pkg/handler"
+    "github.com/argonsecurity/pipeline-parser/pkg/consts"
+)
 
 // Read the pipeline data as bytes array
-buf, err := ioutil.ReadFile("/path/to/workflow.yml")
+buf, err := os.ReadFile("/path/to/workflow.yml")
 if err != nil {
     return nil
 }

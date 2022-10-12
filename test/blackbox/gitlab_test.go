@@ -72,14 +72,14 @@ func TestGitLab(t *testing.T) {
 							Shell: &models.Shell{
 								Script: utils.GetPtr(`GRADLE_USER_HOME="$(pwd)/.gradle"`),
 							},
-							FileReference: testutils.CreateFileReference(20, 3, 20, 61),
+							FileReference: testutils.CreateFileReference(19, 3, 19, 61),
 						},
 						{
 							Type: models.ShellStepType,
 							Shell: &models.Shell{
 								Script: utils.GetPtr(`export GRADLE_USER_HOME`),
 							},
-							FileReference: testutils.CreateFileReference(21, 3, 21, 51),
+							FileReference: testutils.CreateFileReference(20, 3, 20, 51),
 						},
 					},
 				},
@@ -160,14 +160,14 @@ func TestGitLab(t *testing.T) {
 								Shell: &models.Shell{
 									Script: utils.GetPtr("cd requests"),
 								},
-								FileReference: testutils.CreateFileReference(15, 5, 15, 40),
+								FileReference: testutils.CreateFileReference(14, 5, 14, 40),
 							},
 							{
 								Type: models.ShellStepType,
 								Shell: &models.Shell{
 									Script: utils.GetPtr("python3 setup.py sdist"),
 								},
-								FileReference: testutils.CreateFileReference(16, 5, 16, 51),
+								FileReference: testutils.CreateFileReference(15, 5, 15, 51),
 							},
 						},
 						ConcurrencyGroup: utils.GetPtr(models.ConcurrencyGroup("build")),
