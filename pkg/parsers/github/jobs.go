@@ -89,8 +89,8 @@ func parseMatrix(matrix *githubModels.Matrix) *models.Matrix {
 	}
 }
 
-func convertMatrixMap(matrix map[string][]any) map[any]any {
-	convertedMatrix := map[any]any{}
+func convertMatrixMap(matrix map[string][]any) map[string]any {
+	convertedMatrix := map[string]any{}
 	for key, value := range matrix {
 		convertedMatrix[key] = value
 	}

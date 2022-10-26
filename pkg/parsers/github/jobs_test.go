@@ -614,14 +614,14 @@ func Test_convertMatrixMap(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want map[any]any
+		want map[string]any
 	}{
 		{
 			name: "empty matrix",
 			args: args{
 				matrix: map[string][]any{},
 			},
-			want: map[any]any{},
+			want: map[string]any{},
 		},
 		{
 			name: "matrix with one key",
@@ -630,7 +630,7 @@ func Test_convertMatrixMap(t *testing.T) {
 					"key": {"value"},
 				},
 			},
-			want: map[any]any{
+			want: map[string]any{
 				"key": []any{"value"},
 			},
 		},
@@ -642,7 +642,7 @@ func Test_convertMatrixMap(t *testing.T) {
 					"key2": {"value2"},
 				},
 			},
-			want: map[any]any{
+			want: map[string]any{
 				"key1": []any{"value1", "value2"},
 				"key2": []any{"value2"},
 			},
@@ -683,7 +683,7 @@ func Test_parseMatrix(t *testing.T) {
 				},
 			},
 			want: &models.Matrix{
-				Matrix: map[any]any{
+				Matrix: map[string]any{
 					"key": []any{"value"},
 				},
 			},
@@ -705,7 +705,7 @@ func Test_parseMatrix(t *testing.T) {
 				},
 			},
 			want: &models.Matrix{
-				Matrix: map[any]any{
+				Matrix: map[string]any{
 					"key1": []any{"value1"},
 					"key2": []any{"value2"},
 				},
@@ -734,7 +734,7 @@ func Test_parseMatrix(t *testing.T) {
 				},
 			},
 			want: &models.Matrix{
-				Matrix: map[any]any{
+				Matrix: map[string]any{
 					"key1": []any{"value1"},
 					"key2": []any{"value2"},
 				},
