@@ -29,7 +29,7 @@ type Job struct {
 }
 
 type Matrix struct {
-	Matrix        map[any]any
+	Matrix        map[string]any
 	Include       []map[string]any
 	Exclude       []map[string]any
 	FileReference *FileReference

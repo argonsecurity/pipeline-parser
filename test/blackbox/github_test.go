@@ -419,7 +419,7 @@ func TestGitHub(t *testing.T) {
 						ContinueOnError: utils.GetPtr(false),
 						TimeoutMS:       utils.GetPtr(21600000),
 						Matrix: &models.Matrix{
-							Matrix: map[any]any{
+							Matrix: map[string]any{
 								"artifact": []any{"docker/image", "docker/tar", "go", "java", "node", "php", "python/tar", "python/wheel", "ruby/gemspec"},
 								"os":       []any{"ubuntu-latest", "macos-latest", "windows-latest"},
 							},
