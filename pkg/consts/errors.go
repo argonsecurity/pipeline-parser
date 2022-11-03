@@ -62,3 +62,14 @@ func (e *ErrInvalidArgumentsCount) Error() string {
 func NewErrInvalidArgumentsCount(count int) error {
 	return &ErrInvalidArgumentsCount{Count: count}
 }
+
+type ErrEmptyData struct {
+}
+
+func (e *ErrEmptyData) Error() string {
+	return "empty data"
+}
+
+func NewErrEmptyData() error {
+	return &ErrEmptyData{}
+}
