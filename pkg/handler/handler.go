@@ -21,7 +21,7 @@ func Handle(data []byte, platform consts.Platform) (*models.Pipeline, error) {
 	var err error
 
 	if len(data) == 0 {
-		return nil, nil
+		return nil, consts.NewErrEmptyData()
 	}
 
 	switch platform {
