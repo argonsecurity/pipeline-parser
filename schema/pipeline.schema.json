@@ -1,0 +1,627 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/argonsecurity/pipeline-parser/pkg/models/pipeline",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "triggers": {
+      "$ref": "#/$defs/Triggers"
+    },
+    "jobs": {
+      "items": {
+        "$ref": "#/$defs/Job"
+      },
+      "type": "array"
+    },
+    "imports": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "parameters": {
+      "items": {
+        "$ref": "#/$defs/Parameter"
+      },
+      "type": "array"
+    },
+    "defaults": {
+      "$ref": "#/$defs/Defaults"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "$defs": {
+    "Condition": {
+      "properties": {
+        "statement": {
+          "type": "string"
+        },
+        "allow": {
+          "type": "boolean"
+        },
+        "paths": {
+          "$ref": "#/$defs/Filter"
+        },
+        "exists": {
+          "$ref": "#/$defs/Filter"
+        },
+        "branches": {
+          "$ref": "#/$defs/Filter"
+        },
+        "events": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "variables": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Defaults": {
+      "properties": {
+        "environment_variables": {
+          "$ref": "#/$defs/EnvironmentVariablesRef"
+        },
+        "scans": {
+          "$ref": "#/$defs/Scans"
+        },
+        "runner": {
+          "$ref": "#/$defs/Runner"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/$defs/Condition"
+          },
+          "type": "array"
+        },
+        "continue_on_error": {
+          "type": "boolean"
+        },
+        "token_permissions": {
+          "$ref": "#/$defs/TokenPermissions"
+        },
+        "settings": {
+          "type": "object"
+        },
+        "file_reference": {
+          "$ref": "#/$defs/FileReference"
+        },
+        "post_steps": {
+          "items": {
+            "$ref": "#/$defs/Step"
+          },
+          "type": "array"
+        },
+        "pre_steps": {
+          "items": {
+            "$ref": "#/$defs/Step"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "DockerMetadata": {
+      "properties": {
+        "image": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "registry_url": {
+          "type": "string"
+        },
+        "registry_credentials_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "EnvironmentVariables": {
+      "type": "object"
+    },
+    "EnvironmentVariablesRef": {
+      "properties": {
+        "environment_variables": {
+          "$ref": "#/$defs/EnvironmentVariables"
+        },
+        "file_reference": {
+          "$ref": "#/$defs/FileReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "FileLocation": {
+      "properties": {
+        "line": {
+          "type": "integer"
+        },
+        "column": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "FileReference": {
+      "properties": {
+        "start_ref": {
+          "$ref": "#/$defs/FileLocation"
+        },
+        "end_ref": {
+          "$ref": "#/$defs/FileLocation"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Filter": {
+      "properties": {
+        "allow_list": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "deny_list": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Job": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/Step"
+          },
+          "type": "array"
+        },
+        "continue_on_error": {
+          "type": "boolean"
+        },
+        "pre_steps": {
+          "items": {
+            "$ref": "#/$defs/Step"
+          },
+          "type": "array"
+        },
+        "post_steps": {
+          "items": {
+            "$ref": "#/$defs/Step"
+          },
+          "type": "array"
+        },
+        "environment_variables": {
+          "$ref": "#/$defs/EnvironmentVariablesRef"
+        },
+        "runner": {
+          "$ref": "#/$defs/Runner"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/$defs/Condition"
+          },
+          "type": "array"
+        },
+        "concurrency_group": {
+          "type": "string"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/Parameter"
+          },
+          "type": "array"
+        },
+        "timeout_ms": {
+          "type": "integer"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "token_permissions": {
+          "$ref": "#/$defs/TokenPermissions"
+        },
+        "dependencies": {
+          "items": {
+            "$ref": "#/$defs/JobDependency"
+          },
+          "type": "array"
+        },
+        "metadata": {
+          "$ref": "#/$defs/Metadata"
+        },
+        "matrix": {
+          "$ref": "#/$defs/Matrix"
+        },
+        "file_reference": {
+          "$ref": "#/$defs/FileReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "JobDependency": {
+      "properties": {
+        "job_id": {
+          "type": "string"
+        },
+        "concurrency_group": {
+          "type": "string"
+        },
+        "pipeline": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Matrix": {
+      "properties": {
+        "Matrix": {
+          "type": "object"
+        },
+        "Include": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "Exclude": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "FileReference": {
+          "$ref": "#/$defs/FileReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": ["Matrix", "Include", "Exclude", "FileReference"]
+    },
+    "Metadata": {
+      "properties": {
+        "build": {
+          "type": "boolean"
+        },
+        "test": {
+          "type": "boolean"
+        },
+        "deploy": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Parameter": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": true,
+        "description": {
+          "type": "string"
+        },
+        "default": true,
+        "options": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "file_reference": {
+          "$ref": "#/$defs/FileReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Permission": {
+      "properties": {
+        "read": {
+          "type": "boolean"
+        },
+        "write": {
+          "type": "boolean"
+        },
+        "admin": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Pipeline": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "triggers": {
+          "$ref": "#/$defs/Triggers"
+        },
+        "jobs": {
+          "items": {
+            "$ref": "#/$defs/Job"
+          },
+          "type": "array"
+        },
+        "imports": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "parameters": {
+          "items": {
+            "$ref": "#/$defs/Parameter"
+          },
+          "type": "array"
+        },
+        "defaults": {
+          "$ref": "#/$defs/Defaults"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Runner": {
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "labels": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "os": {
+          "type": "string"
+        },
+        "arch": {
+          "type": "string"
+        },
+        "self_hosted": {
+          "type": "boolean"
+        },
+        "docker_metadata": {
+          "$ref": "#/$defs/DockerMetadata"
+        },
+        "file_reference": {
+          "$ref": "#/$defs/FileReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Scans": {
+      "properties": {
+        "secrets": {
+          "type": "boolean"
+        },
+        "iac": {
+          "type": "boolean"
+        },
+        "pipelines": {
+          "type": "boolean"
+        },
+        "sast": {
+          "type": "boolean"
+        },
+        "dependencies": {
+          "type": "boolean"
+        },
+        "license": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Shell": {
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "script": {
+          "type": "string"
+        },
+        "file_reference": {
+          "$ref": "#/$defs/FileReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Step": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "fails_pipeline": {
+          "type": "boolean"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "environment_variables": {
+          "$ref": "#/$defs/EnvironmentVariablesRef"
+        },
+        "working_directory": {
+          "type": "string"
+        },
+        "timeout": {
+          "type": "integer"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/$defs/Condition"
+          },
+          "type": "array"
+        },
+        "shell": {
+          "$ref": "#/$defs/Shell"
+        },
+        "task": {
+          "$ref": "#/$defs/Task"
+        },
+        "metadata": {
+          "$ref": "#/$defs/Metadata"
+        },
+        "file_reference": {
+          "$ref": "#/$defs/FileReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Task": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/Parameter"
+          },
+          "type": "array"
+        },
+        "version": {
+          "type": "string"
+        },
+        "version_type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TokenPermissions": {
+      "properties": {
+        "Permissions": {
+          "patternProperties": {
+            ".*": {
+              "$ref": "#/$defs/Permission"
+            }
+          },
+          "type": "object"
+        },
+        "FileReference": {
+          "$ref": "#/$defs/FileReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": ["Permissions", "FileReference"]
+    },
+    "Trigger": {
+      "properties": {
+        "branches": {
+          "$ref": "#/$defs/Filter"
+        },
+        "paths": {
+          "$ref": "#/$defs/Filter"
+        },
+        "tags": {
+          "$ref": "#/$defs/Filter"
+        },
+        "exists": {
+          "$ref": "#/$defs/Filter"
+        },
+        "parameters": {
+          "items": {
+            "$ref": "#/$defs/Parameter"
+          },
+          "type": "array"
+        },
+        "pipelines": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "filters": {
+          "type": "object"
+        },
+        "event": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "schedules": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "file_reference": {
+          "$ref": "#/$defs/FileReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Triggers": {
+      "properties": {
+        "triggers": {
+          "items": {
+            "$ref": "#/$defs/Trigger"
+          },
+          "type": "array"
+        },
+        "file_reference": {
+          "$ref": "#/$defs/FileReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    }
+  }
+}
