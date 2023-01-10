@@ -1,8 +1,13 @@
 package models
 
+import (
+	"github.com/argonsecurity/pipeline-parser/pkg/consts"
+	"gopkg.in/yaml.v3"
+)
+
 type Image struct {
 	ImageWithCustomUser *ImageWithCustomUser
-	String              *string
+	Name                string
 }
 
 type ImageWithCustomUser struct {
@@ -17,4 +22,13 @@ type ImageWithCustomUser struct {
 type Aws struct {
 	AccessKey string `yaml:"access-key"` // AWS Access Key
 	SecretKey string `yaml:"secret-key"` // AWS Secret Key
+}
+
+func (i *Image) UnmarshalYAML(node *yaml.Node) error {
+	if node.Tag == consts.StringTag {
+		i.Name = node.Value
+		return nil
+	}
+	i.ImageWithCustomUser = nil
+	return node.Decode(&i)
 }
