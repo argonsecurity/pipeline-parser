@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/argonsecurity/pipeline-parser/pkg/loaders/bitbucket/models"
+	bbModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/bitbucket/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/r3labs/diff/v3"
 )
@@ -13,52 +13,66 @@ func TestLoad(t *testing.T) {
 	testCases := []struct {
 		name             string
 		filename         string
-		expectedPipeline *models.Pipeline
+		expectedPipeline *bbModels.Pipeline
 		expectedError    error
 	}{
 		{
-			name:             "simple",
-			filename:         "../../../test/fixtures/bitbucket/simple.yml",
-			expectedPipeline: &models.Pipeline{
-				// Image: &models.Image{
-				// 	Name: "node:16",
-				// },
-				// Pipelines: &models.BuildPipelines{
-				// 	Default: []*models.Step{
-				// 		{
-				// 			Parallel: []*models.ParallelSteps{
-				// 				{
-				// 					Step: &models.BuildExecutionUnit{
-				// 						Name: "Build and Test",
-				// 						Caches: []string{
-				// 							"node",
-				// 						},
-				// 						Script: []models.Script{
-				// 							{
-				// 								String: "npm install",
-				// 							},
-				// 							{String: "npm test"},
-				// 						},
-				// 					},
-				// 				},
-				// 				{
-				// 					Step: &models.BuildExecutionUnit{
-				// 						Name: "Code linting",
-				// 						Caches: []string{
-				// 							"node",
-				// 						},
-				// 						Script: []models.Script{
-				// 							{
-				// 								String: "npm install eslint",
-				// 							},
-				// 							{String: "npx eslint ."},
-				// 						},
-				// 					},
-				// 				},
-				// 			},
-				// 		},
-				// 	},
-				// },
+			name:     "parallel steps",
+			filename: "../../../test/fixtures/bitbucket/parallel-steps.yml",
+			expectedPipeline: &bbModels.Pipeline{
+				Image: &bbModels.Image{
+					Name: "node:16",
+				},
+				Pipelines: &bbModels.BuildPipelines{
+					Default: []*bbModels.Step{
+						{
+							Parallel: []*bbModels.ParallelSteps{
+								{
+									Step: &bbModels.ExecutionUnitRef{
+										ExecutionUnit: &bbModels.ExecutionUnit{
+											Name: "Build and Test",
+											Caches: []string{
+												"node",
+											},
+											Script: []bbModels.Script{
+												{
+													String:        "npm install",
+													FileReference: testutils.CreateFileReference(11, 17, 11, 28),
+												},
+												{
+													String:        "npm test",
+													FileReference: testutils.CreateFileReference(12, 17, 12, 25),
+												},
+											},
+										},
+										FileReference: testutils.CreateFileReference(7, 13, 12, 25),
+									},
+								},
+								{
+									Step: &bbModels.ExecutionUnitRef{
+										ExecutionUnit: &bbModels.ExecutionUnit{
+											Name: "Code linting",
+											Caches: []string{
+												"node",
+											},
+											Script: []bbModels.Script{
+												{
+													String:        "npm install eslint",
+													FileReference: testutils.CreateFileReference(16, 17, 16, 35),
+												},
+												{
+													String:        "npx eslint .",
+													FileReference: testutils.CreateFileReference(17, 17, 17, 29),
+												},
+											},
+										},
+										FileReference: testutils.CreateFileReference(14, 13, 19, 21),
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			expectedError: nil,
 		},
