@@ -4,16 +4,16 @@ pipelines:
   pull-requests:
     "**":
       - step:
-        name: Build and Test
-        caches:
-          - node
-        script:
-          - npm install
-          - npm test
+          name: Build and Test
+          caches:
+            - node
+          script:
+            - npm install
+            - npm test
       - step:
-        name: Code linting
-        script:
-          - npm install eslint
-          - npx eslint .
-        caches:
-          - node
+          name: Code linting
+          script:
+            - npm install eslint
+            - npx eslint .
+          caches:
+            - node

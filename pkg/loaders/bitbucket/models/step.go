@@ -29,7 +29,7 @@ func (s *Step) UnmarshalYAML(node *yaml.Node) error {
 			return nil
 		case "step":
 			var step *ExecutionUnitRef
-			if err := node.Decode(&step); err != nil {
+			if err := value.Decode(&step); err != nil {
 				return err
 			}
 			*s = Step{Step: step}

@@ -96,15 +96,15 @@ func TestLoad(t *testing.T) {
 										Script: []bbModels.Script{
 											{
 												String:        "npm install",
-												FileReference: testutils.CreateFileReference(11, 13, 11, 24),
+												FileReference: testutils.CreateFileReference(11, 15, 11, 26),
 											},
 											{
 												String:        "npm test",
-												FileReference: testutils.CreateFileReference(12, 13, 12, 21),
+												FileReference: testutils.CreateFileReference(12, 15, 12, 23),
 											},
 										},
 									},
-									FileReference: testutils.CreateFileReference(6, 9, 12, 21),
+									FileReference: testutils.CreateFileReference(6, 9, 12, 23),
 								},
 							},
 							{
@@ -117,15 +117,88 @@ func TestLoad(t *testing.T) {
 										Script: []bbModels.Script{
 											{
 												String:        "npm install eslint",
-												FileReference: testutils.CreateFileReference(16, 13, 16, 31),
+												FileReference: testutils.CreateFileReference(16, 15, 16, 33),
 											},
 											{
 												String:        "npx eslint .",
-												FileReference: testutils.CreateFileReference(17, 13, 17, 25),
+												FileReference: testutils.CreateFileReference(17, 15, 17, 27),
 											},
 										},
 									},
-									FileReference: testutils.CreateFileReference(13, 9, 19, 17),
+									FileReference: testutils.CreateFileReference(13, 9, 19, 19),
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedError: nil,
+		},
+		{
+			name:     "multiple pipelines definitions",
+			filename: "../../../test/fixtures/bitbucket/multiple-pipelines-types.yml",
+			expectedPipeline: &bbModels.Pipeline{
+				Image: &bbModels.Image{
+					Name: "node:16",
+				},
+				Pipelines: &bbModels.BuildPipelines{
+					Custom: &bbModels.StepMap{
+						"notify": {
+							{
+								Step: &bbModels.ExecutionUnitRef{
+									ExecutionUnit: &bbModels.ExecutionUnit{
+										Name: "Notify Teams",
+										Caches: []string{
+											"node",
+										},
+										Script: []bbModels.Script{
+											{
+												String:        "npx notify -s \"deployment\"",
+												FileReference: testutils.CreateFileReference(11, 15, 11, 41),
+											},
+										},
+									},
+									FileReference: testutils.CreateFileReference(6, 9, 11, 41),
+								},
+							},
+						},
+					},
+					Branches: &bbModels.StepMap{
+						"master": {
+							{
+								Step: &bbModels.ExecutionUnitRef{
+									ExecutionUnit: &bbModels.ExecutionUnit{
+										Name: "step 1",
+									},
+									FileReference: testutils.CreateFileReference(14, 9, 15, 23),
+								},
+							},
+							{
+								Step: &bbModels.ExecutionUnitRef{
+									ExecutionUnit: &bbModels.ExecutionUnit{
+										Name: "step 2",
+									},
+									FileReference: testutils.CreateFileReference(16, 9, 17, 23),
+								},
+							},
+							{
+								Parallel: []*bbModels.ParallelSteps{
+									{
+										Step: &bbModels.ExecutionUnitRef{
+											ExecutionUnit: &bbModels.ExecutionUnit{
+												Name: "step 3",
+											},
+											FileReference: testutils.CreateFileReference(20, 15, 20, 27),
+										},
+									},
+									{
+										Step: &bbModels.ExecutionUnitRef{
+											ExecutionUnit: &bbModels.ExecutionUnit{
+												Name: "step 4",
+											},
+											FileReference: testutils.CreateFileReference(22, 15, 22, 27),
+										},
+									},
 								},
 							},
 						},
