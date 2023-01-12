@@ -1,0 +1,35 @@
+definitions:
+  steps:
+    - step:
+      name: variable step
+      script:
+        - echo $FOO
+      variables:
+        FOO: bar
+    - step:
+        name: scripts step
+        script:
+          - echo "hello world"
+        after-script:
+          - echo "goodbye world"
+          - pipe: notify
+            variables:
+              FOO: bar
+    - step:
+        name: artifacts step
+        caches:
+          - package.json
+    - step:
+        name: shared artifact step
+        artifacts:
+          download: false
+          paths:
+            - dist/*
+            - package-lock.json
+    - parallel:
+        - step:
+            name: parallel step 1
+            trigger: manual
+        - step:
+            name: parallel step 2
+            trigger: automatic

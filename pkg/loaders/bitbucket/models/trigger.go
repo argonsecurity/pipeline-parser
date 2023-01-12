@@ -3,6 +3,6 @@ package models
 type StepTriggerType string
 
 const (
-	Automatic StepTriggerType = "automatic"
-	Manual    StepTriggerType = "manual"
+	AUTOMATIC StepTriggerType = "automatic"
+	MANUAL    StepTriggerType = "manual"
 )
