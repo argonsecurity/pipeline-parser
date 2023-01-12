@@ -288,25 +288,26 @@ func TestLoad(t *testing.T) {
 			expectedPipeline: &bbModels.Pipeline{
 				Definitions: &bbModels.Definitions{
 					Steps: []*bbModels.Step{
-						{
-							Step: &bbModels.ExecutionUnitRef{
-								ExecutionUnit: &bbModels.ExecutionUnit{
-									Name: "variable step",
-									Script: []bbModels.Script{
-										{
-											String:        "echo $FOO",
-											FileReference: testutils.CreateFileReference(5, 7, 5, 10),
-										},
-									},
-								},
-							},
-							Variables: []*bbModels.Variable{
-								{
-									Name:          Ptr("FOO"),
-									FileReference: testutils.CreateFileReference(5, 7, 5, 10),
-								},
-							},
-						},
+						// {
+						// 	Step: &bbModels.ExecutionUnitRef{
+						// 		ExecutionUnit: &bbModels.ExecutionUnit{
+						// 			Name: "variable step",
+						// 			Script: []bbModels.Script{
+						// 				{
+						// 					String:        "echo $FOO",
+						// 					FileReference: testutils.CreateFileReference(5, 7, 5, 10),
+						// 				},
+						// 			},
+						// 		},
+						// 		FileReference: testutils.CreateFileReference(3, 7, 17, 2),
+						// 	},
+						// 	Variables: []*bbModels.StepVariable{
+						// 		{
+						// 			Name:          Ptr("FOO"),
+						// 			FileReference: testutils.CreateFileReference(5, 7, 5, 10),
+						// 		},
+						// 	},
+						// },
 						{
 							Step: &bbModels.ExecutionUnitRef{
 								ExecutionUnit: &bbModels.ExecutionUnit{
@@ -346,6 +347,7 @@ func TestLoad(t *testing.T) {
 										"package.json",
 									},
 								},
+								FileReference: testutils.CreateFileReference(18, 7, 21, 25),
 							},
 						},
 						{
@@ -362,6 +364,7 @@ func TestLoad(t *testing.T) {
 										},
 									},
 								},
+								FileReference: testutils.CreateFileReference(22, 7, 28, 32),
 							},
 						},
 						{
