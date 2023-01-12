@@ -1,3 +1,3 @@
 package models
 
-type Caches struct{}
+type Caches map[string]string

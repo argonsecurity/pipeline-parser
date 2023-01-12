@@ -1,0 +1,13 @@
+image: node:16
+
+pipelines:
+  default:
+    - step:
+        image:
+          name: node:16
+          email: test@test.com
+          username: test
+          password: test
+          aws:
+            access-key: "123456"
+            secret-key: "7891011"

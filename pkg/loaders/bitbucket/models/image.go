@@ -11,12 +11,12 @@ type Image struct {
 }
 
 type ImageWithCustomUser struct {
-	Name      string  `yaml:"name"`
+	Name      string `yaml:"name"`
 	RunAsUser *int64  `yaml:"run-as-user,omitempty"`
 	Email     *string `yaml:"email,omitempty"`    // Email to use to fetch the Docker image
 	Password  *string `yaml:"password,omitempty"` // Password to use to fetch the Docker image
 	Username  *string `yaml:"username,omitempty"` // Username to use to fetch the Docker image
-	Aws       *Aws    `yaml:"aws,omitempty"`      // AWS credentials
+	Aws       *Aws   `yaml:"aws,omitempty"`      // AWS credentials
 }
 
 type Aws struct {
@@ -27,8 +27,13 @@ type Aws struct {
 func (i *Image) UnmarshalYAML(node *yaml.Node) error {
 	if node.Tag == consts.StringTag {
 		i.Name = node.Value
+		i.ImageWithCustomUser = nil
 		return nil
 	}
-	i.ImageWithCustomUser = nil
-	return node.Decode(&i)
+	var image ImageWithCustomUser
+	if err := node.Decode(&image); err != nil {
+		return err
+	}
+	*i = Image{ImageWithCustomUser: &image}
+	return nil
 }
