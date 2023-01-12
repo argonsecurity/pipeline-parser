@@ -18,12 +18,25 @@ type ParallelSteps struct {
 }
 
 func (s *Step) UnmarshalYAML(node *yaml.Node) error {
-	var step *ExecutionUnitRef
-	if err := node.Decode(&step); err != nil {
-		return err
-	}
-	*s = Step{Step: step}
-	return nil
+	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+		switch key {
+		case "parallel":
+			var parallel []*ParallelSteps
+			if err := loadersUtils.ParseSequenceOrOne(value, &parallel); err != nil {
+				return err
+			}
+			s.Parallel = parallel
+			return nil
+		case "step":
+			var step *ExecutionUnitRef
+			if err := node.Decode(&step); err != nil {
+				return err
+			}
+			*s = Step{Step: step}
+			return nil
+		}
+		return nil
+	}, "Step")
 }
 
 func (sm *StepMap) UnmarshalYAML(node *yaml.Node) error {

@@ -16,66 +16,66 @@ func TestLoad(t *testing.T) {
 		expectedPipeline *bbModels.Pipeline
 		expectedError    error
 	}{
-		// {
-		// 	name:     "parallel steps",
-		// 	filename: "../../../test/fixtures/bitbucket/parallel-steps.yml",
-		// 	expectedPipeline: &bbModels.Pipeline{
-		// 		Image: &bbModels.Image{
-		// 			Name: "node:16",
-		// 		},
-		// 		Pipelines: &bbModels.BuildPipelines{
-		// 			Default: []*bbModels.Step{
-		// 				{
-		// 					Parallel: []*bbModels.ParallelSteps{
-		// 						{
-		// 							Step: &bbModels.ExecutionUnitRef{
-		// 								ExecutionUnit: &bbModels.ExecutionUnit{
-		// 									Name: "Build and Test",
-		// 									Caches: []string{
-		// 										"node",
-		// 									},
-		// 									Script: []bbModels.Script{
-		// 										{
-		// 											String:        "npm install",
-		// 											FileReference: testutils.CreateFileReference(11, 17, 11, 28),
-		// 										},
-		// 										{
-		// 											String:        "npm test",
-		// 											FileReference: testutils.CreateFileReference(12, 17, 12, 25),
-		// 										},
-		// 									},
-		// 								},
-		// 								FileReference: testutils.CreateFileReference(7, 13, 12, 25),
-		// 							},
-		// 						},
-		// 						{
-		// 							Step: &bbModels.ExecutionUnitRef{
-		// 								ExecutionUnit: &bbModels.ExecutionUnit{
-		// 									Name: "Code linting",
-		// 									Caches: []string{
-		// 										"node",
-		// 									},
-		// 									Script: []bbModels.Script{
-		// 										{
-		// 											String:        "npm install eslint",
-		// 											FileReference: testutils.CreateFileReference(16, 17, 16, 35),
-		// 										},
-		// 										{
-		// 											String:        "npx eslint .",
-		// 											FileReference: testutils.CreateFileReference(17, 17, 17, 29),
-		// 										},
-		// 									},
-		// 								},
-		// 								FileReference: testutils.CreateFileReference(14, 13, 19, 21),
-		// 							},
-		// 						},
-		// 					},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// 	expectedError: nil,
-		// },
+		{
+			name:     "parallel steps",
+			filename: "../../../test/fixtures/bitbucket/parallel-steps.yml",
+			expectedPipeline: &bbModels.Pipeline{
+				Image: &bbModels.Image{
+					Name: "node:16",
+				},
+				Pipelines: &bbModels.BuildPipelines{
+					Default: []*bbModels.Step{
+						{
+							Parallel: []*bbModels.ParallelSteps{
+								{
+									Step: &bbModels.ExecutionUnitRef{
+										ExecutionUnit: &bbModels.ExecutionUnit{
+											Name: "Build and Test",
+											Caches: []string{
+												"node",
+											},
+											Script: []bbModels.Script{
+												{
+													String:        "npm install",
+													FileReference: testutils.CreateFileReference(11, 17, 11, 28),
+												},
+												{
+													String:        "npm test",
+													FileReference: testutils.CreateFileReference(12, 17, 12, 25),
+												},
+											},
+										},
+										FileReference: testutils.CreateFileReference(7, 13, 12, 25),
+									},
+								},
+								{
+									Step: &bbModels.ExecutionUnitRef{
+										ExecutionUnit: &bbModels.ExecutionUnit{
+											Name: "Code linting",
+											Caches: []string{
+												"node",
+											},
+											Script: []bbModels.Script{
+												{
+													String:        "npm install eslint",
+													FileReference: testutils.CreateFileReference(16, 17, 16, 35),
+												},
+												{
+													String:        "npx eslint .",
+													FileReference: testutils.CreateFileReference(17, 17, 17, 29),
+												},
+											},
+										},
+										FileReference: testutils.CreateFileReference(14, 13, 19, 21),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedError: nil,
+		},
 		{
 			name:     "sync steps",
 			filename: "../../../test/fixtures/bitbucket/sync-steps.yml",
@@ -96,15 +96,15 @@ func TestLoad(t *testing.T) {
 										Script: []bbModels.Script{
 											{
 												String:        "npm install",
-												FileReference: testutils.CreateFileReference(11, 17, 11, 28),
+												FileReference: testutils.CreateFileReference(11, 13, 11, 24),
 											},
 											{
 												String:        "npm test",
-												FileReference: testutils.CreateFileReference(12, 17, 12, 25),
+												FileReference: testutils.CreateFileReference(12, 13, 12, 21),
 											},
 										},
 									},
-									FileReference: testutils.CreateFileReference(7, 13, 12, 25),
+									FileReference: testutils.CreateFileReference(6, 9, 12, 21),
 								},
 							},
 							{
@@ -117,15 +117,15 @@ func TestLoad(t *testing.T) {
 										Script: []bbModels.Script{
 											{
 												String:        "npm install eslint",
-												FileReference: testutils.CreateFileReference(16, 17, 16, 35),
+												FileReference: testutils.CreateFileReference(16, 13, 16, 31),
 											},
 											{
 												String:        "npx eslint .",
-												FileReference: testutils.CreateFileReference(17, 17, 17, 29),
+												FileReference: testutils.CreateFileReference(17, 13, 17, 25),
 											},
 										},
 									},
-									FileReference: testutils.CreateFileReference(14, 13, 19, 21),
+									FileReference: testutils.CreateFileReference(13, 9, 19, 17),
 								},
 							},
 						},
