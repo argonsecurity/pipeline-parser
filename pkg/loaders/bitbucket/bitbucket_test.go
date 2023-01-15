@@ -403,6 +403,90 @@ func TestLoad(t *testing.T) {
 			},
 			expectedError: nil,
 		},
+		{
+			name:     "alias nodes",
+			filename: "../../../test/fixtures/bitbucket/alias-nodes.yml",
+			expectedPipeline: &bbModels.Pipeline{
+				Definitions: &bbModels.Definitions{
+					Caches: &bbModels.Caches{
+						"cypress": "/root/.cache/Cypress",
+					},
+					Services: map[string]*bbModels.Service{
+						"docker": {
+							Memory: Ptr(int64(2048)),
+						},
+					},
+					Steps: []*bbModels.Step{
+						{
+							Step: &bbModels.ExecutionUnitRef{
+								ExecutionUnit: &bbModels.ExecutionUnit{
+									Name: "Install and build",
+									Script: []bbModels.Script{
+										{
+											String:        "yarn build",
+											FileReference: testutils.CreateFileReference(11, 13, 11, 23),
+										},
+									},
+									Artifacts: &bbModels.Artifacts{
+										Paths: []string{
+											"dist/**",
+										},
+									},
+								},
+								FileReference: testutils.CreateFileReference(8, 7, 13, 20),
+							},
+						},
+					},
+				},
+				Pipelines: &bbModels.BuildPipelines{
+					PullRequests: &bbModels.StepMap{
+						"*": {
+							{
+								Step: &bbModels.ExecutionUnitRef{
+									ExecutionUnit: &bbModels.ExecutionUnit{
+										Name: "Install and build",
+										Script: []bbModels.Script{
+											{
+												String:        "yarn build",
+												FileReference: testutils.CreateFileReference(11, 13, 11, 23),
+											},
+										},
+										Artifacts: &bbModels.Artifacts{
+											Paths: []string{
+												"dist/**",
+											},
+										},
+									},
+									FileReference: testutils.CreateFileReference(8, 7, 13, 20),
+								},
+							},
+						},
+						"**": {
+							{
+								Step: &bbModels.ExecutionUnitRef{
+									ExecutionUnit: &bbModels.ExecutionUnit{
+										Name: "Install and build",
+										Script: []bbModels.Script{
+											{
+												String:        "yarn build",
+												FileReference: testutils.CreateFileReference(11, 13, 11, 23),
+											},
+										},
+										Artifacts: &bbModels.Artifacts{
+											Paths: []string{
+												"dist/**",
+											},
+										},
+									},
+									FileReference: testutils.CreateFileReference(20, 9, 21, 28),
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedError: nil,
+		},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
