@@ -27,7 +27,6 @@ definitions:
         - step:
             name: parallel step 2
             trigger: automatic
-
 pipelines:
   custom:
     test:

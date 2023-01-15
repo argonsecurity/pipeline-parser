@@ -8,9 +8,9 @@ import (
 type StepMap map[string][]*Step
 
 type Step struct {
-	Step      *ExecutionUnitRef `yaml:"step,omitempty"`
-	Parallel  []*ParallelSteps  `yaml:"parallel"`
-	Variables []*StepVariable   `yaml:"variables"` // List of variables for the custom pipeline
+	Step      *ExecutionUnitRef     `yaml:"step,omitempty"`
+	Parallel  []*ParallelSteps      `yaml:"parallel"`
+	Variables []*CustomStepVariable `yaml:"variables"` // List of variables for the custom pipeline
 }
 
 type ParallelSteps struct {
@@ -59,8 +59,8 @@ func (sm *StepMap) UnmarshalYAML(node *yaml.Node) error {
 	}, "StepMap")
 }
 
-func parseVariables(node *yaml.Node) ([]*StepVariable, error) {
-	var vars []*StepVariable
+func parseVariables(node *yaml.Node) ([]*CustomStepVariable, error) {
+	var vars []*CustomStepVariable
 	if err := loadersUtils.ParseSequenceOrOne(node, &vars); err != nil {
 		return nil, err
 	}
