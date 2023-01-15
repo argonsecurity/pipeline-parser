@@ -18,7 +18,7 @@ type ExecutionUnit struct {
 	Clone       *Clone           `yaml:"clone,omitempty"`
 	Deployment  string           `yaml:"deployment,omitempty"` // Sets the type of environment for your deployment step, used in the Deployments dashboard.
 	Image       *Image           `yaml:"image"`
-	MaxTime     int64            `yaml:"max-time,omitempty"`
+	MaxTime     *int64           `yaml:"max-time,omitempty"`
 	Name        string           `yaml:"name,omitempty"` // You can add a name to a step to make displays and reports easier to read and understand.
 	RunsOn      []string         `yaml:"runs-on"`        // self-hosted runner labels
 	Script      []Script         `yaml:"script"`         // Commands to execute in the step
