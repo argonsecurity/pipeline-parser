@@ -19,3 +19,4 @@ pipelines:
     "**":
       - step:
           <<: *install-build
+          name: merge test

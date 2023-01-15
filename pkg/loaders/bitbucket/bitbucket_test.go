@@ -457,7 +457,7 @@ func TestLoad(t *testing.T) {
 											},
 										},
 									},
-									FileReference: testutils.CreateFileReference(8, 7, 13, 20),
+									FileReference: testutils.CreateFileReference(8, 7, 13, 20, true),
 								},
 							},
 						},
@@ -465,7 +465,7 @@ func TestLoad(t *testing.T) {
 							{
 								Step: &bbModels.ExecutionUnitRef{
 									ExecutionUnit: &bbModels.ExecutionUnit{
-										Name: "Install and build",
+										Name: "merge test",
 										Script: []bbModels.Script{
 											{
 												String:        "yarn build",
@@ -478,7 +478,7 @@ func TestLoad(t *testing.T) {
 											},
 										},
 									},
-									FileReference: testutils.CreateFileReference(20, 9, 21, 28),
+									FileReference: testutils.CreateFileReference(20, 9, 22, 27, true),
 								},
 							},
 						},

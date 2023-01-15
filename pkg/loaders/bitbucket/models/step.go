@@ -32,6 +32,9 @@ func (s *Step) UnmarshalYAML(node *yaml.Node) error {
 			if err := value.Decode(&step); err != nil {
 				return err
 			}
+			if isAliasStep(value) {
+				step.FileReference.IsAlias = true
+			}
 			s.Step = step
 			return nil
 		case "variables":
@@ -65,4 +68,19 @@ func parseVariables(node *yaml.Node) ([]*CustomStepVariable, error) {
 		return nil, err
 	}
 	return vars, nil
+}
+
+func isAliasStep(node *yaml.Node) bool {
+	if node.Kind == yaml.AliasNode {
+		return true
+	}
+
+	var res = false
+	loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+		if value.Kind == yaml.AliasNode {
+			res = true
+		}
+		return nil
+	}, "Step")
+	return res
 }

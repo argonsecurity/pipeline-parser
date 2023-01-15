@@ -52,4 +52,5 @@ type FileLocation struct {
 type FileReference struct {
 	StartRef *FileLocation `json:"start_ref,omitempty"`
 	EndRef   *FileLocation `json:"end_ref,omitempty"`
+	IsAlias  bool          `json:"is_alias,omitempty"`
 }
