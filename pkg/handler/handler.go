@@ -33,7 +33,7 @@ func Handle(data []byte, platform consts.Platform) (*models.Pipeline, error) {
 	case consts.AzurePlatform:
 		pipeline, err = handle[azureModels.Pipeline](data, &AzureHandler{})
 	case consts.BitBucketPlatform:
-		pipeline, err = handle[bitbucketModels.Pipeline](data, &BitBucketHandler{})
+		pipeline, err = handle[bitbucketModels.Pipeline](data, &BitbucketHandler{})
 	default:
 		return nil, consts.NewErrInvalidPlatform(platform)
 	}

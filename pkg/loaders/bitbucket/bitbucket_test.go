@@ -23,7 +23,9 @@ func TestLoad(t *testing.T) {
 			filename: "../../../test/fixtures/bitbucket/parallel-steps.yml",
 			expectedPipeline: &bbModels.Pipeline{
 				Image: &bbModels.Image{
-					Name: "node:16",
+					ImageData: &bbModels.ImageData{
+						Name: utils.GetPtr("node:16"),
+					},
 				},
 				Pipelines: &bbModels.BuildPipelines{
 					Default: []*bbModels.Step{
@@ -83,7 +85,9 @@ func TestLoad(t *testing.T) {
 			filename: "../../../test/fixtures/bitbucket/sync-steps.yml",
 			expectedPipeline: &bbModels.Pipeline{
 				Image: &bbModels.Image{
-					Name: "node:16",
+					ImageData: &bbModels.ImageData{
+						Name: utils.GetPtr("node:16"),
+					},
 				},
 				Pipelines: &bbModels.BuildPipelines{
 					PullRequests: &bbModels.StepMap{
@@ -141,7 +145,9 @@ func TestLoad(t *testing.T) {
 			filename: "../../../test/fixtures/bitbucket/multiple-pipelines-types.yml",
 			expectedPipeline: &bbModels.Pipeline{
 				Image: &bbModels.Image{
-					Name: "node:16",
+					ImageData: &bbModels.ImageData{
+						Name: utils.GetPtr("node:16"),
+					},
 				},
 				Pipelines: &bbModels.BuildPipelines{
 					Custom: &bbModels.StepMap{
@@ -214,7 +220,9 @@ func TestLoad(t *testing.T) {
 			filename: "../../../test/fixtures/bitbucket/image.yml",
 			expectedPipeline: &bbModels.Pipeline{
 				Image: &bbModels.Image{
-					Name: "node:16",
+					ImageData: &bbModels.ImageData{
+						Name: utils.GetPtr("node:16"),
+					},
 				},
 				Pipelines: &bbModels.BuildPipelines{
 					Default: []*bbModels.Step{
@@ -222,7 +230,7 @@ func TestLoad(t *testing.T) {
 							Step: &bbModels.ExecutionUnitRef{
 								ExecutionUnit: &bbModels.ExecutionUnit{
 									Image: &bbModels.Image{
-										ImageWithCustomUser: &bbModels.ImageWithCustomUser{
+										ImageData: &bbModels.ImageData{
 											Name:     utils.GetPtr("node:16"),
 											Email:    utils.GetPtr("test@test.com"),
 											Username: utils.GetPtr("test"),
@@ -264,7 +272,9 @@ func TestLoad(t *testing.T) {
 						"service": {
 							Memory: utils.GetPtr(int64(128)),
 							Image: &bbModels.Image{
-								Name: "node:16",
+								ImageData: &bbModels.ImageData{
+									Name: utils.GetPtr("node:16"),
+								},
 							},
 							Variables: &bbModels.EnvironmentVariablesRef{
 								EnvironmentVariables: models.EnvironmentVariables{

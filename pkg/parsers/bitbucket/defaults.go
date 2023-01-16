@@ -25,16 +25,11 @@ func parsePipelineDefaults(pipeline *bitbucketModels.Pipeline) *models.Defaults 
 }
 
 func parseRunner(pipeline *bitbucketModels.Pipeline) *models.Runner {
-	if pipeline.Image != nil {
+	if pipeline.Image != nil && pipeline.Image.ImageData != nil {
 		runner := &models.Runner{
 			DockerMetadata: &models.DockerMetadata{
-				Image: &pipeline.Image.Name,
+				Image: pipeline.Image.ImageData.Name,
 			},
-		}
-		if pipeline.Image.ImageWithCustomUser != nil {
-			runner.DockerMetadata = &models.DockerMetadata{
-				Image: pipeline.Image.ImageWithCustomUser.Name,
-			}
 		}
 
 		return runner

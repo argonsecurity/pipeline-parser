@@ -8,12 +8,12 @@ import (
 	bitbucketParser "github.com/argonsecurity/pipeline-parser/pkg/parsers/bitbucket"
 )
 
-type BitBucketHandler struct{}
+type BitbucketHandler struct{}
 
-func (g *BitBucketHandler) GetLoader() loaders.Loader[bitbucketModels.Pipeline] {
+func (g *BitbucketHandler) GetLoader() loaders.Loader[bitbucketModels.Pipeline] {
 	return &bitbucketLoader.BitbucketLoader{}
 }
 
-func (g *BitBucketHandler) GetParser() parsers.Parser[bitbucketModels.Pipeline] {
+func (g *BitbucketHandler) GetParser() parsers.Parser[bitbucketModels.Pipeline] {
 	return &bitbucketParser.BitbucketParser{}
 }

@@ -204,7 +204,9 @@ func TestParse(t *testing.T) {
 			name: "Pipeline with options and definitions",
 			bitbucketPipeline: &bbModels.Pipeline{
 				Image: &bbModels.Image{
-					Name: "node:8",
+					ImageData: &bbModels.ImageData{
+						Name: utils.GetPtr("node:8"),
+					},
 				},
 				Options: &bbModels.GlobalSettings{
 					Docker:  utils.GetPtr(true),
