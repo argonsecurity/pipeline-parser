@@ -25,11 +25,11 @@ func (a *Artifacts) UnmarshalYAML(node *yaml.Node) error {
 		return nil
 	}
 	if node.Kind == yaml.MappingNode {
-		var sharedStepFiles *SharedStepFiles
+		var sharedStepFiles SharedStepFiles
 		if err := node.Decode(&sharedStepFiles); err != nil {
 			return err
 		}
-		a.SharedStepFiles = sharedStepFiles
+		a.SharedStepFiles = &sharedStepFiles
 		return nil
 	}
 	return nil

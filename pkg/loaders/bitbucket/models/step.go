@@ -51,15 +51,18 @@ func (s *Step) UnmarshalYAML(node *yaml.Node) error {
 
 func (sm *StepMap) UnmarshalYAML(node *yaml.Node) error {
 	var stepMap = make(map[string][]*Step)
-	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+	if err := loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		var steps []*Step
 		if err := loadersUtils.ParseSequenceOrOne(value, &steps); err != nil {
 			return err
 		}
 		stepMap[key] = steps
-		*sm = stepMap
 		return nil
-	}, "StepMap")
+	}, "StepMap"); err != nil {
+		return err
+	}
+	*sm = stepMap
+	return nil
 }
 
 func parseVariables(node *yaml.Node) ([]*CustomStepVariable, error) {

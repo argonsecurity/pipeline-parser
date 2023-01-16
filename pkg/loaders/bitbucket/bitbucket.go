@@ -7,7 +7,7 @@ import (
 
 type BitbucketLoader struct{}
 
-func (g *BitbucketLoader) Load(data []byte) (*models.Pipeline, error) {
+func (b *BitbucketLoader) Load(data []byte) (*models.Pipeline, error) {
 	pipeline := &models.Pipeline{}
 	err := yaml.Unmarshal(data, pipeline)
 	return pipeline, err
