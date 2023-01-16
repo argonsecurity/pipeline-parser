@@ -85,7 +85,7 @@ func parseStep(step *bitbucketModels.Step) []*models.Step {
 
 func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef) *models.Step {
 	var step models.Step
-	step.Name = &executionUnitRef.ExecutionUnit.Name
+	step.Name = executionUnitRef.ExecutionUnit.Name
 	step.FileReference = executionUnitRef.FileReference
 	if executionUnitRef.ExecutionUnit.MaxTime != nil {
 		var timeout int = int(*executionUnitRef.ExecutionUnit.MaxTime)
@@ -114,7 +114,7 @@ func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef
 	return &step
 }
 
-func parseScript(scripts []bitbucketModels.Script) *models.Shell {
+func parseScript(scripts []*bitbucketModels.Script) *models.Shell {
 	if scripts == nil {
 		return nil
 	}
@@ -122,11 +122,13 @@ func parseScript(scripts []bitbucketModels.Script) *models.Shell {
 	var shell models.Shell
 	var scriptString string
 	for _, script := range scripts {
-		if script.String != "" {
-			scriptString += addScriptLine(script.String)
-		}
-		if (script.PipeToExecute) != nil {
-			scriptString += addScriptLine(script.PipeToExecute.Pipe)
+		if script != nil {
+			if script.String != nil {
+				scriptString += addScriptLine(*script.String)
+			}
+			if (script.PipeToExecute) != nil {
+				scriptString += addScriptLine(*script.PipeToExecute.Pipe)
+			}
 		}
 	}
 	shell.Script = &scriptString

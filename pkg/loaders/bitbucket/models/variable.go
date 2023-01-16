@@ -9,7 +9,7 @@ import (
 type CustomStepVariable struct {
 	Name          *string  `yaml:"name,omitempty"` // Name of a variable for the custom pipeline
 	Default       *string  `yaml:"default,omitempty"`
-	AllowedValues []string `yaml:"allowed-values,omitempty"`
+	AllowedValues []*string `yaml:"allowed-values,omitempty"`
 	FileReference *models.FileReference
 }
 
@@ -18,7 +18,7 @@ func (v *CustomStepVariable) UnmarshalYAML(node *yaml.Node) error {
 	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		switch key {
 		case "allowed-values":
-			var items []string
+			var items []*string
 			if err := loadersUtils.ParseSequenceOrOne(value, &items); err != nil {
 				return err
 			}

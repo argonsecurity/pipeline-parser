@@ -1,3 +1,3 @@
 package models
 
-type Caches map[string]string
+type Caches map[string]*string

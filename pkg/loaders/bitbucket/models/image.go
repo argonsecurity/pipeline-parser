@@ -11,7 +11,7 @@ type Image struct {
 }
 
 type ImageWithCustomUser struct {
-	Name      string `yaml:"name"`
+	Name      *string `yaml:"name"`
 	RunAsUser *int64  `yaml:"run-as-user,omitempty"`
 	Email     *string `yaml:"email,omitempty"`    // Email to use to fetch the Docker image
 	Password  *string `yaml:"password,omitempty"` // Password to use to fetch the Docker image
@@ -20,8 +20,8 @@ type ImageWithCustomUser struct {
 }
 
 type Aws struct {
-	AccessKey string `yaml:"access-key"` // AWS Access Key
-	SecretKey string `yaml:"secret-key"` // AWS Secret Key
+	AccessKey *string `yaml:"access-key"` // AWS Access Key
+	SecretKey *string `yaml:"secret-key"` // AWS Secret Key
 }
 
 func (i *Image) UnmarshalYAML(node *yaml.Node) error {

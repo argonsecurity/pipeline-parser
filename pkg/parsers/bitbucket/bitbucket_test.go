@@ -31,17 +31,17 @@ func TestParse(t *testing.T) {
 								{
 									Step: &bbModels.ExecutionUnitRef{
 										ExecutionUnit: &bbModels.ExecutionUnit{
-											Name: "Build and Test",
-											Caches: []string{
-												"node",
+											Name: utils.GetPtr("Build and Test"),
+											Caches: []*string{
+												utils.GetPtr("node"),
 											},
-											Script: []bbModels.Script{
+											Script: []*bbModels.Script{
 												{
-													String:        "npm install",
+													String:        utils.GetPtr("npm install"),
 													FileReference: testutils.CreateFileReference(11, 17, 11, 28),
 												},
 												{
-													String:        "npm test",
+													String:        utils.GetPtr("npm test"),
 													FileReference: testutils.CreateFileReference(12, 17, 12, 25),
 												},
 											},
@@ -52,17 +52,17 @@ func TestParse(t *testing.T) {
 								{
 									Step: &bbModels.ExecutionUnitRef{
 										ExecutionUnit: &bbModels.ExecutionUnit{
-											Name: "Code linting",
-											Caches: []string{
-												"node",
+											Name: utils.GetPtr("Code linting"),
+											Caches: []*string{
+												utils.GetPtr("node"),
 											},
-											Script: []bbModels.Script{
+											Script: []*bbModels.Script{
 												{
-													String:        "npm install eslint",
+													String:        utils.GetPtr("npm install eslint"),
 													FileReference: testutils.CreateFileReference(16, 17, 16, 35),
 												},
 												{
-													String:        "npx eslint .",
+													String:        utils.GetPtr("npx eslint ."),
 													FileReference: testutils.CreateFileReference(17, 17, 17, 29),
 												},
 											},
@@ -111,14 +111,14 @@ func TestParse(t *testing.T) {
 							{
 								Step: &bbModels.ExecutionUnitRef{
 									ExecutionUnit: &bbModels.ExecutionUnit{
-										Name: "Build and Test",
-										Script: []bbModels.Script{
+										Name: utils.GetPtr("Build and Test"),
+										Script: []*bbModels.Script{
 											{
-												String:        "npm install",
+												String:        utils.GetPtr("npm install"),
 												FileReference: testutils.CreateFileReference(11, 17, 11, 28),
 											},
 											{
-												String:        "npm test",
+												String:        utils.GetPtr("npm test"),
 												FileReference: testutils.CreateFileReference(12, 17, 12, 25),
 											},
 										},
@@ -129,10 +129,10 @@ func TestParse(t *testing.T) {
 							{
 								Step: &bbModels.ExecutionUnitRef{
 									ExecutionUnit: &bbModels.ExecutionUnit{
-										Name: "Deploy",
-										Script: []bbModels.Script{
+										Name: utils.GetPtr("Deploy"),
+										Script: []*bbModels.Script{
 											{
-												String:        "deploy.sh",
+												String:        utils.GetPtr("deploy.sh"),
 												FileReference: testutils.CreateFileReference(11, 17, 11, 28),
 											},
 										},
@@ -145,10 +145,10 @@ func TestParse(t *testing.T) {
 							{
 								Step: &bbModels.ExecutionUnitRef{
 									ExecutionUnit: &bbModels.ExecutionUnit{
-										Name: "Test",
-										Script: []bbModels.Script{
+										Name: utils.GetPtr("Test"),
+										Script: []*bbModels.Script{
 											{
-												String:        "npm test",
+												String:        utils.GetPtr("npm test"),
 												FileReference: testutils.CreateFileReference(12, 17, 12, 25),
 											},
 										},
@@ -216,12 +216,12 @@ func TestParse(t *testing.T) {
 						{
 							Step: &bbModels.ExecutionUnitRef{
 								ExecutionUnit: &bbModels.ExecutionUnit{
-									Name: "Build and Test",
-									Script: []bbModels.Script{
+									Name: utils.GetPtr("Build and Test"),
+									Script: []*bbModels.Script{
 										{
 											PipeToExecute: &bbModels.PipeToExecute{
-												Pipe: "npm install",
-												Variables: bbModels.EnvironmentVariablesRef{
+												Pipe: utils.GetPtr("npm install"),
+												Variables: &bbModels.EnvironmentVariablesRef{
 													EnvironmentVariables: models.EnvironmentVariables{
 														"NPM_TOKEN": "secret",
 													},
@@ -243,12 +243,12 @@ func TestParse(t *testing.T) {
 							{
 								Step: &bbModels.ExecutionUnitRef{
 									ExecutionUnit: &bbModels.ExecutionUnit{
-										Name: "Build and Test",
-										Script: []bbModels.Script{
+										Name: utils.GetPtr("Build and Test"),
+										Script: []*bbModels.Script{
 											{
 												PipeToExecute: &bbModels.PipeToExecute{
-													Pipe: "npm install",
-													Variables: bbModels.EnvironmentVariablesRef{
+													Pipe: utils.GetPtr("npm install"),
+													Variables: &bbModels.EnvironmentVariablesRef{
 														EnvironmentVariables: models.EnvironmentVariables{
 															"NPM_TOKEN": "secret",
 														},

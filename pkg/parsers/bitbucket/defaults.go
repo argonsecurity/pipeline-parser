@@ -33,7 +33,7 @@ func parseRunner(pipeline *bitbucketModels.Pipeline) *models.Runner {
 		}
 		if pipeline.Image.ImageWithCustomUser != nil {
 			runner.DockerMetadata = &models.DockerMetadata{
-				Image: &pipeline.Image.ImageWithCustomUser.Name,
+				Image: pipeline.Image.ImageWithCustomUser.Name,
 			}
 		}
 

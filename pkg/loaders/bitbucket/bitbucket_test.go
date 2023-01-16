@@ -7,12 +7,9 @@ import (
 	bbModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/bitbucket/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
+	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/r3labs/diff/v3"
 )
-
-func Ptr[T any](v T) *T {
-	return &v
-}
 
 func TestLoad(t *testing.T) {
 	testCases := []struct {
@@ -35,17 +32,17 @@ func TestLoad(t *testing.T) {
 								{
 									Step: &bbModels.ExecutionUnitRef{
 										ExecutionUnit: &bbModels.ExecutionUnit{
-											Name: "Build and Test",
-											Caches: []string{
-												"node",
+											Name: utils.GetPtr("Build and Test"),
+											Caches: []*string{
+												utils.GetPtr("node"),
 											},
-											Script: []bbModels.Script{
+											Script: []*bbModels.Script{
 												{
-													String:        "npm install",
+													String:        utils.GetPtr("npm install"),
 													FileReference: testutils.CreateFileReference(11, 17, 11, 28),
 												},
 												{
-													String:        "npm test",
+													String:        utils.GetPtr("npm test"),
 													FileReference: testutils.CreateFileReference(12, 17, 12, 25),
 												},
 											},
@@ -56,17 +53,17 @@ func TestLoad(t *testing.T) {
 								{
 									Step: &bbModels.ExecutionUnitRef{
 										ExecutionUnit: &bbModels.ExecutionUnit{
-											Name: "Code linting",
-											Caches: []string{
-												"node",
+											Name: utils.GetPtr("Code linting"),
+											Caches: []*string{
+												utils.GetPtr("node"),
 											},
-											Script: []bbModels.Script{
+											Script: []*bbModels.Script{
 												{
-													String:        "npm install eslint",
+													String:        utils.GetPtr("npm install eslint"),
 													FileReference: testutils.CreateFileReference(16, 17, 16, 35),
 												},
 												{
-													String:        "npx eslint .",
+													String:        utils.GetPtr("npx eslint ."),
 													FileReference: testutils.CreateFileReference(17, 17, 17, 29),
 												},
 											},
@@ -94,17 +91,17 @@ func TestLoad(t *testing.T) {
 							{
 								Step: &bbModels.ExecutionUnitRef{
 									ExecutionUnit: &bbModels.ExecutionUnit{
-										Name: "Build and Test",
-										Caches: []string{
-											"node",
+										Name: utils.GetPtr("Build and Test"),
+										Caches: []*string{
+											utils.GetPtr("node"),
 										},
-										Script: []bbModels.Script{
+										Script: []*bbModels.Script{
 											{
-												String:        "npm install",
+												String:        utils.GetPtr("npm install"),
 												FileReference: testutils.CreateFileReference(11, 15, 11, 26),
 											},
 											{
-												String:        "npm test",
+												String:        utils.GetPtr("npm test"),
 												FileReference: testutils.CreateFileReference(12, 15, 12, 23),
 											},
 										},
@@ -115,17 +112,17 @@ func TestLoad(t *testing.T) {
 							{
 								Step: &bbModels.ExecutionUnitRef{
 									ExecutionUnit: &bbModels.ExecutionUnit{
-										Name: "Code linting",
-										Caches: []string{
-											"node",
+										Name: utils.GetPtr("Code linting"),
+										Caches: []*string{
+											utils.GetPtr("node"),
 										},
-										Script: []bbModels.Script{
+										Script: []*bbModels.Script{
 											{
-												String:        "npm install eslint",
+												String:        utils.GetPtr("npm install eslint"),
 												FileReference: testutils.CreateFileReference(16, 15, 16, 33),
 											},
 											{
-												String:        "npx eslint .",
+												String:        utils.GetPtr("npx eslint ."),
 												FileReference: testutils.CreateFileReference(17, 15, 17, 27),
 											},
 										},
@@ -152,13 +149,13 @@ func TestLoad(t *testing.T) {
 							{
 								Step: &bbModels.ExecutionUnitRef{
 									ExecutionUnit: &bbModels.ExecutionUnit{
-										Name: "Notify Teams",
-										Caches: []string{
-											"node",
+										Name: utils.GetPtr("Notify Teams"),
+										Caches: []*string{
+											utils.GetPtr("node"),
 										},
-										Script: []bbModels.Script{
+										Script: []*bbModels.Script{
 											{
-												String:        "npx notify -s \"deployment\"",
+												String:        utils.GetPtr("npx notify -s \"deployment\""),
 												FileReference: testutils.CreateFileReference(11, 15, 11, 41),
 											},
 										},
@@ -173,7 +170,7 @@ func TestLoad(t *testing.T) {
 							{
 								Step: &bbModels.ExecutionUnitRef{
 									ExecutionUnit: &bbModels.ExecutionUnit{
-										Name: "step 1",
+										Name: utils.GetPtr("step 1"),
 									},
 									FileReference: testutils.CreateFileReference(14, 9, 15, 23),
 								},
@@ -181,7 +178,7 @@ func TestLoad(t *testing.T) {
 							{
 								Step: &bbModels.ExecutionUnitRef{
 									ExecutionUnit: &bbModels.ExecutionUnit{
-										Name: "step 2",
+										Name: utils.GetPtr("step 2"),
 									},
 									FileReference: testutils.CreateFileReference(16, 9, 17, 23),
 								},
@@ -191,7 +188,7 @@ func TestLoad(t *testing.T) {
 									{
 										Step: &bbModels.ExecutionUnitRef{
 											ExecutionUnit: &bbModels.ExecutionUnit{
-												Name: "step 3",
+												Name: utils.GetPtr("step 3"),
 											},
 											FileReference: testutils.CreateFileReference(20, 15, 20, 27),
 										},
@@ -199,7 +196,7 @@ func TestLoad(t *testing.T) {
 									{
 										Step: &bbModels.ExecutionUnitRef{
 											ExecutionUnit: &bbModels.ExecutionUnit{
-												Name: "step 4",
+												Name: utils.GetPtr("step 4"),
 											},
 											FileReference: testutils.CreateFileReference(22, 15, 22, 27),
 										},
@@ -226,13 +223,13 @@ func TestLoad(t *testing.T) {
 								ExecutionUnit: &bbModels.ExecutionUnit{
 									Image: &bbModels.Image{
 										ImageWithCustomUser: &bbModels.ImageWithCustomUser{
-											Name:     "node:16",
-											Email:    Ptr("test@test.com"),
-											Username: Ptr("test"),
-											Password: Ptr("test"),
+											Name:     utils.GetPtr("node:16"),
+											Email:    utils.GetPtr("test@test.com"),
+											Username: utils.GetPtr("test"),
+											Password: utils.GetPtr("test"),
 											Aws: &bbModels.Aws{
-												AccessKey: "123456",
-												SecretKey: "7891011",
+												AccessKey: utils.GetPtr("123456"),
+												SecretKey: utils.GetPtr("7891011"),
 											},
 										},
 									},
@@ -251,21 +248,21 @@ func TestLoad(t *testing.T) {
 			expectedPipeline: &bbModels.Pipeline{
 				Clone: &bbModels.Clone{
 					Depth:   1,
-					LFS:     Ptr(true),
-					Enabled: Ptr(true),
+					LFS:     utils.GetPtr(true),
+					Enabled: utils.GetPtr(true),
 				},
 				Options: &bbModels.GlobalSettings{
-					MaxTime: Ptr(int64(30)),
-					Docker:  Ptr(true),
-					Size:    Ptr(bbModels.X1),
+					MaxTime: utils.GetPtr(int64(30)),
+					Docker:  utils.GetPtr(true),
+					Size:    utils.GetPtr(bbModels.X1),
 				},
 				Definitions: &bbModels.Definitions{
 					Caches: &bbModels.Caches{
-						"custom-npm": "node_modules",
+						"custom-npm": utils.GetPtr("node_modules"),
 					},
 					Services: map[string]*bbModels.Service{
 						"service": {
-							Memory: Ptr(int64(128)),
+							Memory: utils.GetPtr(int64(128)),
 							Image: &bbModels.Image{
 								Name: "node:16",
 							},
@@ -291,22 +288,22 @@ func TestLoad(t *testing.T) {
 						{
 							Step: &bbModels.ExecutionUnitRef{
 								ExecutionUnit: &bbModels.ExecutionUnit{
-									Name: "scripts step",
-									Script: []bbModels.Script{
+									Name: utils.GetPtr("scripts step"),
+									Script: []*bbModels.Script{
 										{
-											String:        "echo \"hello world\"",
+											String:        utils.GetPtr("echo \"hello world\""),
 											FileReference: testutils.CreateFileReference(6, 13, 6, 31),
 										},
 									},
-									AfterScript: []bbModels.Script{
+									AfterScript: []*bbModels.Script{
 										{
-											String:        "echo \"goodbye world\"",
+											String:        utils.GetPtr("echo \"goodbye world\""),
 											FileReference: testutils.CreateFileReference(8, 13, 8, 33),
 										},
 										{
 											PipeToExecute: &bbModels.PipeToExecute{
-												Pipe: "notify",
-												Variables: bbModels.EnvironmentVariablesRef{
+												Pipe: utils.GetPtr("notify"),
+												Variables: &bbModels.EnvironmentVariablesRef{
 													EnvironmentVariables: models.EnvironmentVariables{
 														"FOO": "bar",
 													},
@@ -322,9 +319,9 @@ func TestLoad(t *testing.T) {
 						{
 							Step: &bbModels.ExecutionUnitRef{
 								ExecutionUnit: &bbModels.ExecutionUnit{
-									Name: "artifacts step",
-									Caches: []string{
-										"package.json",
+									Name: utils.GetPtr("artifacts step"),
+									Caches: []*string{
+										utils.GetPtr("package.json"),
 									},
 								},
 								FileReference: testutils.CreateFileReference(12, 7, 15, 25),
@@ -333,13 +330,13 @@ func TestLoad(t *testing.T) {
 						{
 							Step: &bbModels.ExecutionUnitRef{
 								ExecutionUnit: &bbModels.ExecutionUnit{
-									Name: "shared artifact step",
+									Name: utils.GetPtr("shared artifact step"),
 									Artifacts: &bbModels.Artifacts{
 										SharedStepFiles: &bbModels.SharedStepFiles{
-											Download: Ptr(false),
-											Paths: []string{
-												"dist/*",
-												"package-lock.json",
+											Download: utils.GetPtr(false),
+											Paths: []*string{
+												utils.GetPtr("dist/*"),
+												utils.GetPtr("package-lock.json"),
 											},
 										},
 									},
@@ -352,8 +349,8 @@ func TestLoad(t *testing.T) {
 								{
 									Step: &bbModels.ExecutionUnitRef{
 										ExecutionUnit: &bbModels.ExecutionUnit{
-											Name:    "parallel step 1",
-											Trigger: Ptr(bbModels.MANUAL),
+											Name:    utils.GetPtr("parallel step 1"),
+											Trigger: utils.GetPtr(bbModels.MANUAL),
 										},
 										FileReference: testutils.CreateFileReference(25, 13, 26, 28),
 									},
@@ -361,8 +358,8 @@ func TestLoad(t *testing.T) {
 								{
 									Step: &bbModels.ExecutionUnitRef{
 										ExecutionUnit: &bbModels.ExecutionUnit{
-											Name:    "parallel step 2",
-											Trigger: Ptr(bbModels.AUTOMATIC),
+											Name:    utils.GetPtr("parallel step 2"),
+											Trigger: utils.GetPtr(bbModels.AUTOMATIC),
 										},
 										FileReference: testutils.CreateFileReference(28, 13, 29, 31),
 									},
@@ -377,21 +374,21 @@ func TestLoad(t *testing.T) {
 							{
 								Variables: []*bbModels.CustomStepVariable{
 									{
-										Name:          Ptr("Username"),
+										Name:          utils.GetPtr("Username"),
 										FileReference: testutils.CreateFileReference(34, 13, 34, 27),
 									},
 									{
-										Name:          Ptr("Role"),
-										Default:       Ptr("admin"),
+										Name:          utils.GetPtr("Role"),
+										Default:       utils.GetPtr("admin"),
 										FileReference: testutils.CreateFileReference(35, 13, 36, 27),
 									},
 									{
-										Name:    Ptr("Region"),
-										Default: Ptr("ap-southeast-2"),
-										AllowedValues: []string{
-											"ap-southeast-2",
-											"us-east-1",
-											"us-west-2",
+										Name:    utils.GetPtr("Region"),
+										Default: utils.GetPtr("ap-southeast-2"),
+										AllowedValues: []*string{
+											utils.GetPtr("ap-southeast-2"),
+											utils.GetPtr("us-east-1"),
+											utils.GetPtr("us-west-2"),
 										},
 										FileReference: testutils.CreateFileReference(37, 13, 42, 26),
 									},
@@ -409,27 +406,27 @@ func TestLoad(t *testing.T) {
 			expectedPipeline: &bbModels.Pipeline{
 				Definitions: &bbModels.Definitions{
 					Caches: &bbModels.Caches{
-						"cypress": "/root/.cache/Cypress",
+						"cypress": utils.GetPtr("/root/.cache/Cypress"),
 					},
 					Services: map[string]*bbModels.Service{
 						"docker": {
-							Memory: Ptr(int64(2048)),
+							Memory: utils.GetPtr(int64(2048)),
 						},
 					},
 					Steps: []*bbModels.Step{
 						{
 							Step: &bbModels.ExecutionUnitRef{
 								ExecutionUnit: &bbModels.ExecutionUnit{
-									Name: "Install and build",
-									Script: []bbModels.Script{
+									Name: utils.GetPtr("Install and build"),
+									Script: []*bbModels.Script{
 										{
-											String:        "yarn build",
+											String:        utils.GetPtr("yarn build"),
 											FileReference: testutils.CreateFileReference(11, 13, 11, 23),
 										},
 									},
 									Artifacts: &bbModels.Artifacts{
-										Paths: []string{
-											"dist/**",
+										Paths: []*string{
+											utils.GetPtr("dist/**"),
 										},
 									},
 								},
@@ -444,16 +441,16 @@ func TestLoad(t *testing.T) {
 							{
 								Step: &bbModels.ExecutionUnitRef{
 									ExecutionUnit: &bbModels.ExecutionUnit{
-										Name: "Install and build",
-										Script: []bbModels.Script{
+										Name: utils.GetPtr("Install and build"),
+										Script: []*bbModels.Script{
 											{
-												String:        "yarn build",
+												String:        utils.GetPtr("yarn build"),
 												FileReference: testutils.CreateFileReference(11, 13, 11, 23),
 											},
 										},
 										Artifacts: &bbModels.Artifacts{
-											Paths: []string{
-												"dist/**",
+											Paths: []*string{
+												utils.GetPtr("dist/**"),
 											},
 										},
 									},
@@ -465,16 +462,16 @@ func TestLoad(t *testing.T) {
 							{
 								Step: &bbModels.ExecutionUnitRef{
 									ExecutionUnit: &bbModels.ExecutionUnit{
-										Name: "merge test",
-										Script: []bbModels.Script{
+										Name: utils.GetPtr("merge test"),
+										Script: []*bbModels.Script{
 											{
-												String:        "yarn build",
+												String:        utils.GetPtr("yarn build"),
 												FileReference: testutils.CreateFileReference(11, 13, 11, 23),
 											},
 										},
 										Artifacts: &bbModels.Artifacts{
-											Paths: []string{
-												"dist/**",
+											Paths: []*string{
+												utils.GetPtr("dist/**"),
 											},
 										},
 									},
