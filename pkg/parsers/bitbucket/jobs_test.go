@@ -1,0 +1,226 @@
+package bitbucket
+
+import (
+	"testing"
+
+	bbModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/bitbucket/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
+	"github.com/argonsecurity/pipeline-parser/pkg/utils"
+)
+
+func TestJobsParse(t *testing.T) {
+	testCases := []struct {
+		name              string
+		bitbucketPipeline *bbModels.Pipeline
+		expectedJobs      []*models.Job
+	}{
+		{
+			name:              "Pipeline is nil",
+			bitbucketPipeline: nil,
+			expectedJobs:      nil,
+		},
+		{
+			name: "Pipeline has no jobs",
+			bitbucketPipeline: &bbModels.Pipeline{
+				Image: &bbModels.Image{
+					ImageData: &bbModels.ImageData{
+						Name: utils.GetPtr("node:10.15.3"),
+					},
+				},
+			},
+			expectedJobs: nil,
+		},
+		{
+			name: "Pipeline has default job",
+			bitbucketPipeline: &bbModels.Pipeline{
+				Pipelines: &bbModels.BuildPipelines{
+					Default: []*bbModels.Step{
+						{
+							Step: &bbModels.ExecutionUnitRef{
+								ExecutionUnit: &bbModels.ExecutionUnit{
+									Script: []*bbModels.Script{
+										{
+											String:        utils.GetPtr("echo 'hello world'"),
+											FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+										},
+									},
+								},
+								FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+							},
+						},
+					},
+				},
+			},
+			expectedJobs: []*models.Job{
+				{
+					Name: utils.GetPtr("default"),
+					Steps: []*models.Step{
+						{
+							Shell: &models.Shell{
+								Script:        utils.GetPtr("- echo 'hello world' \n"),
+								FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+							},
+							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline has pull request job",
+			bitbucketPipeline: &bbModels.Pipeline{
+				Pipelines: &bbModels.BuildPipelines{
+					PullRequests: &bbModels.StepMap{
+						"*": []*bbModels.Step{
+							{
+								Step: &bbModels.ExecutionUnitRef{
+									ExecutionUnit: &bbModels.ExecutionUnit{
+										Script: []*bbModels.Script{
+											{
+												String:        utils.GetPtr("echo 'hello world'"),
+												FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+											},
+											{
+												String:        utils.GetPtr("echo 'hello world2'"),
+												FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+											},
+										},
+									},
+									FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedJobs: []*models.Job{
+				{
+					Name: utils.GetPtr("*"),
+					Steps: []*models.Step{
+						{
+							Shell: &models.Shell{
+								Script:        utils.GetPtr("- echo 'hello world' \n- echo 'hello world2' \n"),
+								FileReference: testutils.CreateFileReference(1, 2, 7, 8),
+							},
+							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline has branch job",
+			bitbucketPipeline: &bbModels.Pipeline{
+				Pipelines: &bbModels.BuildPipelines{
+					Branches: &bbModels.StepMap{
+						"master": []*bbModels.Step{
+							{
+								Step: &bbModels.ExecutionUnitRef{
+									ExecutionUnit: &bbModels.ExecutionUnit{
+										Script: []*bbModels.Script{
+											{
+												PipeToExecute: &bbModels.PipeToExecute{
+													Pipe: utils.GetPtr("echo 'hello world'"),
+													Variables: &bbModels.EnvironmentVariablesRef{
+														EnvironmentVariables: map[string]any{
+															"key": "value",
+														},
+														FileReference: testutils.CreateFileReference(3, 4, 5, 6),
+													},
+												},
+												FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+											},
+										},
+									},
+									FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedJobs: []*models.Job{
+				{
+					Name: utils.GetPtr("master"),
+					Steps: []*models.Step{
+						{
+							Shell: &models.Shell{
+								Script:        utils.GetPtr("- echo 'hello world' \n"),
+								FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+							},
+							EnvironmentVariables: &models.EnvironmentVariablesRef{
+								EnvironmentVariables: map[string]any{
+									"key": "value",
+								},
+								FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+							},
+							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline has tag job",
+			bitbucketPipeline: &bbModels.Pipeline{
+				Pipelines: &bbModels.BuildPipelines{
+					Tags: &bbModels.StepMap{
+						"test:1.2.3": []*bbModels.Step{
+							{
+								Step: &bbModels.ExecutionUnitRef{
+									ExecutionUnit: &bbModels.ExecutionUnit{},
+									FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedJobs: []*models.Job{
+				{
+					Name: utils.GetPtr("test:1.2.3"),
+					Steps: []*models.Step{
+						{
+							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Pipeline has Custom job",
+			bitbucketPipeline: &bbModels.Pipeline{
+				Pipelines: &bbModels.BuildPipelines{
+					Custom: &bbModels.StepMap{
+						"on-push": []*bbModels.Step{
+							{
+								Step: &bbModels.ExecutionUnitRef{
+									ExecutionUnit: &bbModels.ExecutionUnit{},
+									FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedJobs: []*models.Job{
+				{
+					Name: utils.GetPtr("on-push"),
+					Steps: []*models.Step{
+						{
+							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			jobs := parseJobs(testCase.bitbucketPipeline)
+			testutils.DeepCompare(t, testCase.expectedJobs, jobs)
+		})
+	}
+}

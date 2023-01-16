@@ -6,12 +6,12 @@ const (
 	GitHubPlatform    Platform = "github"
 	GitLabPlatform    Platform = "gitlab"
 	AzurePlatform     Platform = "azure"
-	BitBucketPlatform Platform = "bitbucket"
+	BitbucketPlatform Platform = "bitbucket"
 )
 
 var Platforms = []Platform{
 	GitHubPlatform,
 	GitLabPlatform,
 	AzurePlatform,
-	BitBucketPlatform,
+	BitbucketPlatform,
 }

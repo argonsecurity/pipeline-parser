@@ -5,9 +5,9 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders"
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
+	bitbucketModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/bitbucket/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
-	bitbucketModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/bitbucket/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/parsers"
 )
@@ -32,7 +32,7 @@ func Handle(data []byte, platform consts.Platform) (*models.Pipeline, error) {
 		pipeline, err = handle[gitlabModels.GitlabCIConfiguration](data, &GitLabHandler{})
 	case consts.AzurePlatform:
 		pipeline, err = handle[azureModels.Pipeline](data, &AzureHandler{})
-	case consts.BitBucketPlatform:
+	case consts.BitbucketPlatform:
 		pipeline, err = handle[bitbucketModels.Pipeline](data, &BitbucketHandler{})
 	default:
 		return nil, consts.NewErrInvalidPlatform(platform)

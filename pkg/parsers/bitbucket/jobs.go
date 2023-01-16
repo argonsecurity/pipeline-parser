@@ -14,30 +14,32 @@ func parseJobs(pipeline *bitbucketModels.Pipeline) []*models.Job {
 
 	var jobs []*models.Job
 
-	if pipeline.Pipelines.Default != nil {
-		defaultJob := createJob("default")
-		defaultJob.Steps = parseStepArray(pipeline.Pipelines.Default, defaultJob)
-		jobs = append(jobs, defaultJob)
-	}
+	if pipeline.Pipelines != nil {
+		if pipeline.Pipelines.Default != nil {
+			defaultJob := createJob("default")
+			defaultJob.Steps = parseStepArray(pipeline.Pipelines.Default, defaultJob)
+			jobs = append(jobs, defaultJob)
+		}
 
-	if pipeline.Pipelines.PullRequests != nil {
-		jobs = append(jobs, parseJobMap(pipeline.Pipelines.PullRequests)...)
-	}
+		if pipeline.Pipelines.PullRequests != nil {
+			jobs = append(jobs, parseJobMap(pipeline.Pipelines.PullRequests)...)
+		}
 
-	if pipeline.Pipelines.Branches != nil {
-		jobs = append(jobs, parseJobMap(pipeline.Pipelines.Branches)...)
-	}
+		if pipeline.Pipelines.Branches != nil {
+			jobs = append(jobs, parseJobMap(pipeline.Pipelines.Branches)...)
+		}
 
-	if pipeline.Pipelines.Tags != nil {
-		jobs = append(jobs, parseJobMap(pipeline.Pipelines.Tags)...)
-	}
+		if pipeline.Pipelines.Tags != nil {
+			jobs = append(jobs, parseJobMap(pipeline.Pipelines.Tags)...)
+		}
 
-	if pipeline.Pipelines.Bookmarks != nil {
-		jobs = append(jobs, parseJobMap(pipeline.Pipelines.Bookmarks)...)
-	}
+		if pipeline.Pipelines.Bookmarks != nil {
+			jobs = append(jobs, parseJobMap(pipeline.Pipelines.Bookmarks)...)
+		}
 
-	if pipeline.Pipelines.Custom != nil {
-		jobs = append(jobs, parseJobMap(pipeline.Pipelines.Custom)...)
+		if pipeline.Pipelines.Custom != nil {
+			jobs = append(jobs, parseJobMap(pipeline.Pipelines.Custom)...)
+		}
 	}
 
 	return jobs
