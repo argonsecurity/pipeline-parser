@@ -18,6 +18,7 @@ Pipeline Parser is Argon's solution for parsing and analyzing pipeline files of 
 | GitHub Workflows
 | GitLab CI
 | Azure Pipelines
+| Bitbucket Pipelines
 
 ## Usage
 
@@ -59,6 +60,12 @@ pipeline-parser -p gitlab .gitlab-ci.yml
 
 ```bash
 pipeline-parser -p azure .azure-pipelines.yml
+```
+
+#### Parse Bitbucket Pipelines yaml
+
+```bash
+pipeline-parser -p bitbucket .bitbucket-pipelines.yml
 ```
 
 #### Parse multiple files in one execution
