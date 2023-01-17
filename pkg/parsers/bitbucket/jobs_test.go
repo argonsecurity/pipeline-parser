@@ -54,7 +54,7 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
-					ID:  utils.GetPtr("job-default"),
+					ID:   utils.GetPtr("job-default"),
 					Name: utils.GetPtr("default"),
 					Steps: []*models.Step{
 						{
@@ -97,7 +97,7 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
-					ID:  utils.GetPtr("job-*"),
+					ID:   utils.GetPtr("job-*"),
 					Name: utils.GetPtr("*"),
 					Steps: []*models.Step{
 						{
@@ -123,12 +123,15 @@ func TestJobsParse(t *testing.T) {
 										Script: []*bbModels.Script{
 											{
 												PipeToExecute: &bbModels.PipeToExecute{
-													Pipe: utils.GetPtr("echo 'hello world'"),
+													Pipe: &bbModels.Pipe{
+														String:        utils.GetPtr("echo 'hello world'"),
+														FileReference: testutils.CreateFileReference(3, 4, 5, 6),
+													},
 													Variables: &bbModels.EnvironmentVariablesRef{
 														EnvironmentVariables: map[string]any{
 															"key": "value",
 														},
-														FileReference: testutils.CreateFileReference(3, 4, 5, 6),
+														FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 													},
 												},
 												FileReference: testutils.CreateFileReference(1, 2, 3, 4),
@@ -144,13 +147,13 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
-					ID:  utils.GetPtr("job-master"),
+					ID:   utils.GetPtr("job-master"),
 					Name: utils.GetPtr("master"),
 					Steps: []*models.Step{
 						{
 							Shell: &models.Shell{
 								Script:        utils.GetPtr("- echo 'hello world' \n"),
-								FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+								FileReference: testutils.CreateFileReference(3, 4, 5, 6),
 							},
 							EnvironmentVariables: &models.EnvironmentVariablesRef{
 								EnvironmentVariables: map[string]any{
@@ -182,7 +185,7 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
-					ID:  utils.GetPtr("job-test:1.2.3"),
+					ID:   utils.GetPtr("job-test:1.2.3"),
 					Name: utils.GetPtr("test:1.2.3"),
 					Steps: []*models.Step{
 						{
@@ -210,7 +213,7 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
-					ID:  utils.GetPtr("job-on-push"),
+					ID:   utils.GetPtr("job-on-push"),
 					Name: utils.GetPtr("on-push"),
 					Steps: []*models.Step{
 						{

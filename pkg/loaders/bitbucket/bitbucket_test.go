@@ -312,7 +312,10 @@ func TestLoad(t *testing.T) {
 										},
 										{
 											PipeToExecute: &bbModels.PipeToExecute{
-												Pipe: utils.GetPtr("notify"),
+												Pipe: &bbModels.Pipe{
+													String:        utils.GetPtr("notify"),
+													FileReference: testutils.CreateFileReference(9, 19, 9, 25),
+												},
 												Variables: &bbModels.EnvironmentVariablesRef{
 													EnvironmentVariables: models.EnvironmentVariables{
 														"FOO": "bar",

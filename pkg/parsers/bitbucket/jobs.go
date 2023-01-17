@@ -107,12 +107,10 @@ func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef
 				for key, env := range script.PipeToExecute.Variables.EnvironmentVariables {
 					step.EnvironmentVariables.EnvironmentVariables[key] = env
 				}
-			}
-		}
-		if step.EnvironmentVariables != nil {
-			step.EnvironmentVariables.FileReference = &models.FileReference{
-				StartRef: scripts[0].FileReference.StartRef,
-				EndRef:   scripts[len(scripts)-1].FileReference.EndRef,
+				step.EnvironmentVariables.FileReference = &models.FileReference{
+					StartRef: script.PipeToExecute.Variables.FileReference.StartRef,
+					EndRef:   script.PipeToExecute.Variables.FileReference.EndRef,
+				}
 			}
 		}
 	}
@@ -132,11 +130,18 @@ func parseScript(scripts []*bitbucketModels.Script) *models.Shell {
 				scriptString += addScriptLine(*script.String)
 			}
 			if (script.PipeToExecute) != nil {
-				scriptString += addScriptLine(*script.PipeToExecute.Pipe)
+				scriptString += addScriptLine(*script.PipeToExecute.Pipe.String)
+				shell.FileReference = script.PipeToExecute.Pipe.FileReference
 			}
 		}
 	}
+
 	shell.Script = &scriptString
+	if scripts[0].PipeToExecute != nil {
+		shell.FileReference = scripts[0].PipeToExecute.Pipe.FileReference
+		return &shell
+	}
+
 	shell.FileReference = &models.FileReference{
 		StartRef: scripts[0].FileReference.StartRef,
 		EndRef:   scripts[len(scripts)-1].FileReference.EndRef,

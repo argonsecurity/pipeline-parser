@@ -229,6 +229,47 @@ func TestBitbucket(t *testing.T) {
 				},
 			},
 		},
+		{
+			Filename: "variables-pipeline.yml",
+			Expected: &models.Pipeline{
+				Defaults: &models.Defaults{
+					Runner: &models.Runner{
+						DockerMetadata: &models.DockerMetadata{
+							Image: utils.GetPtr("atlassian/default-image:3"),
+						},
+					},
+				},
+				Jobs: []*models.Job{
+					{
+						ID:   utils.GetPtr("job-master"),
+						Name: utils.GetPtr("master"),
+						Steps: []*models.Step{
+							{
+								Name: utils.GetPtr("Deploy to Production"),
+								Shell: &models.Shell{
+									Script:        utils.GetPtr("- atlassian/aws-elasticbeanstalk-deploy:1.0.2 \n"),
+									FileReference: testutils.CreateFileReference(11, 21, 11, 64),
+								},
+								EnvironmentVariables: &models.EnvironmentVariablesRef{
+									EnvironmentVariables: models.EnvironmentVariables{
+										"AWS_ACCESS_KEY_ID":     "$AWS_ACCESS_KEY_ID",
+										"AWS_SECRET_ACCESS_KEY": "$AWS_SECRET_ACCESS_KEY",
+										"AWS_DEFAULT_REGION":    "$AWS_DEFAULT_REGION",
+										"APPLICATION_NAME":      "pipes-templates-java-spring-boot-app",
+										"ENVIRONMENT_NAME":      "Production",
+										"S3_BUCKET":             "pipes-template-java-spring-boot-source",
+										"ZIP_FILE":              "application.zip",
+										"VERSION_LABEL":         "prod-0.1.$BITBUCKET_BUILD_NUMBER",
+									},
+									FileReference: testutils.CreateFileReference(12, 17, 20, 64),
+								},
+								FileReference: testutils.CreateFileReference(6, 9, 20, 64),
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	executeTestCases(t, testCases, "bitbucket", consts.BitbucketPlatform)

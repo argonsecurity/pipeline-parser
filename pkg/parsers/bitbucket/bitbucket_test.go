@@ -79,7 +79,7 @@ func TestParse(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
-						ID:  utils.GetPtr("job-default"),
+						ID:   utils.GetPtr("job-default"),
 						Name: utils.GetPtr("default"),
 						Steps: []*models.Step{
 							{
@@ -165,7 +165,7 @@ func TestParse(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
-						ID:  utils.GetPtr("job-**"),
+						ID:   utils.GetPtr("job-**"),
 						Name: utils.GetPtr("**"),
 						Steps: []*models.Step{
 							{
@@ -187,7 +187,7 @@ func TestParse(t *testing.T) {
 						},
 					},
 					{
-						ID:  utils.GetPtr("job-master"),
+						ID:   utils.GetPtr("job-master"),
 						Name: utils.GetPtr("master"),
 						Steps: []*models.Step{
 							{
@@ -225,7 +225,10 @@ func TestParse(t *testing.T) {
 									Script: []*bbModels.Script{
 										{
 											PipeToExecute: &bbModels.PipeToExecute{
-												Pipe: utils.GetPtr("npm install"),
+												Pipe: &bbModels.Pipe{
+													String:        utils.GetPtr("npm install"),
+													FileReference: testutils.CreateFileReference(7, 13, 11, 23),
+												},
 												Variables: &bbModels.EnvironmentVariablesRef{
 													EnvironmentVariables: models.EnvironmentVariables{
 														"NPM_TOKEN": "secret",
@@ -252,7 +255,10 @@ func TestParse(t *testing.T) {
 										Script: []*bbModels.Script{
 											{
 												PipeToExecute: &bbModels.PipeToExecute{
-													Pipe: utils.GetPtr("npm install"),
+													Pipe: &bbModels.Pipe{
+														String:        utils.GetPtr("npm install"),
+														FileReference: testutils.CreateFileReference(10, 17, 10, 28),
+													},
 													Variables: &bbModels.EnvironmentVariablesRef{
 														EnvironmentVariables: models.EnvironmentVariables{
 															"NPM_TOKEN": "secret",
@@ -286,20 +292,20 @@ func TestParse(t *testing.T) {
 				},
 				Jobs: []*models.Job{
 					{
-						ID:  utils.GetPtr("job-install"),
+						ID:   utils.GetPtr("job-install"),
 						Name: utils.GetPtr("install"),
 						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("Build and Test"),
 								Shell: &models.Shell{
 									Script:        utils.GetPtr("- npm install \n"),
-									FileReference: testutils.CreateFileReference(7, 13, 12, 25),
+									FileReference: testutils.CreateFileReference(10, 17, 10, 28),
 								},
 								EnvironmentVariables: &models.EnvironmentVariablesRef{
 									EnvironmentVariables: models.EnvironmentVariables{
 										"NPM_TOKEN": "secret",
 									},
-									FileReference: testutils.CreateFileReference(7, 13, 12, 25),
+									FileReference: testutils.CreateFileReference(11, 17, 11, 28),
 								},
 								FileReference: testutils.CreateAliasFileReference(8, 13, 12, 25, true),
 							},
