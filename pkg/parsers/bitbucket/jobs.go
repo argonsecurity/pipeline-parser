@@ -22,30 +22,30 @@ func parseJobs(pipeline *bitbucketModels.Pipeline) []*models.Job {
 		}
 
 		if pipeline.Pipelines.PullRequests != nil {
-			jobs = append(jobs, parseJobMap(pipeline.Pipelines.PullRequests)...)
+			jobs = append(jobs, parseStepMapToJob(pipeline.Pipelines.PullRequests)...)
 		}
 
 		if pipeline.Pipelines.Branches != nil {
-			jobs = append(jobs, parseJobMap(pipeline.Pipelines.Branches)...)
+			jobs = append(jobs, parseStepMapToJob(pipeline.Pipelines.Branches)...)
 		}
 
 		if pipeline.Pipelines.Tags != nil {
-			jobs = append(jobs, parseJobMap(pipeline.Pipelines.Tags)...)
+			jobs = append(jobs, parseStepMapToJob(pipeline.Pipelines.Tags)...)
 		}
 
 		if pipeline.Pipelines.Bookmarks != nil {
-			jobs = append(jobs, parseJobMap(pipeline.Pipelines.Bookmarks)...)
+			jobs = append(jobs, parseStepMapToJob(pipeline.Pipelines.Bookmarks)...)
 		}
 
 		if pipeline.Pipelines.Custom != nil {
-			jobs = append(jobs, parseJobMap(pipeline.Pipelines.Custom)...)
+			jobs = append(jobs, parseStepMapToJob(pipeline.Pipelines.Custom)...)
 		}
 	}
 
 	return jobs
 }
 
-func parseJobMap(jobMap *bitbucketModels.StepMap) []*models.Job {
+func parseStepMapToJob(jobMap *bitbucketModels.StepMap) []*models.Job {
 	var jobs []*models.Job
 	for jobName, steps := range *jobMap {
 		job := createJob(jobName)
@@ -72,8 +72,11 @@ func createJob(jobName string) *models.Job {
 }
 
 func parseStep(step *bitbucketModels.Step) []*models.Step {
-	var steps []*models.Step
+	if step == nil {
+		return nil
+	}
 
+	var steps []*models.Step
 	if step.Step != nil {
 		steps = append(steps, parseExecutionUnitToStep(step.Step))
 	}
@@ -88,6 +91,10 @@ func parseStep(step *bitbucketModels.Step) []*models.Step {
 }
 
 func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef) *models.Step {
+	if executionUnitRef == nil {
+		return nil
+	}
+
 	var step models.Step
 	step.Name = executionUnitRef.ExecutionUnit.Name
 	step.FileReference = executionUnitRef.FileReference
@@ -101,20 +108,25 @@ func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef
 	if step.Shell != nil { // script env vars
 		for _, script := range scripts {
 			if script.PipeToExecute != nil {
-				step.EnvironmentVariables = &models.EnvironmentVariablesRef{
-					EnvironmentVariables: make(map[string]any),
-				}
-				for key, env := range script.PipeToExecute.Variables.EnvironmentVariables {
-					step.EnvironmentVariables.EnvironmentVariables[key] = env
-				}
-				step.EnvironmentVariables.FileReference = &models.FileReference{
-					StartRef: script.PipeToExecute.Variables.FileReference.StartRef,
-					EndRef:   script.PipeToExecute.Variables.FileReference.EndRef,
-				}
+				step.EnvironmentVariables = parseEnvironmentVariables(script.PipeToExecute.Variables)
 			}
 		}
 	}
 	return &step
+}
+
+func parseEnvironmentVariables(srcEnvVars *bitbucketModels.EnvironmentVariablesRef) *models.EnvironmentVariablesRef {
+	envVars := models.EnvironmentVariablesRef{
+		EnvironmentVariables: make(map[string]any),
+	}
+	for key, env := range srcEnvVars.EnvironmentVariables {
+		envVars.EnvironmentVariables[key] = env
+	}
+	envVars.FileReference = &models.FileReference{
+		StartRef: srcEnvVars.FileReference.StartRef,
+		EndRef:   srcEnvVars.FileReference.EndRef,
+	}
+	return &envVars
 }
 
 func parseScript(scripts []*bitbucketModels.Script) *models.Shell {
@@ -124,6 +136,7 @@ func parseScript(scripts []*bitbucketModels.Script) *models.Shell {
 
 	var shell models.Shell
 	var scriptString string
+	var pipeFileReference *models.FileReference
 	for _, script := range scripts {
 		if script != nil {
 			if script.String != nil {
@@ -131,14 +144,18 @@ func parseScript(scripts []*bitbucketModels.Script) *models.Shell {
 			}
 			if (script.PipeToExecute) != nil {
 				scriptString += addScriptLine(*script.PipeToExecute.Pipe.String)
-				shell.FileReference = script.PipeToExecute.Pipe.FileReference
+				if pipeFileReference == nil {
+					pipeFileReference = script.PipeToExecute.Pipe.FileReference
+					continue
+				}
+				pipeFileReference.EndRef = script.PipeToExecute.Pipe.FileReference.EndRef
 			}
 		}
 	}
 
 	shell.Script = &scriptString
-	if scripts[0].PipeToExecute != nil {
-		shell.FileReference = scripts[0].PipeToExecute.Pipe.FileReference
+	if pipeFileReference != nil {
+		shell.FileReference = pipeFileReference
 		return &shell
 	}
 

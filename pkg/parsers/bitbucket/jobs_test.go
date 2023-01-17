@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	bbModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/bitbucket/models"
+	bitbucketModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/bitbucket/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -229,6 +230,255 @@ func TestJobsParse(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			jobs := parseJobs(testCase.bitbucketPipeline)
 			testutils.DeepCompare(t, testCase.expectedJobs, jobs)
+		})
+	}
+}
+
+func TestStepParse(t *testing.T) {
+	testCases := []struct {
+		name          string
+		bitbucketStep *bitbucketModels.Step
+		expectedStep  []*models.Step
+	}{
+		{
+			name:          "Step is nil",
+			bitbucketStep: nil,
+			expectedStep:  nil,
+		},
+		{
+			name: "single step",
+			bitbucketStep: &bbModels.Step{
+				Step: &bbModels.ExecutionUnitRef{
+					ExecutionUnit: &bbModels.ExecutionUnit{
+						Script: []*bbModels.Script{
+							{
+								String:        utils.GetPtr("echo 'hello world'"),
+								FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+							},
+						},
+					},
+					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+				},
+			},
+			expectedStep: []*models.Step{
+				{
+					Shell: &models.Shell{
+						Script:        utils.GetPtr("- echo 'hello world' \n"),
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+					},
+					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+				},
+			},
+		},
+		{
+			name: "parallel steps in step",
+			bitbucketStep: &bbModels.Step{
+				Parallel: []*bbModels.ParallelSteps{
+					{
+						Step: &bbModels.ExecutionUnitRef{
+							ExecutionUnit: &bbModels.ExecutionUnit{
+								Script: []*bbModels.Script{
+									{
+										String:        utils.GetPtr("echo 'hello world'"),
+										FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+									},
+								},
+							},
+							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+						},
+					},
+					{
+						Step: &bbModels.ExecutionUnitRef{
+							ExecutionUnit: &bbModels.ExecutionUnit{
+								Script: []*bbModels.Script{
+									{
+										String:        utils.GetPtr("echo 'goodbye world'"),
+										FileReference: testutils.CreateFileReference(4, 3, 2, 1),
+									},
+								},
+							},
+							FileReference: testutils.CreateFileReference(8, 7, 6, 5),
+						},
+					},
+				},
+			},
+			expectedStep: []*models.Step{
+				{
+					Shell: &models.Shell{
+						Script:        utils.GetPtr("- echo 'hello world' \n"),
+						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+					},
+					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+				},
+				{
+					Shell: &models.Shell{
+						Script:        utils.GetPtr("- echo 'goodbye world' \n"),
+						FileReference: testutils.CreateFileReference(4, 3, 2, 1),
+					},
+					FileReference: testutils.CreateFileReference(8, 7, 6, 5),
+				},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			step := parseStep(testCase.bitbucketStep)
+			testutils.DeepCompare(t, testCase.expectedStep, step)
+		})
+	}
+}
+
+func TestScriptParse(t *testing.T) {
+	testCases := []struct {
+		name             string
+		bitbucketScripts []*bitbucketModels.Script
+		expectedShell    *models.Shell
+	}{
+		{
+			name:             "Step is nil",
+			bitbucketScripts: nil,
+			expectedShell:    nil,
+		},
+		{
+			name: "single script",
+			bitbucketScripts: []*bbModels.Script{
+				{
+					String:        utils.GetPtr("echo 'hello world'"),
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+			},
+			expectedShell: &models.Shell{
+				Script:        utils.GetPtr("- echo 'hello world' \n"),
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+		},
+		{
+			name: "multiple scripts",
+			bitbucketScripts: []*bbModels.Script{
+				{
+					String:        utils.GetPtr("echo 'hello world'"),
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+				{
+					String:        utils.GetPtr("echo 'goodbye world'"),
+					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+				},
+			},
+			expectedShell: &models.Shell{
+				Script:        utils.GetPtr("- echo 'hello world' \n- echo 'goodbye world' \n"),
+				FileReference: testutils.CreateFileReference(1, 2, 7, 8),
+			},
+		},
+		{
+			name: "pipe script",
+			bitbucketScripts: []*bbModels.Script{
+				{
+					PipeToExecute: &bbModels.PipeToExecute{
+						Pipe: &bbModels.Pipe{
+							String:        utils.GetPtr("echo 'hello world'"),
+							FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+						},
+					},
+				},
+			},
+			expectedShell: &models.Shell{
+				Script:        utils.GetPtr("- echo 'hello world' \n"),
+				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			shell := parseScript(testCase.bitbucketScripts)
+			testutils.DeepCompare(t, testCase.expectedShell, shell)
+		})
+	}
+}
+
+func TestExecutionUnitParse(t *testing.T) {
+	testCases := []struct {
+		name             string
+		bitbucketExeUnit *bitbucketModels.ExecutionUnitRef
+		expectedStep     *models.Step
+	}{
+		// {
+		// 	name:             "Step is nil",
+		// 	bitbucketExeUnit: nil,
+		// 	expectedStep:     nil,
+		// },
+		// {
+		// 	name: "execution unit has script",
+		// 	bitbucketExeUnit: &bbModels.ExecutionUnitRef{
+		// 		ExecutionUnit: &bbModels.ExecutionUnit{
+		// 			Name: utils.GetPtr("test"),
+		// 			Script: []*bbModels.Script{
+		// 				{
+		// 					String:        utils.GetPtr("echo 'hello world'"),
+		// 					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+		// 				},
+		// 			},
+		// 		},
+		// 		FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+		// 	},
+		// 	expectedStep: &models.Step{
+		// 		Name: utils.GetPtr("test"),
+		// 		Shell: &models.Shell{
+		// 			Script:        utils.GetPtr("- echo 'hello world' \n"),
+		// 			FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+		// 		},
+		// 		FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+		// 	},
+		// },
+		{
+			name: "execution unit has pipe",
+			bitbucketExeUnit: &bbModels.ExecutionUnitRef{
+				ExecutionUnit: &bbModels.ExecutionUnit{
+					Name: utils.GetPtr("test"),
+					Script: []*bbModels.Script{
+						{
+							PipeToExecute: &bbModels.PipeToExecute{
+								Pipe: &bbModels.Pipe{
+									String:        utils.GetPtr("echo 'hello world'"),
+									FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+								},
+								Variables: &bbModels.EnvironmentVariablesRef{
+									EnvironmentVariables: models.EnvironmentVariables{
+										"key":  "value",
+										"key2": "value2",
+									},
+									FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+								},
+							},
+							FileReference: testutils.CreateFileReference(1, 2, 7, 8),
+						},
+					},
+				},
+				FileReference: testutils.CreateFileReference(9, 10, 11, 12),
+			},
+			expectedStep: &models.Step{
+				Name: utils.GetPtr("test"),
+				Shell: &models.Shell{
+					Script:        utils.GetPtr("- echo 'hello world' \n"),
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+				EnvironmentVariables: &models.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"key":  "value",
+						"key2": "value2",
+					},
+					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+				},
+				FileReference: testutils.CreateFileReference(9, 10, 11, 12),
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			step := parseExecutionUnitToStep(testCase.bitbucketExeUnit)
+			testutils.DeepCompare(t, testCase.expectedStep, step)
 		})
 	}
 }

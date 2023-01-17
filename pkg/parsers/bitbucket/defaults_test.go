@@ -80,3 +80,44 @@ func TestDefaultsParse(t *testing.T) {
 		})
 	}
 }
+
+func TestRunnerParse(t *testing.T) {
+	testCases := []struct {
+		name              string
+		bitbucketPipeline *bbModels.Pipeline
+		expectedRunner    *models.Runner
+	}{
+		{
+			name:              "Pipeline is nil",
+			bitbucketPipeline: nil,
+			expectedRunner:    nil,
+		},
+		{
+			name:              "image name is not defined",
+			bitbucketPipeline: &bbModels.Pipeline{},
+			expectedRunner:    nil,
+		},
+		{
+			name: "image name is defined",
+			bitbucketPipeline: &bbModels.Pipeline{
+				Image: &bbModels.Image{
+					ImageData: &bbModels.ImageData{
+						Name: utils.GetPtr("node:10.15.3"),
+					},
+				},
+			},
+			expectedRunner: &models.Runner{
+				DockerMetadata: &models.DockerMetadata{
+					Image: utils.GetPtr("node:10.15.3"),
+				},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			runner := parseRunner(testCase.bitbucketPipeline)
+			testutils.DeepCompare(t, testCase.expectedRunner, runner)
+		})
+	}
+}

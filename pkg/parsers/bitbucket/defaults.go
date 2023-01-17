@@ -25,6 +25,10 @@ func parsePipelineDefaults(pipeline *bitbucketModels.Pipeline) *models.Defaults 
 }
 
 func parseRunner(pipeline *bitbucketModels.Pipeline) *models.Runner {
+	if pipeline == nil {
+		return nil
+	}
+
 	if pipeline.Image != nil && pipeline.Image.ImageData != nil {
 		runner := &models.Runner{
 			DockerMetadata: &models.DockerMetadata{
