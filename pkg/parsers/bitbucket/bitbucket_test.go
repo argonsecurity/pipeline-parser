@@ -85,7 +85,7 @@ func TestParse(t *testing.T) {
 							{
 								Name: utils.GetPtr("Build and Test"),
 								Shell: &models.Shell{
-									Script:        utils.GetPtr("- npm install \n- npm test \n"),
+									Script:        utils.GetPtr("npm install\nnpm test\n"),
 									FileReference: testutils.CreateFileReference(11, 17, 12, 25),
 								},
 								FileReference: testutils.CreateFileReference(7, 13, 12, 25),
@@ -93,7 +93,7 @@ func TestParse(t *testing.T) {
 							{
 								Name: utils.GetPtr("Code linting"),
 								Shell: &models.Shell{
-									Script:        utils.GetPtr("- npm install eslint \n- npx eslint . \n"),
+									Script:        utils.GetPtr("npm install eslint\nnpx eslint .\n"),
 									FileReference: testutils.CreateFileReference(16, 17, 17, 29),
 								},
 								FileReference: testutils.CreateFileReference(14, 13, 19, 21),
@@ -171,7 +171,7 @@ func TestParse(t *testing.T) {
 							{
 								Name: utils.GetPtr("Build and Test"),
 								Shell: &models.Shell{
-									Script:        utils.GetPtr("- npm install \n- npm test \n"),
+									Script:        utils.GetPtr("npm install\nnpm test\n"),
 									FileReference: testutils.CreateFileReference(11, 17, 12, 25),
 								},
 								FileReference: testutils.CreateFileReference(7, 13, 12, 25),
@@ -179,7 +179,7 @@ func TestParse(t *testing.T) {
 							{
 								Name: utils.GetPtr("Deploy"),
 								Shell: &models.Shell{
-									Script:        utils.GetPtr("- deploy.sh \n"),
+									Script:        utils.GetPtr("deploy.sh\n"),
 									FileReference: testutils.CreateFileReference(11, 17, 11, 28),
 								},
 								FileReference: testutils.CreateFileReference(7, 13, 12, 25),
@@ -193,7 +193,7 @@ func TestParse(t *testing.T) {
 							{
 								Name: utils.GetPtr("Test"),
 								Shell: &models.Shell{
-									Script:        utils.GetPtr("- npm test \n"),
+									Script:        utils.GetPtr("npm test\n"),
 									FileReference: testutils.CreateFileReference(12, 17, 12, 25),
 								},
 								FileReference: testutils.CreateFileReference(12, 17, 12, 25),
@@ -298,7 +298,7 @@ func TestParse(t *testing.T) {
 							{
 								Name: utils.GetPtr("Build and Test"),
 								Shell: &models.Shell{
-									Script:        utils.GetPtr("- npm install \n"),
+									Script:        utils.GetPtr("npm install\n"),
 									FileReference: testutils.CreateFileReference(10, 17, 10, 28),
 								},
 								EnvironmentVariables: &models.EnvironmentVariablesRef{

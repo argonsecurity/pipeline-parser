@@ -60,7 +60,7 @@ func TestJobsParse(t *testing.T) {
 					Steps: []*models.Step{
 						{
 							Shell: &models.Shell{
-								Script:        utils.GetPtr("- echo 'hello world' \n"),
+								Script:        utils.GetPtr("echo 'hello world'\n"),
 								FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 							},
 							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
@@ -103,7 +103,7 @@ func TestJobsParse(t *testing.T) {
 					Steps: []*models.Step{
 						{
 							Shell: &models.Shell{
-								Script:        utils.GetPtr("- echo 'hello world' \n- echo 'hello world2' \n"),
+								Script:        utils.GetPtr("echo 'hello world'\necho 'hello world2'\n"),
 								FileReference: testutils.CreateFileReference(1, 2, 7, 8),
 							},
 							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
@@ -153,7 +153,7 @@ func TestJobsParse(t *testing.T) {
 					Steps: []*models.Step{
 						{
 							Shell: &models.Shell{
-								Script:        utils.GetPtr("- echo 'hello world' \n"),
+								Script:        utils.GetPtr("echo 'hello world'\n"),
 								FileReference: testutils.CreateFileReference(3, 4, 5, 6),
 							},
 							EnvironmentVariables: &models.EnvironmentVariablesRef{
@@ -263,7 +263,7 @@ func TestStepParse(t *testing.T) {
 			expectedStep: []*models.Step{
 				{
 					Shell: &models.Shell{
-						Script:        utils.GetPtr("- echo 'hello world' \n"),
+						Script:        utils.GetPtr("echo 'hello world'\n"),
 						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 					},
 					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
@@ -305,14 +305,14 @@ func TestStepParse(t *testing.T) {
 			expectedStep: []*models.Step{
 				{
 					Shell: &models.Shell{
-						Script:        utils.GetPtr("- echo 'hello world' \n"),
+						Script:        utils.GetPtr("echo 'hello world'\n"),
 						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 					},
 					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
 				},
 				{
 					Shell: &models.Shell{
-						Script:        utils.GetPtr("- echo 'goodbye world' \n"),
+						Script:        utils.GetPtr("echo 'goodbye world'\n"),
 						FileReference: testutils.CreateFileReference(4, 3, 2, 1),
 					},
 					FileReference: testutils.CreateFileReference(8, 7, 6, 5),
@@ -349,7 +349,7 @@ func TestScriptParse(t *testing.T) {
 				},
 			},
 			expectedShell: &models.Shell{
-				Script:        utils.GetPtr("- echo 'hello world' \n"),
+				Script:        utils.GetPtr("echo 'hello world'\n"),
 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 			},
 		},
@@ -366,7 +366,7 @@ func TestScriptParse(t *testing.T) {
 				},
 			},
 			expectedShell: &models.Shell{
-				Script:        utils.GetPtr("- echo 'hello world' \n- echo 'goodbye world' \n"),
+				Script:        utils.GetPtr("echo 'hello world'\necho 'goodbye world'\n"),
 				FileReference: testutils.CreateFileReference(1, 2, 7, 8),
 			},
 		},
@@ -383,7 +383,7 @@ func TestScriptParse(t *testing.T) {
 				},
 			},
 			expectedShell: &models.Shell{
-				Script:        utils.GetPtr("- echo 'hello world' \n"),
+				Script:        utils.GetPtr("echo 'hello world'\n"),
 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 			},
 		},
@@ -403,34 +403,34 @@ func TestExecutionUnitParse(t *testing.T) {
 		bitbucketExeUnit *bitbucketModels.ExecutionUnitRef
 		expectedStep     *models.Step
 	}{
-		// {
-		// 	name:             "Step is nil",
-		// 	bitbucketExeUnit: nil,
-		// 	expectedStep:     nil,
-		// },
-		// {
-		// 	name: "execution unit has script",
-		// 	bitbucketExeUnit: &bbModels.ExecutionUnitRef{
-		// 		ExecutionUnit: &bbModels.ExecutionUnit{
-		// 			Name: utils.GetPtr("test"),
-		// 			Script: []*bbModels.Script{
-		// 				{
-		// 					String:        utils.GetPtr("echo 'hello world'"),
-		// 					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
-		// 				},
-		// 			},
-		// 		},
-		// 		FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-		// 	},
-		// 	expectedStep: &models.Step{
-		// 		Name: utils.GetPtr("test"),
-		// 		Shell: &models.Shell{
-		// 			Script:        utils.GetPtr("- echo 'hello world' \n"),
-		// 			FileReference: testutils.CreateFileReference(1, 2, 3, 4),
-		// 		},
-		// 		FileReference: testutils.CreateFileReference(5, 6, 7, 8),
-		// 	},
-		// },
+		{
+			name:             "Step is nil",
+			bitbucketExeUnit: nil,
+			expectedStep:     nil,
+		},
+		{
+			name: "execution unit has script",
+			bitbucketExeUnit: &bbModels.ExecutionUnitRef{
+				ExecutionUnit: &bbModels.ExecutionUnit{
+					Name: utils.GetPtr("test"),
+					Script: []*bbModels.Script{
+						{
+							String:        utils.GetPtr("echo 'hello world'"),
+							FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+						},
+					},
+				},
+				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+			},
+			expectedStep: &models.Step{
+				Name: utils.GetPtr("test"),
+				Shell: &models.Shell{
+					Script:        utils.GetPtr("echo 'hello world'\n"),
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+				FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+			},
+		},
 		{
 			name: "execution unit has pipe",
 			bitbucketExeUnit: &bbModels.ExecutionUnitRef{
@@ -460,7 +460,7 @@ func TestExecutionUnitParse(t *testing.T) {
 			expectedStep: &models.Step{
 				Name: utils.GetPtr("test"),
 				Shell: &models.Shell{
-					Script:        utils.GetPtr("- echo 'hello world' \n"),
+					Script:        utils.GetPtr("echo 'hello world'\n"),
 					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 				},
 				EnvironmentVariables: &models.EnvironmentVariablesRef{

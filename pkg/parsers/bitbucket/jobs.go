@@ -167,5 +167,5 @@ func parseScript(scripts []*bitbucketModels.Script) *models.Shell {
 }
 
 func addScriptLine(script string) string {
-	return fmt.Sprintf("- %s \n", script)
+	return fmt.Sprintf("%s\n", script)
 }
