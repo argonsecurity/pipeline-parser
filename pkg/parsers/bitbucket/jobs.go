@@ -96,6 +96,7 @@ func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef
 		step.Timeout = &timeout
 	}
 	step.Shell = parseScript(executionUnitRef.ExecutionUnit.Script)
+	step.AfterScript = parseScript(executionUnitRef.ExecutionUnit.AfterScript)
 	var scripts = executionUnitRef.ExecutionUnit.Script
 	if step.Shell != nil { // script env vars
 		for _, script := range scripts {

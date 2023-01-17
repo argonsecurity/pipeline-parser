@@ -49,7 +49,7 @@ func TestLoad(t *testing.T) {
 												},
 											},
 										},
-										FileReference: testutils.CreateFileReference(7, 13, 12, 25),
+										FileReference: testutils.CreateFileReference(6, 11, 12, 25),
 									},
 								},
 								{
@@ -70,7 +70,7 @@ func TestLoad(t *testing.T) {
 												},
 											},
 										},
-										FileReference: testutils.CreateFileReference(14, 13, 19, 21),
+										FileReference: testutils.CreateFileReference(13, 11, 19, 21),
 									},
 								},
 							},
@@ -196,7 +196,7 @@ func TestLoad(t *testing.T) {
 											ExecutionUnit: &bbModels.ExecutionUnit{
 												Name: utils.GetPtr("step 3"),
 											},
-											FileReference: testutils.CreateFileReference(20, 15, 20, 27),
+											FileReference: testutils.CreateFileReference(19, 13, 20, 27),
 										},
 									},
 									{
@@ -204,7 +204,7 @@ func TestLoad(t *testing.T) {
 											ExecutionUnit: &bbModels.ExecutionUnit{
 												Name: utils.GetPtr("step 4"),
 											},
-											FileReference: testutils.CreateFileReference(22, 15, 22, 27),
+											FileReference: testutils.CreateFileReference(21, 13, 22, 27),
 										},
 									},
 								},
@@ -362,7 +362,7 @@ func TestLoad(t *testing.T) {
 											Name:    utils.GetPtr("parallel step 1"),
 											Trigger: utils.GetPtr(bbModels.MANUAL),
 										},
-										FileReference: testutils.CreateFileReference(25, 13, 26, 28),
+										FileReference: testutils.CreateFileReference(24, 11, 26, 28),
 									},
 								},
 								{
@@ -371,7 +371,7 @@ func TestLoad(t *testing.T) {
 											Name:    utils.GetPtr("parallel step 2"),
 											Trigger: utils.GetPtr(bbModels.AUTOMATIC),
 										},
-										FileReference: testutils.CreateFileReference(28, 13, 29, 31),
+										FileReference: testutils.CreateFileReference(27, 11, 29, 31),
 									},
 								},
 							},

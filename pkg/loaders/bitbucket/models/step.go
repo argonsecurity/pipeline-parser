@@ -17,6 +17,24 @@ type ParallelSteps struct {
 	Step *ExecutionUnitRef `yaml:"step,omitempty"`
 }
 
+func (ps *ParallelSteps) UnmarshalYAML(node *yaml.Node) error {
+	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
+		switch key {
+		case "step":
+			var step *ExecutionUnitRef
+			if err := value.Decode(&step); err != nil {
+				return err
+			}
+			if isAliasStep(value) {
+				step.FileReference.IsAlias = true
+			}
+			ps.Step = step
+			return nil
+		}
+		return nil
+	}, "ParallelSteps")
+}
+
 func (s *Step) UnmarshalYAML(node *yaml.Node) error {
 	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		switch key {

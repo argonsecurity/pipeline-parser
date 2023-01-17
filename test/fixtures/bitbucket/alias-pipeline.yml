@@ -1,0 +1,40 @@
+image: node:14.17.6
+
+definitions:
+  caches:
+    cypress: /root/.cache/Cypress
+  services:
+    docker:
+      memory: 2048
+  steps:
+    - step: &install-build
+        name: build
+        size: 2x
+        caches:
+          - node
+          - cypress
+        script:
+          - yarn
+          - yarn build
+        artifacts:
+          - demo/**
+          - dist/**
+        after-script:
+          - npx notify -s "Install and build" --only-failure
+    - step: &deploy-env
+        name: deploy
+        script:
+          - echo deploy
+
+pipelines:
+  pull-requests:
+    "**":
+      - step: *install-build
+  custom:
+    deploy-staging:
+      - step: *install-build
+      - step: *deploy-env
+  branches:
+    master:
+      - step: *install-build
+      - step: *deploy-env
