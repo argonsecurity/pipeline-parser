@@ -54,6 +54,7 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
+					ID:  utils.GetPtr("job-default"),
 					Name: utils.GetPtr("default"),
 					Steps: []*models.Step{
 						{
@@ -96,6 +97,7 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
+					ID:  utils.GetPtr("job-*"),
 					Name: utils.GetPtr("*"),
 					Steps: []*models.Step{
 						{
@@ -142,6 +144,7 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
+					ID:  utils.GetPtr("job-master"),
 					Name: utils.GetPtr("master"),
 					Steps: []*models.Step{
 						{
@@ -179,6 +182,7 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
+					ID:  utils.GetPtr("job-test:1.2.3"),
 					Name: utils.GetPtr("test:1.2.3"),
 					Steps: []*models.Step{
 						{
@@ -206,6 +210,7 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
+					ID:  utils.GetPtr("job-on-push"),
 					Name: utils.GetPtr("on-push"),
 					Steps: []*models.Step{
 						{

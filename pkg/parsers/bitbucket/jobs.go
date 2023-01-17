@@ -65,6 +65,8 @@ func parseStepArray(jobSteps []*bitbucketModels.Step, job *models.Job) []*models
 
 func createJob(jobName string) *models.Job {
 	var job models.Job
+	id := fmt.Sprintf("job-%s", jobName)
+	job.ID = &id
 	job.Name = &jobName
 	return &job
 }

@@ -79,6 +79,7 @@ func TestParse(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
+						ID:  utils.GetPtr("job-default"),
 						Name: utils.GetPtr("default"),
 						Steps: []*models.Step{
 							{
@@ -164,6 +165,7 @@ func TestParse(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
+						ID:  utils.GetPtr("job-**"),
 						Name: utils.GetPtr("**"),
 						Steps: []*models.Step{
 							{
@@ -185,6 +187,7 @@ func TestParse(t *testing.T) {
 						},
 					},
 					{
+						ID:  utils.GetPtr("job-master"),
 						Name: utils.GetPtr("master"),
 						Steps: []*models.Step{
 							{
@@ -283,6 +286,7 @@ func TestParse(t *testing.T) {
 				},
 				Jobs: []*models.Job{
 					{
+						ID:  utils.GetPtr("job-install"),
 						Name: utils.GetPtr("install"),
 						Steps: []*models.Step{
 							{
