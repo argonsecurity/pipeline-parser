@@ -120,6 +120,9 @@ func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef
 }
 
 func parseEnvironmentVariables(srcEnvVars *bitbucketModels.EnvironmentVariablesRef) *models.EnvironmentVariablesRef {
+	if srcEnvVars == nil {
+		return nil
+	}
 	envVars := models.EnvironmentVariablesRef{
 		EnvironmentVariables: make(map[string]any),
 	}
