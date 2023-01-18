@@ -122,33 +122,47 @@ func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef
 	if step.Shell != nil && step.Shell.Type != nil {
 		step.Type = models.StepType(*step.Shell.Type)
 	}
-	step.AfterScript = parseScriptToShell(executionUnitRef.ExecutionUnit.AfterScript)
 	var scripts = executionUnitRef.ExecutionUnit.Script
 	if step.Shell != nil { // script env vars
 		for _, script := range scripts {
 			if script.PipeToExecute != nil {
-				step.EnvironmentVariables = parseEnvironmentVariables(script.PipeToExecute.Variables)
+				step.EnvironmentVariables = parseEnvironmentVariables(step.EnvironmentVariables, script.PipeToExecute.Variables)
+			}
+		}
+	}
+	var afterScripts = executionUnitRef.ExecutionUnit.AfterScript
+	step.AfterScript = parseScriptToShell(afterScripts)
+	if step.AfterScript != nil {
+		for _, script := range afterScripts {
+			if script.PipeToExecute != nil {
+				step.EnvironmentVariables = parseEnvironmentVariables(step.EnvironmentVariables, script.PipeToExecute.Variables)
 			}
 		}
 	}
 	return &step
 }
 
-func parseEnvironmentVariables(srcEnvVars *bitbucketModels.EnvironmentVariablesRef) *models.EnvironmentVariablesRef {
+func parseEnvironmentVariables(existing *models.EnvironmentVariablesRef, srcEnvVars *bitbucketModels.EnvironmentVariablesRef) *models.EnvironmentVariablesRef {
 	if srcEnvVars == nil {
-		return nil
+		return existing
 	}
-	envVars := models.EnvironmentVariablesRef{
-		EnvironmentVariables: make(map[string]any),
+	if existing == nil {
+		existing = &models.EnvironmentVariablesRef{
+			EnvironmentVariables: make(map[string]any),
+			FileReference:        srcEnvVars.FileReference,
+		}
 	}
 	for key, env := range srcEnvVars.EnvironmentVariables {
-		envVars.EnvironmentVariables[key] = env
+		_, ok := existing.EnvironmentVariables[key]
+		if !ok {
+			existing.EnvironmentVariables[key] = env
+		}
 	}
-	envVars.FileReference = &models.FileReference{
-		StartRef: srcEnvVars.FileReference.StartRef,
+	existing.FileReference = &models.FileReference{
+		StartRef: existing.FileReference.StartRef,
 		EndRef:   srcEnvVars.FileReference.EndRef,
 	}
-	return &envVars
+	return existing
 }
 
 func parseScriptToShell(scripts []*bitbucketModels.Script) *models.Shell {
