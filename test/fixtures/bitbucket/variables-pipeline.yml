@@ -18,3 +18,7 @@ pipelines:
                 S3_BUCKET: "pipes-template-java-spring-boot-source"
                 ZIP_FILE: "application.zip"
                 VERSION_LABEL: "prod-0.1.$BITBUCKET_BUILD_NUMBER"
+            - pipe: atlassian/aws-elasticbeanstalk-run:1.0.2
+              variables:
+                KEY: "value"
+                FOO: "bar"

@@ -159,9 +159,9 @@ func TestJobsParse(t *testing.T) {
 					Name:          utils.GetPtr("master"),
 					Steps: []*models.Step{
 						{
-							Shell: &models.Shell{
-								Script:        utils.GetPtr("echo 'hello world'\n"),
-								FileReference: testutils.CreateFileReference(3, 4, 5, 6),
+							Task: &models.Task{
+								Name:        utils.GetPtr("echo 'hello world'\n"),
+								VersionType: "none",
 							},
 							EnvironmentVariables: &models.EnvironmentVariablesRef{
 								EnvironmentVariables: map[string]any{
@@ -349,11 +349,13 @@ func TestScriptParse(t *testing.T) {
 		name             string
 		bitbucketScripts []*bitbucketModels.Script
 		expectedShell    *models.Shell
+		expectedTask     *models.Task
 	}{
 		{
 			name:             "Step is nil",
 			bitbucketScripts: nil,
 			expectedShell:    nil,
+			expectedTask:     nil,
 		},
 		{
 			name: "single script",
@@ -399,9 +401,9 @@ func TestScriptParse(t *testing.T) {
 					},
 				},
 			},
-			expectedShell: &models.Shell{
-				Script:        utils.GetPtr("echo 'hello world'\n"),
-				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+			expectedTask: &models.Task{
+				Name:        utils.GetPtr("echo 'hello world'\n"),
+				VersionType: "none",
 			},
 		},
 	}
@@ -409,7 +411,10 @@ func TestScriptParse(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			shell := parseScriptToShell(testCase.bitbucketScripts)
+			task := parseScriptToTask(testCase.bitbucketScripts)
 			testutils.DeepCompare(t, testCase.expectedShell, shell)
+			testutils.DeepCompare(t, testCase.expectedTask, task)
+
 		})
 	}
 }
@@ -478,9 +483,9 @@ func TestExecutionUnitParse(t *testing.T) {
 			},
 			expectedStep: &models.Step{
 				Name: utils.GetPtr("test"),
-				Shell: &models.Shell{
-					Script:        utils.GetPtr("echo 'hello world'\n"),
-					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				Task: &models.Task{
+					Name:        utils.GetPtr("echo 'hello world'\n"),
+					VersionType: "none",
 				},
 				EnvironmentVariables: &models.EnvironmentVariablesRef{
 					EnvironmentVariables: models.EnvironmentVariables{

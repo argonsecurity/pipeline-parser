@@ -311,9 +311,9 @@ func TestParse(t *testing.T) {
 						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("Build and Test"),
-								Shell: &models.Shell{
-									Script:        utils.GetPtr("npm install\n"),
-									FileReference: testutils.CreateFileReference(10, 17, 10, 28),
+								Task: &models.Task{
+									Name:        utils.GetPtr("npm install\n"),
+									VersionType: "none",
 								},
 								EnvironmentVariables: &models.EnvironmentVariablesRef{
 									EnvironmentVariables: models.EnvironmentVariables{

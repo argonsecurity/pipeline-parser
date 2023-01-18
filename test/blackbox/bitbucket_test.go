@@ -272,15 +272,15 @@ func TestBitbucket(t *testing.T) {
 				},
 				Jobs: []*models.Job{
 					{
-						FileReference: testutils.CreateFileReference(6, 9, 20, 64),
+						FileReference: testutils.CreateFileReference(6, 9, 24, 25),
 						ID:            utils.GetPtr("job-master"),
 						Name:          utils.GetPtr("master"),
 						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("Deploy to Production"),
-								Shell: &models.Shell{
-									Script:        utils.GetPtr("atlassian/aws-elasticbeanstalk-deploy:1.0.2\n"),
-									FileReference: testutils.CreateFileReference(11, 21, 11, 64),
+								Task: &models.Task{
+									Name:        utils.GetPtr("atlassian/aws-elasticbeanstalk-deploy:1.0.2\natlassian/aws-elasticbeanstalk-run:1.0.2\n"),
+									VersionType: "none",
 								},
 								EnvironmentVariables: &models.EnvironmentVariablesRef{
 									EnvironmentVariables: models.EnvironmentVariables{
@@ -292,10 +292,12 @@ func TestBitbucket(t *testing.T) {
 										"S3_BUCKET":             "pipes-template-java-spring-boot-source",
 										"ZIP_FILE":              "application.zip",
 										"VERSION_LABEL":         "prod-0.1.$BITBUCKET_BUILD_NUMBER",
+										"KEY":                   "value",
+										"FOO":                   "bar",
 									},
-									FileReference: testutils.CreateFileReference(12, 17, 20, 64),
+									FileReference: testutils.CreateFileReference(12, 17, 24, 25),
 								},
-								FileReference: testutils.CreateFileReference(6, 9, 20, 64),
+								FileReference: testutils.CreateFileReference(6, 9, 24, 25),
 							},
 						},
 					},

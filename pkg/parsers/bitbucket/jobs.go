@@ -119,11 +119,12 @@ func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef
 		step.Timeout = &timeout
 	}
 	step.Shell = parseScriptToShell(executionUnitRef.ExecutionUnit.Script)
+	step.Task = parseScriptToTask(executionUnitRef.ExecutionUnit.Script)
 	if step.Shell != nil && step.Shell.Type != nil {
 		step.Type = models.StepType(*step.Shell.Type)
 	}
 	var scripts = executionUnitRef.ExecutionUnit.Script
-	if step.Shell != nil { // script env vars
+	if step.Task != nil { // script env vars belong to tasks
 		for _, script := range scripts {
 			if script.PipeToExecute != nil {
 				step.EnvironmentVariables = parseEnvironmentVariables(step.EnvironmentVariables, script.PipeToExecute.Variables)
@@ -172,12 +173,36 @@ func parseScriptToShell(scripts []*bitbucketModels.Script) *models.Shell {
 
 	var shell models.Shell
 	var scriptString string
-	var pipeFileReference *models.FileReference
 	for _, script := range scripts {
 		if script != nil {
 			if script.String != nil {
 				scriptString += addScriptLine(*script.String)
 			}
+		}
+	}
+
+	if scriptString == "" {
+		return nil
+	}
+	shell.Script = &scriptString
+	shell.FileReference = &models.FileReference{
+		StartRef: scripts[0].FileReference.StartRef,
+		EndRef:   scripts[len(scripts)-1].FileReference.EndRef,
+	}
+	shell.Type = utils.GetPtr(string(models.ShellStepType))
+	return &shell
+}
+
+func parseScriptToTask(scripts []*bitbucketModels.Script) *models.Task {
+	if scripts == nil {
+		return nil
+	}
+
+	var task models.Task
+	var scriptString string
+	var pipeFileReference *models.FileReference
+	for _, script := range scripts {
+		if script != nil {
 			if (script.PipeToExecute) != nil {
 				scriptString += addScriptLine(*script.PipeToExecute.Pipe.String)
 				if pipeFileReference == nil {
@@ -189,18 +214,12 @@ func parseScriptToShell(scripts []*bitbucketModels.Script) *models.Shell {
 		}
 	}
 
-	shell.Script = &scriptString
-	if pipeFileReference != nil {
-		shell.FileReference = pipeFileReference
-		return &shell
+	if scriptString == "" {
+		return nil
 	}
-
-	shell.FileReference = &models.FileReference{
-		StartRef: scripts[0].FileReference.StartRef,
-		EndRef:   scripts[len(scripts)-1].FileReference.EndRef,
-	}
-	shell.Type = utils.GetPtr(string(models.ShellStepType))
-	return &shell
+	task.Name = &scriptString
+	task.VersionType = models.None // not supported
+	return &task
 }
 
 func addScriptLine(script string) string {
