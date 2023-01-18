@@ -31,12 +31,14 @@ func TestBitbucket(t *testing.T) {
 						},
 						Steps: []*models.Step{
 							{
+								Type: "shell",
 								Name: utils.GetPtr("Build and Test"),
 								Metadata: models.Metadata{
 									Build: true,
 									Test:  true,
 								},
 								Shell: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("IMAGE_NAME=$BITBUCKET_REPO_SLUG\ndocker build . --file Dockerfile --tag ${IMAGE_NAME}\n"),
 									FileReference: testutils.CreateFileReference(17, 17, 18, 69),
 								},
@@ -44,7 +46,9 @@ func TestBitbucket(t *testing.T) {
 							},
 							{
 								Name: utils.GetPtr("Lint the Dockerfile"),
+								Type: "shell",
 								Shell: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("hadolint Dockerfile\n"),
 									FileReference: testutils.CreateFileReference(27, 17, 27, 36),
 								},
@@ -61,20 +65,24 @@ func TestBitbucket(t *testing.T) {
 						},
 						Steps: []*models.Step{
 							{
+								Type: "shell",
 								Name: utils.GetPtr("Build and Test"),
 								Metadata: models.Metadata{
 									Build: true,
 									Test:  true,
 								},
 								Shell: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("IMAGE_NAME=$BITBUCKET_REPO_SLUG\ndocker build . --file Dockerfile --tag ${IMAGE_NAME}\ndocker save ${IMAGE_NAME} --output \"${IMAGE_NAME}.tar\"\n"),
 									FileReference: testutils.CreateFileReference(33, 15, 35, 69),
 								},
 								FileReference: testutils.CreateFileReference(30, 9, 41, 20),
 							},
 							{
+								Type: "shell",
 								Name: utils.GetPtr("Deploy to Production"),
 								Shell: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("echo ${DOCKERHUB_PASSWORD} | docker login --username \"$DOCKERHUB_USERNAME\" --password-stdin\nIMAGE_NAME=$BITBUCKET_REPO_SLUG\ndocker load --input \"${IMAGE_NAME}.tar\"\nVERSION=\"prod-0.1.${BITBUCKET_BUILD_NUMBER}\"\nIMAGE=${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}\ndocker tag \"${IMAGE_NAME}\" \"${IMAGE}:${VERSION}\"\ndocker push \"${IMAGE}:${VERSION}\"\n"),
 									FileReference: testutils.CreateFileReference(46, 15, 52, 48),
 								},
@@ -104,15 +112,18 @@ func TestBitbucket(t *testing.T) {
 						},
 						Steps: []*models.Step{
 							{
+								Type: "shell",
 								Name: utils.GetPtr("build"),
 								Metadata: models.Metadata{
 									Build: true,
 								},
 								Shell: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("yarn\nyarn build\n"),
 									FileReference: testutils.CreateFileReference(17, 13, 18, 23),
 								},
 								AfterScript: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("npx notify -s \"Install and build\" --only-failure\n"),
 									FileReference: testutils.CreateFileReference(23, 13, 23, 61),
 								},
@@ -128,15 +139,18 @@ func TestBitbucket(t *testing.T) {
 						},
 						Steps: []*models.Step{
 							{
+								Type: "shell",
 								Name: utils.GetPtr("build"),
 								Metadata: models.Metadata{
 									Build: true,
 								},
 								Shell: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("yarn\nyarn build\n"),
 									FileReference: testutils.CreateFileReference(17, 13, 18, 23),
 								},
 								AfterScript: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("npx notify -s \"Install and build\" --only-failure\n"),
 									FileReference: testutils.CreateFileReference(23, 13, 23, 61),
 								},
@@ -144,7 +158,9 @@ func TestBitbucket(t *testing.T) {
 							},
 							{
 								Name: utils.GetPtr("deploy"),
+								Type: "shell",
 								Shell: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("echo deploy\n"),
 									FileReference: testutils.CreateFileReference(27, 13, 27, 24),
 								},
@@ -160,15 +176,18 @@ func TestBitbucket(t *testing.T) {
 						},
 						Steps: []*models.Step{
 							{
+								Type: "shell",
 								Name: utils.GetPtr("build"),
 								Metadata: models.Metadata{
 									Build: true,
 								},
 								Shell: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("yarn\nyarn build\n"),
 									FileReference: testutils.CreateFileReference(17, 13, 18, 23),
 								},
 								AfterScript: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("npx notify -s \"Install and build\" --only-failure\n"),
 									FileReference: testutils.CreateFileReference(23, 13, 23, 61),
 								},
@@ -176,7 +195,9 @@ func TestBitbucket(t *testing.T) {
 							},
 							{
 								Name: utils.GetPtr("deploy"),
+								Type: "shell",
 								Shell: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("echo deploy\n"),
 									FileReference: testutils.CreateFileReference(27, 13, 27, 24),
 								},
@@ -206,19 +227,23 @@ func TestBitbucket(t *testing.T) {
 						},
 						Steps: []*models.Step{
 							{
+								Type: "shell",
 								Name: utils.GetPtr("Test"),
 								Metadata: models.Metadata{
 									Test: true,
 								},
 								Shell: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("echo testing...\nnpm run test\n"),
 									FileReference: testutils.CreateFileReference(8, 13, 9, 25),
 								},
 								FileReference: testutils.CreateAliasFileReference(19, 13, 21, 25, true),
 							},
 							{
+								Type: "shell",
 								Name: utils.GetPtr("Send Result"),
 								Shell: &models.Shell{
+									Type:          utils.GetPtr("shell"),
 									Script:        utils.GetPtr("echo sending result...\nnpm run send-result\n"),
 									FileReference: testutils.CreateFileReference(13, 13, 14, 32),
 								},

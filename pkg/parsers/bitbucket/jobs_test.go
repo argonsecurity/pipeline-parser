@@ -59,7 +59,9 @@ func TestJobsParse(t *testing.T) {
 					Name: utils.GetPtr("default"),
 					Steps: []*models.Step{
 						{
+							Type: "shell",
 							Shell: &models.Shell{
+								Type:          utils.GetPtr("shell"),
 								Script:        utils.GetPtr("echo 'hello world'\n"),
 								FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 							},
@@ -102,7 +104,9 @@ func TestJobsParse(t *testing.T) {
 					Name: utils.GetPtr("*"),
 					Steps: []*models.Step{
 						{
+							Type: "shell",
 							Shell: &models.Shell{
+								Type:          utils.GetPtr("shell"),
 								Script:        utils.GetPtr("echo 'hello world'\necho 'hello world2'\n"),
 								FileReference: testutils.CreateFileReference(1, 2, 7, 8),
 							},
@@ -262,7 +266,9 @@ func TestStepParse(t *testing.T) {
 			},
 			expectedStep: []*models.Step{
 				{
+					Type: "shell",
 					Shell: &models.Shell{
+						Type:          utils.GetPtr("shell"),
 						Script:        utils.GetPtr("echo 'hello world'\n"),
 						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 					},
@@ -304,14 +310,18 @@ func TestStepParse(t *testing.T) {
 			},
 			expectedStep: []*models.Step{
 				{
+					Type: "shell",
 					Shell: &models.Shell{
+						Type:          utils.GetPtr("shell"),
 						Script:        utils.GetPtr("echo 'hello world'\n"),
 						FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 					},
 					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
 				},
 				{
+					Type: "shell",
 					Shell: &models.Shell{
+						Type:          utils.GetPtr("shell"),
 						Script:        utils.GetPtr("echo 'goodbye world'\n"),
 						FileReference: testutils.CreateFileReference(4, 3, 2, 1),
 					},
@@ -349,6 +359,7 @@ func TestScriptParse(t *testing.T) {
 				},
 			},
 			expectedShell: &models.Shell{
+				Type:          utils.GetPtr("shell"),
 				Script:        utils.GetPtr("echo 'hello world'\n"),
 				FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 			},
@@ -366,6 +377,7 @@ func TestScriptParse(t *testing.T) {
 				},
 			},
 			expectedShell: &models.Shell{
+				Type:          utils.GetPtr("shell"),
 				Script:        utils.GetPtr("echo 'hello world'\necho 'goodbye world'\n"),
 				FileReference: testutils.CreateFileReference(1, 2, 7, 8),
 			},
@@ -391,7 +403,7 @@ func TestScriptParse(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			shell := parseScript(testCase.bitbucketScripts)
+			shell := parseScriptToShell(testCase.bitbucketScripts)
 			testutils.DeepCompare(t, testCase.expectedShell, shell)
 		})
 	}
@@ -424,7 +436,9 @@ func TestExecutionUnitParse(t *testing.T) {
 			},
 			expectedStep: &models.Step{
 				Name: utils.GetPtr("test"),
+				Type: "shell",
 				Shell: &models.Shell{
+					Type:          utils.GetPtr("shell"),
 					Script:        utils.GetPtr("echo 'hello world'\n"),
 					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 				},

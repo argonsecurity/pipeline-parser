@@ -5,6 +5,7 @@ import (
 
 	bitbucketModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/bitbucket/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
 func parseJobs(pipeline *bitbucketModels.Pipeline) []*models.Job {
@@ -102,8 +103,11 @@ func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef
 		var timeout int = int(*executionUnitRef.ExecutionUnit.MaxTime)
 		step.Timeout = &timeout
 	}
-	step.Shell = parseScript(executionUnitRef.ExecutionUnit.Script)
-	step.AfterScript = parseScript(executionUnitRef.ExecutionUnit.AfterScript)
+	step.Shell = parseScriptToShell(executionUnitRef.ExecutionUnit.Script)
+	if step.Shell != nil && step.Shell.Type != nil {
+		step.Type = models.StepType(*step.Shell.Type)
+	}
+	step.AfterScript = parseScriptToShell(executionUnitRef.ExecutionUnit.AfterScript)
 	var scripts = executionUnitRef.ExecutionUnit.Script
 	if step.Shell != nil { // script env vars
 		for _, script := range scripts {
@@ -129,7 +133,7 @@ func parseEnvironmentVariables(srcEnvVars *bitbucketModels.EnvironmentVariablesR
 	return &envVars
 }
 
-func parseScript(scripts []*bitbucketModels.Script) *models.Shell {
+func parseScriptToShell(scripts []*bitbucketModels.Script) *models.Shell {
 	if scripts == nil {
 		return nil
 	}
@@ -163,6 +167,7 @@ func parseScript(scripts []*bitbucketModels.Script) *models.Shell {
 		StartRef: scripts[0].FileReference.StartRef,
 		EndRef:   scripts[len(scripts)-1].FileReference.EndRef,
 	}
+	shell.Type = utils.GetPtr(string(models.ShellStepType))
 	return &shell
 }
 
