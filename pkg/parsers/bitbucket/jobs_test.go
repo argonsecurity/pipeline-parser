@@ -55,8 +55,9 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
-					ID:   utils.GetPtr("job-default"),
-					Name: utils.GetPtr("default"),
+					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					ID:            utils.GetPtr("job-default"),
+					Name:          utils.GetPtr("default"),
 					Steps: []*models.Step{
 						{
 							Type: "shell",
@@ -100,8 +101,9 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
-					ID:   utils.GetPtr("job-*"),
-					Name: utils.GetPtr("*"),
+					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					ID:            utils.GetPtr("job-*"),
+					Name:          utils.GetPtr("*"),
 					Steps: []*models.Step{
 						{
 							Type: "shell",
@@ -152,8 +154,9 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
-					ID:   utils.GetPtr("job-master"),
-					Name: utils.GetPtr("master"),
+					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					ID:            utils.GetPtr("job-master"),
+					Name:          utils.GetPtr("master"),
 					Steps: []*models.Step{
 						{
 							Shell: &models.Shell{
@@ -190,8 +193,9 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
-					ID:   utils.GetPtr("job-test:1.2.3"),
-					Name: utils.GetPtr("test:1.2.3"),
+					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					ID:            utils.GetPtr("job-test:1.2.3"),
+					Name:          utils.GetPtr("test:1.2.3"),
 					Steps: []*models.Step{
 						{
 							FileReference: testutils.CreateFileReference(5, 6, 7, 8),
@@ -218,8 +222,9 @@ func TestJobsParse(t *testing.T) {
 			},
 			expectedJobs: []*models.Job{
 				{
-					ID:   utils.GetPtr("job-on-push"),
-					Name: utils.GetPtr("on-push"),
+					FileReference: testutils.CreateFileReference(5, 6, 7, 8),
+					ID:            utils.GetPtr("job-on-push"),
+					Name:          utils.GetPtr("on-push"),
 					Steps: []*models.Step{
 						{
 							FileReference: testutils.CreateFileReference(5, 6, 7, 8),

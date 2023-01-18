@@ -17,8 +17,7 @@ func parseJobs(pipeline *bitbucketModels.Pipeline) []*models.Job {
 
 	if pipeline.Pipelines != nil {
 		if pipeline.Pipelines.Default != nil {
-			defaultJob := createJob("default")
-			defaultJob.Steps = parseStepArray(pipeline.Pipelines.Default, defaultJob)
+			defaultJob := parseJob("default", pipeline.Pipelines.Default)
 			jobs = append(jobs, defaultJob)
 		}
 
@@ -49,11 +48,27 @@ func parseJobs(pipeline *bitbucketModels.Pipeline) []*models.Job {
 func parseStepMapToJob(jobMap *bitbucketModels.StepMap) []*models.Job {
 	var jobs []*models.Job
 	for jobName, steps := range *jobMap {
-		job := createJob(jobName)
-		job.Steps = parseStepArray(steps, job)
+		job := parseJob(jobName, steps)
 		jobs = append(jobs, job)
 	}
 	return jobs
+}
+
+func parseJob(jobName string, steps []*bitbucketModels.Step) *models.Job {
+	job := createJob(jobName)
+	job.Steps = parseStepArray(steps, job)
+	job.FileReference = generateJobFileReference(job)
+	return job
+}
+
+func generateJobFileReference(job *models.Job) *models.FileReference {
+	if job.Steps != nil || len(job.Steps) > 0 {
+		return &models.FileReference{
+			StartRef: job.Steps[0].FileReference.StartRef,
+			EndRef:   job.Steps[len(job.Steps)-1].FileReference.EndRef,
+		}
+	}
+	return nil
 }
 
 func parseStepArray(jobSteps []*bitbucketModels.Step, job *models.Job) []*models.Step {

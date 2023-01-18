@@ -79,8 +79,9 @@ func TestParse(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
-						ID:   utils.GetPtr("job-default"),
-						Name: utils.GetPtr("default"),
+						FileReference: testutils.CreateFileReference(7, 13, 19, 21),
+						ID:            utils.GetPtr("job-default"),
+						Name:          utils.GetPtr("default"),
 						Steps: []*models.Step{
 							{
 								Type: "shell",
@@ -169,8 +170,9 @@ func TestParse(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
-						ID:   utils.GetPtr("job-**"),
-						Name: utils.GetPtr("**"),
+						FileReference: testutils.CreateFileReference(7, 13, 12, 25),
+						ID:            utils.GetPtr("job-**"),
+						Name:          utils.GetPtr("**"),
 						Steps: []*models.Step{
 							{
 								Type: "shell",
@@ -195,8 +197,9 @@ func TestParse(t *testing.T) {
 						},
 					},
 					{
-						ID:   utils.GetPtr("job-master"),
-						Name: utils.GetPtr("master"),
+						FileReference: testutils.CreateFileReference(12, 17, 12, 25),
+						ID:            utils.GetPtr("job-master"),
+						Name:          utils.GetPtr("master"),
 						Steps: []*models.Step{
 							{
 								Type: "shell",
@@ -302,8 +305,9 @@ func TestParse(t *testing.T) {
 				},
 				Jobs: []*models.Job{
 					{
-						ID:   utils.GetPtr("job-install"),
-						Name: utils.GetPtr("install"),
+						FileReference: testutils.CreateFileReference(8, 13, 12, 25),
+						ID:            utils.GetPtr("job-install"),
+						Name:          utils.GetPtr("install"),
 						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("Build and Test"),

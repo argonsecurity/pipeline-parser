@@ -23,8 +23,9 @@ func TestBitbucket(t *testing.T) {
 				},
 				Jobs: []*models.Job{
 					{
-						ID:   utils.GetPtr("job-default"),
-						Name: utils.GetPtr("default"),
+						FileReference: testutils.CreateFileReference(14, 11, 27, 36),
+						ID:            utils.GetPtr("job-default"),
+						Name:          utils.GetPtr("default"),
 						Metadata: models.Metadata{
 							Build: true,
 							Test:  true,
@@ -57,8 +58,9 @@ func TestBitbucket(t *testing.T) {
 						},
 					},
 					{
-						ID:   utils.GetPtr("job-master"),
-						Name: utils.GetPtr("master"),
+						FileReference: testutils.CreateFileReference(30, 9, 54, 21),
+						ID:            utils.GetPtr("job-master"),
+						Name:          utils.GetPtr("master"),
 						Metadata: models.Metadata{
 							Build: true,
 							Test:  true,
@@ -105,8 +107,9 @@ func TestBitbucket(t *testing.T) {
 				},
 				Jobs: []*models.Job{
 					{
-						ID:   utils.GetPtr("job-**"),
-						Name: utils.GetPtr("**"),
+						FileReference: testutils.CreateFileReference(10, 7, 23, 61),
+						ID:            utils.GetPtr("job-**"),
+						Name:          utils.GetPtr("**"),
 						Metadata: models.Metadata{
 							Build: true,
 						},
@@ -132,8 +135,9 @@ func TestBitbucket(t *testing.T) {
 						},
 					},
 					{
-						ID:   utils.GetPtr("job-deploy-staging"),
-						Name: utils.GetPtr("deploy-staging"),
+						FileReference: testutils.CreateFileReference(10, 7, 27, 24),
+						ID:            utils.GetPtr("job-deploy-staging"),
+						Name:          utils.GetPtr("deploy-staging"),
 						Metadata: models.Metadata{
 							Build: true,
 						},
@@ -169,8 +173,9 @@ func TestBitbucket(t *testing.T) {
 						},
 					},
 					{
-						ID:   utils.GetPtr("job-master"),
-						Name: utils.GetPtr("master"),
+						FileReference: testutils.CreateFileReference(10, 7, 27, 24),
+						ID:            utils.GetPtr("job-master"),
+						Name:          utils.GetPtr("master"),
 						Metadata: models.Metadata{
 							Build: true,
 						},
@@ -220,8 +225,9 @@ func TestBitbucket(t *testing.T) {
 				},
 				Jobs: []*models.Job{
 					{
-						ID:   utils.GetPtr("job-main"),
-						Name: utils.GetPtr("main"),
+						FileReference: testutils.CreateFileReference(19, 13, 23, 30),
+						ID:            utils.GetPtr("job-main"),
+						Name:          utils.GetPtr("main"),
 						Metadata: models.Metadata{
 							Test: true,
 						},
@@ -266,8 +272,9 @@ func TestBitbucket(t *testing.T) {
 				},
 				Jobs: []*models.Job{
 					{
-						ID:   utils.GetPtr("job-master"),
-						Name: utils.GetPtr("master"),
+						FileReference: testutils.CreateFileReference(6, 9, 20, 64),
+						ID:            utils.GetPtr("job-master"),
+						Name:          utils.GetPtr("master"),
 						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("Deploy to Production"),
