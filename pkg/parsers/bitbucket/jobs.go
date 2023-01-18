@@ -173,10 +173,16 @@ func parseScriptToShell(scripts []*bitbucketModels.Script) *models.Shell {
 
 	var shell models.Shell
 	var scriptString string
+	var fileReference *models.FileReference
 	for _, script := range scripts {
 		if script != nil {
 			if script.String != nil {
 				scriptString += addScriptLine(*script.String)
+				if fileReference == nil {
+					fileReference = script.FileReference
+					continue
+				}
+				fileReference.EndRef = script.FileReference.EndRef
 			}
 		}
 	}
@@ -185,9 +191,8 @@ func parseScriptToShell(scripts []*bitbucketModels.Script) *models.Shell {
 		return nil
 	}
 	shell.Script = &scriptString
-	shell.FileReference = &models.FileReference{
-		StartRef: scripts[0].FileReference.StartRef,
-		EndRef:   scripts[len(scripts)-1].FileReference.EndRef,
+	if fileReference != nil {
+		shell.FileReference = fileReference
 	}
 	shell.Type = utils.GetPtr(string(models.ShellStepType))
 	return &shell
@@ -200,16 +205,10 @@ func parseScriptToTask(scripts []*bitbucketModels.Script) *models.Task {
 
 	var task models.Task
 	var scriptString string
-	var pipeFileReference *models.FileReference
 	for _, script := range scripts {
 		if script != nil {
 			if (script.PipeToExecute) != nil {
 				scriptString += addScriptLine(*script.PipeToExecute.Pipe.String)
-				if pipeFileReference == nil {
-					pipeFileReference = script.PipeToExecute.Pipe.FileReference
-					continue
-				}
-				pipeFileReference.EndRef = script.PipeToExecute.Pipe.FileReference.EndRef
 			}
 		}
 	}
