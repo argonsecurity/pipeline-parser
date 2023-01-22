@@ -1,0 +1,22 @@
+image: node:16
+
+pipelines:
+  custom:
+    notify:
+      - step:
+          name: Notify Teams
+          caches:
+            - node
+          script:
+            - npx notify -s "deployment"
+  branches:
+    master:
+      - step:
+          name: step 1
+      - step:
+          name: step 2
+      - parallel:
+          - step:
+              name: step 3
+          - step:
+              name: step 4

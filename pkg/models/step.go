@@ -33,6 +33,7 @@ type Step struct {
 	Shell                *Shell                   `json:"shell,omitempty"`
 	Task                 *Task                    `json:"task,omitempty"`
 	Metadata             Metadata                 `json:"metadata,omitempty"`
+	AfterScript          *Shell                   `json:"after_script,omitempty"`
 	FileReference        *FileReference           `json:"file_reference,omitempty"`
 }
 

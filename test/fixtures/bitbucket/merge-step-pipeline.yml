@@ -1,0 +1,23 @@
+image: atlassian/default-image:3
+
+definitions:
+  steps:
+    - step: &test-run
+        name: Test Run
+        script:
+          - echo testing...
+          - npm run test
+    - step: &send-result
+        name: Send Result
+        script:
+          - echo sending result...
+          - npm run send-result
+pipelines:
+  branches:
+    main:
+      - parallel:
+          - step:
+              <<: *test-run
+              name: Test
+          - step:
+              <<: *send-result

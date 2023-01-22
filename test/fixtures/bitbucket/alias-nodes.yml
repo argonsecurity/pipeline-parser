@@ -1,0 +1,22 @@
+definitions:
+  caches:
+    cypress: /root/.cache/Cypress
+  services:
+    docker:
+      memory: 2048
+  steps:
+    - step: &install-build
+        name: Install and build
+        script:
+          - yarn build
+        artifacts:
+          - dist/**
+
+pipelines:
+  pull-requests:
+    "*":
+      - step: *install-build
+    "**":
+      - step:
+          <<: *install-build
+          name: merge test

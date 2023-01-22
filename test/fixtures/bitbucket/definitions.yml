@@ -1,0 +1,42 @@
+definitions:
+  steps:
+    - step:
+        name: scripts step
+        script:
+          - echo "hello world"
+        after-script:
+          - echo "goodbye world"
+          - pipe: notify
+            variables:
+              FOO: bar
+    - step:
+        name: artifacts step
+        caches:
+          - package.json
+    - step:
+        name: shared artifact step
+        artifacts:
+          download: false
+          paths:
+            - dist/*
+            - package-lock.json
+    - parallel:
+        - step:
+            name: parallel step 1
+            trigger: manual
+        - step:
+            name: parallel step 2
+            trigger: automatic
+pipelines:
+  custom:
+    test:
+      - variables: #list variable names under here
+          - name: Username
+          - name: Role
+            default: "admin" # optionally provide a default variable value
+          - name: Region
+            default: "ap-southeast-2"
+            allowed-values: # optionally restrict variable values
+              - "ap-southeast-2"
+              - "us-east-1"
+              - "us-west-2"

@@ -1,0 +1,18 @@
+clone:
+  lfs: true
+  enabled: true
+  depth: 1
+options:
+  max-time: 30
+  docker: true
+  size: 1x
+definitions:
+  caches:
+    custom-npm: node_modules
+  services:
+    service:
+      memory: 128
+      image: node:16
+      variables:
+        TEST: development
+        TEST2: production
