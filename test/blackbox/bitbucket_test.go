@@ -278,6 +278,7 @@ func TestBitbucket(t *testing.T) {
 						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("Deploy to Production"),
+								Type: "task",
 								Task: &models.Task{
 									Name:        utils.GetPtr("atlassian/aws-elasticbeanstalk-deploy:1.0.2\natlassian/aws-elasticbeanstalk-run:1.0.2\n"),
 									VersionType: "none",
