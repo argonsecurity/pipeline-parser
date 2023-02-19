@@ -159,6 +159,7 @@ func TestJobsParse(t *testing.T) {
 					Name:          utils.GetPtr("master"),
 					Steps: []*models.Step{
 						{
+							Type: "task",
 							Task: &models.Task{
 								Name:        utils.GetPtr("echo 'hello world'\n"),
 								VersionType: "none",
@@ -483,6 +484,7 @@ func TestExecutionUnitParse(t *testing.T) {
 			},
 			expectedStep: &models.Step{
 				Name: utils.GetPtr("test"),
+				Type: "task",
 				Task: &models.Task{
 					Name:        utils.GetPtr("echo 'hello world'\n"),
 					VersionType: "none",

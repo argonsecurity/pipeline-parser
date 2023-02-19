@@ -311,6 +311,7 @@ func TestParse(t *testing.T) {
 						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("Build and Test"),
+								Type: "task",
 								Task: &models.Task{
 									Name:        utils.GetPtr("npm install\n"),
 									VersionType: "none",
