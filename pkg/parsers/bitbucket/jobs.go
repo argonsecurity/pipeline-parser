@@ -120,7 +120,7 @@ func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef
 	}
 	step.Shell = parseScriptToShell(executionUnitRef.ExecutionUnit.Script)
 	step.Task = parseScriptToTask(executionUnitRef.ExecutionUnit.Script)
-	step.Type = setStepType(&step)
+	step.Type = getStepType(&step)
 	var scripts = executionUnitRef.ExecutionUnit.Script
 	if step.Task != nil { // script env vars belong to tasks
 		for _, script := range scripts {
@@ -141,9 +141,15 @@ func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef
 	return &step
 }
 
+<<<<<<< HEAD
 func setStepType(step *models.Step) models.StepType {
 	if step.Shell != nil && step.Shell.Type != nil {
 		return models.StepType(*step.Shell.Type)
+=======
+func getStepType(step *models.Step) models.StepType {
+	if step.Shell != nil {
+		return models.ShellStepType
+>>>>>>> 03a07db89e12ba3e60363c836346f15fc25933bd
 	}
 	if step.Task != nil {
 		return models.TaskStepType
