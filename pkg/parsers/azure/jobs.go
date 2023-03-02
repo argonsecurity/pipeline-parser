@@ -1,6 +1,8 @@
 package azure
 
 import (
+	"strconv"
+
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -61,7 +63,7 @@ func parseBaseJob(job *azureModels.BaseJob) *models.Job {
 
 	parsedJob := &models.Job{
 		Name:            &job.DisplayName,
-		ContinueOnError: &job.ContinueOnError,
+		ContinueOnError: utils.GetPtr(strconv.FormatBool(job.ContinueOnError)),
 		Runner:          parseRunner(job),
 	}
 

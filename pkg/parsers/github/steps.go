@@ -33,7 +33,8 @@ func parseJobStep(step githubModels.Step) *models.Step {
 	}
 
 	if step.ContinueOnError != nil {
-		parsedStep.FailsPipeline = utils.GetPtr(!*step.ContinueOnError)
+		isContinueOnError := *step.ContinueOnError == "true"
+		parsedStep.FailsPipeline = utils.GetPtr(!isContinueOnError)
 	}
 
 	if step.If != "" {

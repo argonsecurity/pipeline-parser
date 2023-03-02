@@ -115,7 +115,7 @@ func TestParseJobs(t *testing.T) {
 				{
 					ID:              utils.GetPtr("job-1"),
 					Name:            utils.GetPtr("job-1"),
-					ContinueOnError: utils.GetPtr(true),
+					ContinueOnError: utils.GetPtr("true"),
 					TimeoutMS:       utils.GetPtr(6000000),
 					Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 					Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
@@ -143,7 +143,7 @@ func TestParseJobs(t *testing.T) {
 				{
 					ID:              utils.GetPtr("job-2"),
 					Name:            utils.GetPtr("job-2"),
-					ContinueOnError: utils.GetPtr(true),
+					ContinueOnError: utils.GetPtr("true"),
 					TimeoutMS:       utils.GetPtr(6000000),
 					Conditions:      []*models.Condition{{Statement: "job-2-condition"}},
 					Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-3")}},
@@ -164,7 +164,7 @@ func TestParseJobs(t *testing.T) {
 				{
 					ID:              utils.GetPtr("deployment-1"),
 					Name:            utils.GetPtr("job-1"),
-					ContinueOnError: utils.GetPtr(true),
+					ContinueOnError: utils.GetPtr("true"),
 					TimeoutMS:       utils.GetPtr(6000000),
 					Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 					Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
@@ -185,7 +185,7 @@ func TestParseJobs(t *testing.T) {
 				{
 					ID:              utils.GetPtr("deployment-2"),
 					Name:            utils.GetPtr("job-2"),
-					ContinueOnError: utils.GetPtr(true),
+					ContinueOnError: utils.GetPtr("true"),
 					TimeoutMS:       utils.GetPtr(6000000),
 					Conditions:      []*models.Condition{{Statement: "job-2-condition"}},
 					Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-3")}},
@@ -233,7 +233,7 @@ func TestParseCIJob(t *testing.T) {
 			expectedJob: &models.Job{
 				ID:              utils.GetPtr(""),
 				Name:            utils.GetPtr(""),
-				ContinueOnError: utils.GetPtr(false),
+				ContinueOnError: utils.GetPtr("false"),
 				TimeoutMS:       utils.GetPtr(defaultTimeoutMS),
 			},
 		},
@@ -282,7 +282,7 @@ func TestParseCIJob(t *testing.T) {
 			expectedJob: &models.Job{
 				ID:              utils.GetPtr("job-1"),
 				Name:            utils.GetPtr("job-1"),
-				ContinueOnError: utils.GetPtr(true),
+				ContinueOnError: utils.GetPtr("true"),
 				TimeoutMS:       utils.GetPtr(6000000),
 				Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 				Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
@@ -342,7 +342,7 @@ func TestParseDeploymentJob(t *testing.T) {
 			expectedJob: &models.Job{
 				ID:              utils.GetPtr(""),
 				Name:            utils.GetPtr(""),
-				ContinueOnError: utils.GetPtr(false),
+				ContinueOnError: utils.GetPtr("false"),
 				TimeoutMS:       utils.GetPtr(defaultTimeoutMS),
 			},
 		},
@@ -391,7 +391,7 @@ func TestParseDeploymentJob(t *testing.T) {
 			expectedJob: &models.Job{
 				ID:              utils.GetPtr("deployment-1"),
 				Name:            utils.GetPtr("job-1"),
-				ContinueOnError: utils.GetPtr(true),
+				ContinueOnError: utils.GetPtr("true"),
 				TimeoutMS:       utils.GetPtr(6000000),
 				Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 				Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
@@ -450,7 +450,7 @@ func TestParseBaseJob(t *testing.T) {
 			baseJob: &azureModels.BaseJob{},
 			expectedJob: &models.Job{
 				Name:            utils.GetPtr(""),
-				ContinueOnError: utils.GetPtr(false),
+				ContinueOnError: utils.GetPtr("false"),
 				TimeoutMS:       utils.GetPtr(defaultTimeoutMS),
 			},
 		},
@@ -494,7 +494,7 @@ func TestParseBaseJob(t *testing.T) {
 			},
 			expectedJob: &models.Job{
 				Name:            utils.GetPtr("job-1"),
-				ContinueOnError: utils.GetPtr(true),
+				ContinueOnError: utils.GetPtr("true"),
 				TimeoutMS:       utils.GetPtr(6000000),
 				Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 				Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},

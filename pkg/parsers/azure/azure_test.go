@@ -198,7 +198,7 @@ func TestParse(t *testing.T) {
 					{
 						ID:              utils.GetPtr("job-1"),
 						Name:            utils.GetPtr("job-1"),
-						ContinueOnError: utils.GetPtr(true),
+						ContinueOnError: utils.GetPtr("true"),
 						TimeoutMS:       utils.GetPtr(6000000),
 						Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 						Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
@@ -225,7 +225,7 @@ func TestParse(t *testing.T) {
 					{
 						ID:              utils.GetPtr("job-2"),
 						Name:            utils.GetPtr("job-2"),
-						ContinueOnError: utils.GetPtr(true),
+						ContinueOnError: utils.GetPtr("true"),
 						TimeoutMS:       utils.GetPtr(6000000),
 						Conditions:      []*models.Condition{{Statement: "job-2-condition"}},
 						Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-3")}},
@@ -245,7 +245,7 @@ func TestParse(t *testing.T) {
 					{
 						ID:              utils.GetPtr("deployment-1"),
 						Name:            utils.GetPtr("job-1"),
-						ContinueOnError: utils.GetPtr(true),
+						ContinueOnError: utils.GetPtr("true"),
 						TimeoutMS:       utils.GetPtr(6000000),
 						Conditions:      []*models.Condition{{Statement: "job-1-condition"}},
 						Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-2")}},
@@ -265,7 +265,7 @@ func TestParse(t *testing.T) {
 					{
 						ID:              utils.GetPtr("deployment-2"),
 						Name:            utils.GetPtr("job-2"),
-						ContinueOnError: utils.GetPtr(true),
+						ContinueOnError: utils.GetPtr("true"),
 						TimeoutMS:       utils.GetPtr(6000000),
 						Conditions:      []*models.Condition{{Statement: "job-2-condition"}},
 						Dependencies:    []*models.JobDependency{{JobID: utils.GetPtr("job-3")}},

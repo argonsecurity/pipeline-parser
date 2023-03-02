@@ -118,7 +118,7 @@ func TestAzure(t *testing.T) {
 						ID:              utils.GetPtr("DeployWeb"),
 						Name:            utils.GetPtr("deploy Web App"),
 						TimeoutMS:       utils.GetPtr(3600000),
-						ContinueOnError: utils.GetPtr(false),
+						ContinueOnError: utils.GetPtr("false"),
 						Runner: &models.Runner{
 							OS: utils.GetPtr("linux"),
 						},
@@ -132,7 +132,7 @@ func TestAzure(t *testing.T) {
 						ID:              utils.GetPtr("MyJob"),
 						Name:            utils.GetPtr("My First Job"),
 						TimeoutMS:       utils.GetPtr(3600000),
-						ContinueOnError: utils.GetPtr(true),
+						ContinueOnError: utils.GetPtr("true"),
 						Runner: &models.Runner{
 							DockerMetadata: &models.DockerMetadata{
 								Image: utils.GetPtr("ubuntu"),
@@ -223,7 +223,7 @@ func TestAzure(t *testing.T) {
 					{
 						ID:              utils.GetPtr("jobId"),
 						Name:            utils.GetPtr(""),
-						ContinueOnError: utils.GetPtr(false),
+						ContinueOnError: utils.GetPtr("false"),
 						TimeoutMS:       utils.GetPtr(3600000),
 						Runner: &models.Runner{
 							OS: utils.GetPtr("linux"),
@@ -408,7 +408,7 @@ func TestAzure(t *testing.T) {
 						ID:              utils.GetPtr("FirstJob"),
 						Name:            utils.GetPtr(""),
 						TimeoutMS:       utils.GetPtr(3600000),
-						ContinueOnError: utils.GetPtr(false),
+						ContinueOnError: utils.GetPtr("false"),
 						EnvironmentVariables: &models.EnvironmentVariablesRef{
 							EnvironmentVariables: models.EnvironmentVariables{
 								"JOB_VAR":   "a job var",

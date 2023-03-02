@@ -1,0 +1,11 @@
+name: continue-on-error-jobs
+jobs:
+  job1:
+    name: Job 1
+    continue-on-error: true
+  job2:
+    name: Job 2
+    continue-on-error: false
+  job3:
+    name: Job 3
+    continue-on-error: "${{ inputs.continue-on-error || github.event_name == 'schedule' }}"
