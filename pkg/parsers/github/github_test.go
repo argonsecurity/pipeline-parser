@@ -34,7 +34,7 @@ func TestParse(t *testing.T) {
 						"job-1": {
 							ID:              utils.GetPtr("jobid-1"),
 							Name:            "job-1",
-							ContinueOnError: true,
+							ContinueOnError: utils.GetPtr("true"),
 							Env: &githubModels.EnvironmentVariablesRef{
 								EnvironmentVariables: models.EnvironmentVariables{
 									"string": "value",
@@ -61,7 +61,7 @@ func TestParse(t *testing.T) {
 										FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 									},
 									FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
-									ContinueOnError:  utils.GetPtr(true),
+									ContinueOnError:  utils.GetPtr("true"),
 									If:               "condition",
 									TimeoutMinutes:   1,
 									WorkingDirectory: "dir",
@@ -101,6 +101,14 @@ func TestParse(t *testing.T) {
 						"job-2": {
 							ID: utils.GetPtr("jobid-1"),
 						},
+						"job-3": {
+							ID:              utils.GetPtr("jobid-2"),
+							ContinueOnError: utils.GetPtr("false"),
+						},
+						"job-4": {
+							ID:              utils.GetPtr("jobid-3"),
+							ContinueOnError: utils.GetPtr("${{ inputs.continue-on-tracee-error || github.event_name == 'schedule' }}"),
+						},
 					},
 				},
 				Permissions: &githubModels.PermissionsEvent{
@@ -137,7 +145,7 @@ func TestParse(t *testing.T) {
 					{
 						ID:              utils.GetPtr("jobid-1"),
 						Name:            utils.GetPtr("job-1"),
-						ContinueOnError: utils.GetPtr(true),
+						ContinueOnError: utils.GetPtr("true"),
 						EnvironmentVariables: &models.EnvironmentVariablesRef{
 							EnvironmentVariables: models.EnvironmentVariables{
 								"string": "value",
@@ -219,7 +227,19 @@ func TestParse(t *testing.T) {
 					{
 						ID:              utils.GetPtr("jobid-1"),
 						Name:            utils.GetPtr("jobid-1"),
-						ContinueOnError: utils.GetPtr(false),
+						ContinueOnError: nil,
+						TimeoutMS:       utils.GetPtr(21600000),
+					},
+					{
+						ID:              utils.GetPtr("jobid-2"),
+						Name:            utils.GetPtr("jobid-2"),
+						ContinueOnError: utils.GetPtr("false"),
+						TimeoutMS:       utils.GetPtr(21600000),
+					},
+					{
+						ID:              utils.GetPtr("jobid-3"),
+						Name:            utils.GetPtr("jobid-3"),
+						ContinueOnError: utils.GetPtr("${{ inputs.continue-on-tracee-error || github.event_name == 'schedule' }}"),
 						TimeoutMS:       utils.GetPtr(21600000),
 					},
 				},

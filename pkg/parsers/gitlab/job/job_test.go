@@ -51,7 +51,7 @@ func TestParseJob(t *testing.T) {
 			expectedJob: &models.Job{
 				ID:               utils.GetPtr("1"),
 				Name:             utils.GetPtr("1"),
-				ContinueOnError:  utils.GetPtr(true),
+				ContinueOnError:  utils.GetPtr("true"),
 				ConcurrencyGroup: utils.GetPtr(models.ConcurrencyGroup("stage")),
 				Tags:             []string{"1", "2"},
 				PreSteps: []*models.Step{
@@ -108,7 +108,7 @@ func TestGetJobContinueOnError(t *testing.T) {
 	testCases := []struct {
 		name             string
 		job              *gitlabModels.Job
-		expectedContinue *bool
+		expectedContinue *string
 	}{
 		{
 			name:             "Job is empty",
@@ -122,7 +122,7 @@ func TestGetJobContinueOnError(t *testing.T) {
 					Enabled: utils.GetPtr(true),
 				},
 			},
-			expectedContinue: utils.GetPtr(true),
+			expectedContinue: utils.GetPtr("true"),
 		},
 		{
 			name: "Job with AllowFailure is disabled",
@@ -131,7 +131,7 @@ func TestGetJobContinueOnError(t *testing.T) {
 					Enabled: utils.GetPtr(false),
 				},
 			},
-			expectedContinue: utils.GetPtr(false),
+			expectedContinue: utils.GetPtr("false"),
 		},
 	}
 

@@ -1,6 +1,8 @@
 package job
 
 import (
+	"strconv"
+
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/parsers/gitlab/common"
@@ -36,9 +38,9 @@ func parseJob(jobID string, job *gitlabModels.Job) (*models.Job, error) {
 	return parsedJob, nil
 }
 
-func getJobContinueOnError(job *gitlabModels.Job) *bool {
+func getJobContinueOnError(job *gitlabModels.Job) *string {
 	if job.AllowFailure != nil {
-		return job.AllowFailure.Enabled
+		return utils.GetPtr(strconv.FormatBool(*job.AllowFailure.Enabled))
 	}
 	return nil
 }

@@ -56,14 +56,14 @@ func TestParseStages(t *testing.T) {
 					ID:              utils.GetPtr("ci-job-1"),
 					Name:            utils.GetPtr(""),
 					TimeoutMS:       utils.GetPtr(defaultTimeoutMS),
-					ContinueOnError: utils.GetPtr(false),
+					ContinueOnError: utils.GetPtr("false"),
 					FileReference:   testutils.CreateFileReference(1, 2, 3, 4),
 				},
 				{
 					ID:              utils.GetPtr("ci-job-2"),
 					Name:            utils.GetPtr(""),
 					TimeoutMS:       utils.GetPtr(defaultTimeoutMS),
-					ContinueOnError: utils.GetPtr(false),
+					ContinueOnError: utils.GetPtr("false"),
 					FileReference:   testutils.CreateFileReference(5, 6, 7, 8),
 				},
 			},
@@ -152,7 +152,7 @@ func TestParseStage(t *testing.T) {
 					ID:              utils.GetPtr("ci-job"),
 					Name:            utils.GetPtr(""),
 					TimeoutMS:       utils.GetPtr(defaultTimeoutMS),
-					ContinueOnError: utils.GetPtr(false),
+					ContinueOnError: utils.GetPtr("false"),
 					EnvironmentVariables: &models.EnvironmentVariablesRef{
 						EnvironmentVariables: models.EnvironmentVariables{
 							"var1":    "value1",
@@ -168,7 +168,7 @@ func TestParseStage(t *testing.T) {
 					ID:              utils.GetPtr("deployment-job"),
 					Name:            utils.GetPtr(""),
 					TimeoutMS:       utils.GetPtr(defaultTimeoutMS),
-					ContinueOnError: utils.GetPtr(false),
+					ContinueOnError: utils.GetPtr("false"),
 					EnvironmentVariables: &models.EnvironmentVariablesRef{
 						EnvironmentVariables: models.EnvironmentVariables{
 							"var1": "value1",
