@@ -17,7 +17,7 @@ type ShellCommand struct {
 type With commonModels.Map
 
 type Step struct {
-	ContinueOnError  *bool                    `yaml:"continue-on-error,omitempty"`
+	ContinueOnError  *string                  `yaml:"continue-on-error,omitempty"`
 	Env              *EnvironmentVariablesRef `yaml:"env,omitempty"`
 	Id               string                   `yaml:"id,omitempty"`
 	If               string                   `yaml:"if,omitempty"`

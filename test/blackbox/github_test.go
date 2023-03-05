@@ -148,9 +148,8 @@ func TestGitHub(t *testing.T) {
 								FileReference: testutils.CreateFileReference(39, 9, 43, 14),
 							},
 						},
-						TimeoutMS:       utils.GetPtr(21600000),
-						ContinueOnError: utils.GetPtr(false),
-						FileReference:   testutils.CreateFileReference(4, 3, 43, 14),
+						TimeoutMS:     utils.GetPtr(21600000),
+						FileReference: testutils.CreateFileReference(4, 3, 43, 14),
 					},
 				}),
 			},
@@ -161,17 +160,15 @@ func TestGitHub(t *testing.T) {
 				Name: utils.GetPtr("dependable jobs"),
 				Jobs: SortJobs([]*models.Job{
 					{
-						ID:              utils.GetPtr("dependable-job"),
-						Name:            utils.GetPtr("Dependable Job"),
-						ContinueOnError: utils.GetPtr(false),
-						TimeoutMS:       utils.GetPtr(21600000),
-						FileReference:   testutils.CreateFileReference(4, 3, 5, 25),
+						ID:            utils.GetPtr("dependable-job"),
+						Name:          utils.GetPtr("Dependable Job"),
+						TimeoutMS:     utils.GetPtr(21600000),
+						FileReference: testutils.CreateFileReference(4, 3, 5, 25),
 					},
 					{
-						ID:              utils.GetPtr("dependant-job"),
-						Name:            utils.GetPtr("Dependant Job"),
-						ContinueOnError: utils.GetPtr(false),
-						TimeoutMS:       utils.GetPtr(21600000),
+						ID:        utils.GetPtr("dependant-job"),
+						Name:      utils.GetPtr("Dependant Job"),
+						TimeoutMS: utils.GetPtr(21600000),
 						Dependencies: []*models.JobDependency{
 							{
 								JobID: utils.GetPtr("dependable-job"),
@@ -264,7 +261,6 @@ func TestGitHub(t *testing.T) {
 						FileReference:    testutils.CreateFileReference(8, 3, 10, 26),
 						ID:               utils.GetPtr("job1"),
 						Name:             utils.GetPtr("Job 1"),
-						ContinueOnError:  utils.GetPtr(false),
 						TokenPermissions: getAllGitHubPermissions(models.Permission{Read: true}),
 						TimeoutMS:        utils.GetPtr(21600000),
 					},
@@ -293,10 +289,9 @@ func TestGitHub(t *testing.T) {
 				Name: utils.GetPtr("runners"),
 				Jobs: SortJobs([]*models.Job{
 					{
-						ID:              utils.GetPtr("job1"),
-						Name:            utils.GetPtr("Job 1"),
-						ContinueOnError: utils.GetPtr(false),
-						TimeoutMS:       utils.GetPtr(21600000),
+						ID:        utils.GetPtr("job1"),
+						Name:      utils.GetPtr("Job 1"),
+						TimeoutMS: utils.GetPtr(21600000),
 						Runner: &models.Runner{
 							OS:            utils.GetPtr("linux"),
 							Labels:        &[]string{"ubuntu-latest"},
@@ -306,10 +301,9 @@ func TestGitHub(t *testing.T) {
 						FileReference: testutils.CreateFileReference(4, 3, 6, 27),
 					},
 					{
-						ID:              utils.GetPtr("job2"),
-						Name:            utils.GetPtr("Job 2"),
-						TimeoutMS:       utils.GetPtr(21600000),
-						ContinueOnError: utils.GetPtr(false),
+						ID:        utils.GetPtr("job2"),
+						Name:      utils.GetPtr("Job 2"),
+						TimeoutMS: utils.GetPtr(21600000),
 						Runner: &models.Runner{
 							OS:            utils.GetPtr("windows"),
 							Labels:        &[]string{"self-hosted", "windows-latest"},
@@ -319,10 +313,9 @@ func TestGitHub(t *testing.T) {
 						FileReference: testutils.CreateFileReference(7, 3, 9, 42),
 					},
 					{
-						ID:              utils.GetPtr("job3"),
-						Name:            utils.GetPtr("Job 3"),
-						TimeoutMS:       utils.GetPtr(21600000),
-						ContinueOnError: utils.GetPtr(false),
+						ID:        utils.GetPtr("job3"),
+						Name:      utils.GetPtr("Job 3"),
+						TimeoutMS: utils.GetPtr(21600000),
 						Runner: &models.Runner{
 							OS:            utils.GetPtr("linux"),
 							Arch:          utils.GetPtr("x64"),
@@ -350,9 +343,8 @@ func TestGitHub(t *testing.T) {
 							},
 							FileReference: testutils.CreateFileReference(10, 7, 12, 16),
 						},
-						FileReference:   testutils.CreateFileReference(8, 3, 18, 20),
-						ContinueOnError: utils.GetPtr(false),
-						TimeoutMS:       utils.GetPtr(21600000),
+						FileReference: testutils.CreateFileReference(8, 3, 18, 20),
+						TimeoutMS:     utils.GetPtr(21600000),
 						Steps: []*models.Step{
 							{
 								Name: utils.GetPtr("Step 1"),
@@ -392,7 +384,6 @@ func TestGitHub(t *testing.T) {
 					{
 						ID:               utils.GetPtr("job1"),
 						Name:             utils.GetPtr("Job 1"),
-						ContinueOnError:  utils.GetPtr(false),
 						TimeoutMS:        utils.GetPtr(21600000),
 						ConcurrencyGroup: utils.GetPtr(models.ConcurrencyGroup("ci")),
 						FileReference:    testutils.CreateFileReference(3, 3, 5, 20),
@@ -400,10 +391,38 @@ func TestGitHub(t *testing.T) {
 					{
 						ID:               utils.GetPtr("job2"),
 						Name:             utils.GetPtr("Job 2"),
-						ContinueOnError:  utils.GetPtr(false),
 						TimeoutMS:        utils.GetPtr(21600000),
 						ConcurrencyGroup: utils.GetPtr(models.ConcurrencyGroup("ci")),
 						FileReference:    testutils.CreateFileReference(7, 3, 9, 20),
+					},
+				}),
+			},
+		},
+		{
+			Filename: "continue-on-error-jobs.yaml",
+			Expected: &models.Pipeline{
+				Name: utils.GetPtr("continue-on-error-jobs"),
+				Jobs: SortJobs([]*models.Job{
+					{
+						ID:               utils.GetPtr("job1"),
+						Name:             utils.GetPtr("Job 1"),
+						ContinueOnError:  utils.GetPtr("true"),
+						TimeoutMS:        utils.GetPtr(21600000),
+						FileReference:    testutils.CreateFileReference(3, 3, 5, 28),
+					},
+					{
+						ID:               utils.GetPtr("job2"),
+						Name:             utils.GetPtr("Job 2"),
+						ContinueOnError:  utils.GetPtr("false"),
+						TimeoutMS:        utils.GetPtr(21600000),
+						FileReference:    testutils.CreateFileReference(6, 3, 8, 29),
+					},
+					{
+						ID:               utils.GetPtr("job3"),
+						Name:             utils.GetPtr("Job 3"),
+						ContinueOnError:  utils.GetPtr("${{ inputs.continue-on-error || github.event_name == 'schedule' }}"),
+						TimeoutMS:        utils.GetPtr(21600000),
+						FileReference:    testutils.CreateFileReference(9, 3, 11, 90),
 					},
 				}),
 			},
@@ -414,10 +433,9 @@ func TestGitHub(t *testing.T) {
 				Name: utils.GetPtr("matrix"),
 				Jobs: SortJobs([]*models.Job{
 					{
-						ID:              utils.GetPtr("matrix-job"),
-						Name:            utils.GetPtr("matrix-job"),
-						ContinueOnError: utils.GetPtr(false),
-						TimeoutMS:       utils.GetPtr(21600000),
+						ID:        utils.GetPtr("matrix-job"),
+						Name:      utils.GetPtr("matrix-job"),
+						TimeoutMS: utils.GetPtr(21600000),
 						Matrix: &models.Matrix{
 							Matrix: map[string]any{
 								"artifact": []any{"docker/image", "docker/tar", "go", "java", "node", "php", "python/tar", "python/wheel", "ruby/gemspec"},

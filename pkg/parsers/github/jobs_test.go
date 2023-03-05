@@ -31,7 +31,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 						"job-1": {
 							ID:              utils.GetPtr("jobid-1"),
 							Name:            "job-1",
-							ContinueOnError: true,
+							ContinueOnError: utils.GetPtr("true"),
 							Env: &githubModels.EnvironmentVariablesRef{
 								EnvironmentVariables: models.EnvironmentVariables{
 									"string": "value",
@@ -58,7 +58,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 										FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 									},
 									FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
-									ContinueOnError:  utils.GetPtr(true),
+									ContinueOnError:  utils.GetPtr("true"),
 									If:               "condition",
 									TimeoutMinutes:   1,
 									WorkingDirectory: "dir",
@@ -101,7 +101,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 				{
 					ID:              utils.GetPtr("jobid-1"),
 					Name:            utils.GetPtr("job-1"),
-					ContinueOnError: utils.GetPtr(true),
+					ContinueOnError: utils.GetPtr("true"),
 					EnvironmentVariables: &models.EnvironmentVariablesRef{
 						EnvironmentVariables: models.EnvironmentVariables{
 							"string": "value",
@@ -190,7 +190,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 						"job-1": {
 							ID:              utils.GetPtr("jobid-1"),
 							Name:            "job-1",
-							ContinueOnError: true,
+							ContinueOnError: utils.GetPtr("true"),
 							Env: &githubModels.EnvironmentVariablesRef{
 								EnvironmentVariables: models.EnvironmentVariables{
 									"string": "value",
@@ -217,7 +217,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 										FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 									},
 									FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
-									ContinueOnError:  utils.GetPtr(true),
+									ContinueOnError:  utils.GetPtr("true"),
 									If:               "condition",
 									TimeoutMinutes:   1,
 									WorkingDirectory: "dir",
@@ -263,7 +263,7 @@ func TestParseWorkflowJobs(t *testing.T) {
 				{
 					ID:              utils.GetPtr("jobid-1"),
 					Name:            utils.GetPtr("job-1"),
-					ContinueOnError: utils.GetPtr(true),
+					ContinueOnError: utils.GetPtr("true"),
 					EnvironmentVariables: &models.EnvironmentVariablesRef{
 						EnvironmentVariables: models.EnvironmentVariables{
 							"string": "value",
@@ -345,7 +345,6 @@ func TestParseWorkflowJobs(t *testing.T) {
 				{
 					ID:              utils.GetPtr("jobid-2"),
 					Name:            utils.GetPtr("jobid-2"),
-					ContinueOnError: utils.GetPtr(false),
 					TimeoutMS:       utils.GetPtr(21600000),
 				},
 			},
@@ -375,7 +374,6 @@ func TestParseJob(t *testing.T) {
 			name: "Empty job",
 			job:  &githubModels.Job{},
 			expectedJob: &models.Job{
-				ContinueOnError: utils.GetPtr(false),
 				TimeoutMS:       &defaultTimeoutMS,
 			},
 		},
@@ -384,7 +382,7 @@ func TestParseJob(t *testing.T) {
 			job: &githubModels.Job{
 				ID:              utils.GetPtr("jobid-1"),
 				Name:            "job-1",
-				ContinueOnError: true,
+				ContinueOnError: utils.GetPtr("true"),
 				Env: &githubModels.EnvironmentVariablesRef{
 					EnvironmentVariables: models.EnvironmentVariables{
 						"string": "value",
@@ -411,7 +409,7 @@ func TestParseJob(t *testing.T) {
 							FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 						},
 						FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
-						ContinueOnError:  utils.GetPtr(true),
+						ContinueOnError:  utils.GetPtr("true"),
 						If:               "condition",
 						TimeoutMinutes:   1,
 						WorkingDirectory: "dir",
@@ -450,7 +448,7 @@ func TestParseJob(t *testing.T) {
 			expectedJob: &models.Job{
 				ID:              utils.GetPtr("jobid-1"),
 				Name:            utils.GetPtr("job-1"),
-				ContinueOnError: utils.GetPtr(true),
+				ContinueOnError: utils.GetPtr("true"),
 				EnvironmentVariables: &models.EnvironmentVariablesRef{
 					EnvironmentVariables: models.EnvironmentVariables{
 						"string": "value",
@@ -538,7 +536,6 @@ func TestParseJob(t *testing.T) {
 			expectedJob: &models.Job{
 				ID:              utils.GetPtr("jobid-1"),
 				Name:            utils.GetPtr("jobid-1"),
-				ContinueOnError: utils.GetPtr(false),
 				TimeoutMS:       utils.GetPtr(21600000),
 			},
 		},

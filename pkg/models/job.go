@@ -11,7 +11,7 @@ type Job struct {
 	ID                   *string                  `json:"id,omitempty"`
 	Name                 *string                  `json:"name,omitempty"`
 	Steps                []*Step                  `json:"steps,omitempty"`
-	ContinueOnError      *bool                    `json:"continue_on_error,omitempty"`
+	ContinueOnError      *string                    `json:"continue_on_error,omitempty"`
 	PreSteps             []*Step                  `json:"pre_steps,omitempty"`
 	PostSteps            []*Step                  `json:"post_steps,omitempty"`
 	EnvironmentVariables *EnvironmentVariablesRef `json:"environment_variables,omitempty"`

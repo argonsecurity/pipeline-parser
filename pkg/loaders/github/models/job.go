@@ -90,7 +90,7 @@ type Job struct {
 	ID              *string                  `yaml:"id"`
 	Concurrency     *Concurrency             `yaml:"concurrency,omitempty"`
 	Container       interface{}              `yaml:"container,omitempty"`
-	ContinueOnError bool                     `yaml:"continue-on-error,omitempty"`
+	ContinueOnError *string                  `yaml:"continue-on-error,omitempty"`
 	Defaults        *Defaults                `yaml:"defaults,omitempty"`
 	Env             *EnvironmentVariablesRef `yaml:"env,omitempty"`
 	Environment     interface{}              `yaml:"environment,omitempty"`
