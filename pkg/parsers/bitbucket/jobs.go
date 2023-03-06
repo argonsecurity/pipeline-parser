@@ -121,6 +121,7 @@ func parseExecutionUnitToStep(executionUnitRef *bitbucketModels.ExecutionUnitRef
 	step.Shell = parseScriptToShell(executionUnitRef.ExecutionUnit.Script)
 	step.Task = parseScriptToTask(executionUnitRef.ExecutionUnit.Script)
 	step.Type = getStepType(&step)
+	step.Runner = parseStepRunner(executionUnitRef.ExecutionUnit)
 	var scripts = executionUnitRef.ExecutionUnit.Script
 	if step.Task != nil { // script env vars belong to tasks
 		for _, script := range scripts {
@@ -186,7 +187,7 @@ func parseScriptToShell(scripts []*bitbucketModels.Script) *models.Shell {
 	for _, script := range scripts {
 		if script != nil {
 			if script.String != nil {
-				scriptString += addScriptLine(*script.String)
+				scriptString += addScriptLine(scriptString, *script.String)
 				if fileReference == nil {
 					fileReference = script.FileReference
 					continue
@@ -217,7 +218,7 @@ func parseScriptToTask(scripts []*bitbucketModels.Script) *models.Task {
 	for _, script := range scripts {
 		if script != nil {
 			if (script.PipeToExecute) != nil {
-				scriptString += addScriptLine(*script.PipeToExecute.Pipe.String)
+				scriptString += addScriptLine(scriptString, *script.PipeToExecute.Pipe.String)
 			}
 		}
 	}
@@ -230,6 +231,26 @@ func parseScriptToTask(scripts []*bitbucketModels.Script) *models.Task {
 	return &task
 }
 
-func addScriptLine(script string) string {
-	return fmt.Sprintf("%s\n", script)
+func addScriptLine(scriptString, script string) string {
+	if scriptString == "" {
+		return script
+	}
+	return fmt.Sprintf("\n%s", script)
+}
+
+func parseStepRunner(executionUnit *bitbucketModels.ExecutionUnit) *models.Runner {
+	if executionUnit == nil {
+		return nil
+	}
+
+	if executionUnit.Image != nil && executionUnit.Image.ImageData != nil {
+		runner := &models.Runner{
+			DockerMetadata: &models.DockerMetadata{
+				Image: executionUnit.Image.ImageData.Name,
+			},
+		}
+
+		return runner
+	}
+	return nil
 }

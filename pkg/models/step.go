@@ -24,6 +24,7 @@ type Step struct {
 	ID                   *string                  `json:"id,omitempty"`
 	Name                 *string                  `json:"name,omitempty"`
 	Type                 StepType                 `json:"type,omitempty"`
+	Runner               *Runner                  `json:"runner,omitempty"`
 	FailsPipeline        *bool                    `json:"fails_pipeline,omitempty"`
 	Disabled             *bool                    `json:"disabled,omitempty"`
 	EnvironmentVariables *EnvironmentVariablesRef `json:"environment_variables,omitempty"`
