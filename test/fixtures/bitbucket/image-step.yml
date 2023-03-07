@@ -1,0 +1,11 @@
+pipelines:
+  pull-requests:
+     'master':
+        - step:
+            name: Run Aqua scanner
+            image: aquasec/aqua-scanner
+            script:
+              - trivy fs --security-checks config,vuln,secret --sast .
+              # To customize which severities to scan for, add the following flag: --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+              # To enable SAST scanning, add: --sast
+              # To enable npm/dotnet non-lock file scanning, add: --package-json / --dotnet-proj
