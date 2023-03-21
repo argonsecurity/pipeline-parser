@@ -15,6 +15,3 @@ jobs:
 
       - name: Execute Tests
         run: make test-coverage
-
-      - name: Upload Coverage
-        uses: codecov/codecov-action@v2
