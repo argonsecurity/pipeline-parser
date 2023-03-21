@@ -1,6 +1,7 @@
 package github
 
 import (
+	"reflect"
 	"testing"
 
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
@@ -61,6 +62,53 @@ func TestParseEnvironmentVariablesRef(t *testing.T) {
 			got := parseEnvironmentVariablesRef(testCase.envRef)
 
 			testutils.DeepCompare(t, testCase.expectedEnv, got)
+		})
+	}
+}
+
+func Test_detectVersionType(t *testing.T) {
+	type args struct {
+		version string
+	}
+	tests := []struct {
+		name string
+		args args
+		want models.VersionType
+	}{
+		{
+			name: "Empty version",
+			args: args{
+				version: "",
+			},
+			want: models.None,
+		},
+		{
+			name: "Commit SHA",
+			args: args{
+				version: "1234567890123456789012345678901234567890",
+			},
+			want: models.CommitSHA,
+		},
+		{
+			name: "Tag version",
+			args: args{
+				version: "v1.2.3",
+			},
+			want: models.TagVersion,
+		},
+		{
+			name: "Branch version",
+			args: args{
+				version: "master",
+			},
+			want: models.BranchVersion,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := detectVersionType(tt.args.version); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("detectVersionType() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }

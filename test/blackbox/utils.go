@@ -6,7 +6,6 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/handler"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/go-test/deep"
@@ -17,10 +16,10 @@ func readFile(filename string) []byte {
 	return b
 }
 
-func executeTestCases(t *testing.T, testCases []TestCase, folder string, platform consts.Platform) {
+func executeTestCases(t *testing.T, testCases []TestCase, folder string, platform models.Platform) {
 	for _, testCase := range testCases {
 		buf := readFile(filepath.Join("../fixtures", folder, testCase.Filename))
-		pipeline, err := handler.Handle(buf, platform)
+		pipeline, err := handler.Handle(buf, platform, &models.Credentials{})
 		if err != nil {
 			if !testCase.ShouldFail {
 				t.Errorf("%s: %s", testCase.Filename, err)

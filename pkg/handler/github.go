@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
+	githubEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/github"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders"
 	githubLoader "github.com/argonsecurity/pipeline-parser/pkg/loaders/github"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
@@ -16,4 +18,8 @@ func (g *GitHubHandler) GetLoader() loaders.Loader[githubModels.Workflow] {
 
 func (g *GitHubHandler) GetParser() parsers.Parser[githubModels.Workflow] {
 	return &githubParser.GitHubParser{}
+}
+
+func (g *GitHubHandler) GetEnhancer() enhancers.Enhancer {
+	return &githubEnhancer.GitHubEnhancer{}
 }

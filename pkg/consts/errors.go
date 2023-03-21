@@ -1,16 +1,20 @@
 package consts
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/argonsecurity/pipeline-parser/pkg/models"
+)
 
 type ErrInvalidPlatform struct {
-	Platform Platform
+	Platform models.Platform
 }
 
 func (e *ErrInvalidPlatform) Error() string {
 	return fmt.Sprintf("invalid platform: %s. Supported platforms: %v", e.Platform, Platforms)
 }
 
-func NewErrInvalidPlatform(platform Platform) error {
+func NewErrInvalidPlatform(platform models.Platform) error {
 	return &ErrInvalidPlatform{Platform: platform}
 }
 

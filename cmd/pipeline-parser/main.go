@@ -32,6 +32,11 @@ var (
 	fileSuffixDefaultValue = "parsed"
 	fileSuffixUsage        = "File suffix for output file. This flag is useless if 'output' flag is not set to 'file'"
 
+	token             string
+	tokenFlagName     = "token"
+	tokenDefaultValue = ""
+	tokenUsage        = "SCM token to use for fetching remote files if necessary"
+
 	version string
 )
 
@@ -58,7 +63,7 @@ pipeline-parser --platform azure azure-pipelines.yml`,
 					if err != nil {
 						return nil
 					}
-					pipeline, err := handler.Handle(buf, consts.Platform(platform))
+					pipeline, err := handler.Handle(buf, models.Platform(platform), &models.Credentials{Token: token})
 					if err != nil {
 						return err
 					}
@@ -76,6 +81,7 @@ pipeline-parser --platform azure azure-pipelines.yml`,
 	command.PersistentFlags().StringVarP(&platform, platformFlagName, platformShortFlagName, platformDefaultValue, platformUsage)
 	command.PersistentFlags().StringVarP(&output, outputFlagName, outputShortFlagName, outputDefaultValue, outputUsage)
 	command.PersistentFlags().StringVar(&fileSuffix, fileSuffixFlagName, fileSuffixDefaultValue, fileSuffixUsage)
+	command.PersistentFlags().StringVar(&token, tokenFlagName, tokenDefaultValue, tokenUsage)
 
 	return command
 }
@@ -85,8 +91,8 @@ func preRun(cmd *cobra.Command, args []string) error {
 		return consts.NewErrInvalidArgumentsCount(len(args))
 	}
 
-	if !slices.Contains(consts.Platforms, consts.Platform(platform)) {
-		return consts.NewErrInvalidPlatform(consts.Platform(platform))
+	if !slices.Contains(consts.Platforms, models.Platform(platform)) {
+		return consts.NewErrInvalidPlatform(models.Platform(platform))
 	}
 
 	if !slices.Contains(consts.OutputTargets, consts.OutputTarget(output)) {

@@ -1,4 +1,4 @@
-package enhancers
+package general
 
 import (
 	"testing"
@@ -13,7 +13,7 @@ func TestEnhance(t *testing.T) {
 	testCases := []struct {
 		name             string
 		pipeline         *models.Pipeline
-		platform         consts.Platform
+		platform         models.Platform
 		expectedPipeline *models.Pipeline
 	}{
 		{

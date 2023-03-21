@@ -1,7 +1,7 @@
-package enhancers
+package general
 
 import (
-	"github.com/argonsecurity/pipeline-parser/pkg/enhancers/config"
+	"github.com/argonsecurity/pipeline-parser/pkg/enhancers/general/config"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
