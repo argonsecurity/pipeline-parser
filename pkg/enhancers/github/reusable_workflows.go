@@ -1,9 +1,12 @@
 package github
 
 import (
-	"errors"
 	"fmt"
+	"os"
 
+	"github.com/pkg/errors"
+
+	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
 	"github.com/argonsecurity/pipeline-parser/pkg/http"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -11,22 +14,26 @@ import (
 
 const githubRemoteFileUrl = "https://raw.githubusercontent.com/%s/%s/%s/%s"
 
-func enhanceReusableWorkflows(pipeline *models.Pipeline, credentials *models.Credentials) (*models.Pipeline, error) {
-	var errs []error
+func getReusableWorkflows(pipeline *models.Pipeline, credentials *models.Credentials) ([]*enhancers.ImportedPipeline, error) {
+	var errs error
+	importedPipelines := []*enhancers.ImportedPipeline{}
 	for _, job := range pipeline.Jobs {
 		if job.Imports != nil {
-			importedPipeline, err := handleImport(job.Imports, credentials)
+			importedPipelineBuf, err := handleImport(job.Imports, credentials)
 			if err != nil {
-				errs = append(errs, fmt.Errorf("error importing pipeline for job %s: %w", *job.Name, err))
+				errs = errors.Wrap(errs, fmt.Sprintf("error importing pipeline for job %s: %s", *job.Name, err.Error()))
 			}
-			job.Imports.Pipeline = importedPipeline
+			importedPipelines = append(importedPipelines, &enhancers.ImportedPipeline{
+				JobName: *job.Name,
+				Data:    importedPipelineBuf,
+			})
 		}
 
 	}
-	return pipeline, errors.Join(errs...)
+	return importedPipelines, errs
 }
 
-func handleImport(imports *models.Import, credentials *models.Credentials) (*models.Pipeline, error) {
+func handleImport(imports *models.Import, credentials *models.Credentials) ([]byte, error) {
 	if imports == nil || imports.Source == nil {
 		return nil, nil
 	}
@@ -42,7 +49,7 @@ func handleImport(imports *models.Import, credentials *models.Credentials) (*mod
 	return nil, nil
 }
 
-func loadRemotePipeline(org, repo, version, path string, credentials *models.Credentials) (*models.Pipeline, error) {
+func loadRemotePipeline(org, repo, version, path string, credentials *models.Credentials) ([]byte, error) {
 	if org == "" || repo == "" || path == "" {
 		return nil, nil
 	}
@@ -52,31 +59,29 @@ func loadRemotePipeline(org, repo, version, path string, credentials *models.Cre
 	}
 
 	url := fmt.Sprintf(githubRemoteFileUrl, org, repo, version, path)
-	_, err := getHttpClient(credentials).Get(url, nil, nil)
+	buf, err := getHttpClient(credentials).Get(url, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return &models.Pipeline{
-		Name: utils.GetPtr("remote"),
-	}, nil
-	// return handler.Handle(buf, consts.GitHubPlatform, credentials)
+	return buf, nil
 }
 
-func loadLocalPipeline(path string) (*models.Pipeline, error) {
+func loadLocalPipeline(path string) ([]byte, error) {
 	if path == "" {
 		return nil, nil
 	}
 
-	_, err := utils.ReadFile(path)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return nil, err
+	}
+
+	buf, err := utils.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	return &models.Pipeline{
-		Name: utils.GetPtr("local"),
-	}, nil
-	// return handler.Handle(buf, consts.GitHubPlatform, models.Credentials{})
+	return buf, nil
 }
 
 func getHttpClient(credentials *models.Credentials) *http.HTTPClient {

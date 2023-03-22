@@ -16,6 +16,7 @@ import (
 )
 
 type Handler[T any] interface {
+	GetPlatform() models.Platform
 	GetLoader() loaders.Loader[T]
 	GetParser() parsers.Parser[T]
 	GetEnhancer() enhancers.Enhancer
@@ -60,7 +61,22 @@ func handle[T any](data []byte, handler Handler[T], credentials *models.Credenti
 		return nil, err
 	}
 
-	enhancedPipeline, err := handler.GetEnhancer().Enhance(parsedPipeline, credentials)
+	enhancer := handler.GetEnhancer()
+
+	importedPipelines, err := enhancer.LoadImportedPipelines(parsedPipeline, credentials)
+	if err != nil {
+		fmt.Printf("Failed getting imported pipelines:\n%v", err)
+	}
+
+	for _, importedPipeline := range importedPipelines {
+		parsedImportedPipeline, err := handle(importedPipeline.Data, handler, credentials)
+		if err != nil {
+			fmt.Printf("Failed parsing imported pipeline for job %s - %v", importedPipeline.JobName, err)
+		}
+		importedPipeline.Pipeline = parsedImportedPipeline
+	}
+
+	enhancedPipeline, err := handler.GetEnhancer().Enhance(parsedPipeline, importedPipelines, credentials)
 	if err != nil {
 		fmt.Printf("Error while enhancing pipeline:\n%v", err)
 	}
