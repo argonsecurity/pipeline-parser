@@ -2,10 +2,13 @@ package blackbox
 
 import (
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"path/filepath"
 	"sort"
 	"testing"
 
+	githubEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/github"
 	"github.com/argonsecurity/pipeline-parser/pkg/handler"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/go-test/deep"
@@ -18,6 +21,12 @@ func readFile(filename string) []byte {
 
 func executeTestCases(t *testing.T, testCases []TestCase, folder string, platform models.Platform) {
 	for _, testCase := range testCases {
+		if testCase.TestdataDir != "" {
+			h := http.FileServer(http.Dir(testCase.TestdataDir))
+			ts := httptest.NewServer(h)
+			githubEnhancer.GithubBaseURL = ts.URL
+		}
+
 		buf := readFile(filepath.Join("../fixtures", folder, testCase.Filename))
 		pipeline, err := handler.Handle(buf, platform, &models.Credentials{})
 		if err != nil {

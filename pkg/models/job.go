@@ -8,9 +8,9 @@ type TokenPermissions struct {
 type ConcurrencyGroup string
 
 type SecretsRef struct {
-	Secrets       map[string]string `json:"secrets,omitempty"`
-	Inherit       bool              `json:"inherit,omitempty"`
-	FileReference *FileReference    `json:"file_reference,omitempty"`
+	Secrets       map[string]any `json:"secrets,omitempty"`
+	Inherit       bool           `json:"inherit,omitempty"`
+	FileReference *FileReference `json:"file_reference,omitempty"`
 }
 
 type SourceType string

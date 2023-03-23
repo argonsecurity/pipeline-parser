@@ -12,7 +12,9 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
-const githubRemoteFileUrl = "https://raw.githubusercontent.com/%s/%s/%s/%s"
+var (
+	GithubBaseURL = "https://raw.githubusercontent.com"
+)
 
 func getReusableWorkflows(pipeline *models.Pipeline, credentials *models.Credentials) ([]*enhancers.ImportedPipeline, error) {
 	var errs error
@@ -58,7 +60,7 @@ func loadRemotePipeline(org, repo, version, path string, credentials *models.Cre
 		version = "main"
 	}
 
-	url := fmt.Sprintf(githubRemoteFileUrl, org, repo, version, path)
+	url := fmt.Sprintf("%s/%s/%s/%s/%s", GithubBaseURL, org, repo, version, path)
 	buf, err := getHttpClient(credentials).Get(url, nil, nil)
 	if err != nil {
 		return nil, err

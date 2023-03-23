@@ -172,7 +172,7 @@ func parseDependencies(needs *githubModels.Needs) []*models.JobDependency {
 	})
 }
 
-func parseSecrets(secrets any) (map[string]string, bool) {
+func parseSecrets(secrets any) (map[string]any, bool) {
 	if secrets == nil {
 		return nil, false
 	}
@@ -181,7 +181,7 @@ func parseSecrets(secrets any) (map[string]string, bool) {
 		return nil, true
 	}
 
-	if secretsMap, ok := secrets.(map[string]string); ok {
+	if secretsMap, ok := secrets.(map[string]any); ok {
 		return secretsMap, false
 	}
 

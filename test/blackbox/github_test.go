@@ -404,25 +404,25 @@ func TestGitHub(t *testing.T) {
 				Name: utils.GetPtr("continue-on-error-jobs"),
 				Jobs: SortJobs([]*models.Job{
 					{
-						ID:               utils.GetPtr("job1"),
-						Name:             utils.GetPtr("Job 1"),
-						ContinueOnError:  utils.GetPtr("true"),
-						TimeoutMS:        utils.GetPtr(21600000),
-						FileReference:    testutils.CreateFileReference(3, 3, 5, 28),
+						ID:              utils.GetPtr("job1"),
+						Name:            utils.GetPtr("Job 1"),
+						ContinueOnError: utils.GetPtr("true"),
+						TimeoutMS:       utils.GetPtr(21600000),
+						FileReference:   testutils.CreateFileReference(3, 3, 5, 28),
 					},
 					{
-						ID:               utils.GetPtr("job2"),
-						Name:             utils.GetPtr("Job 2"),
-						ContinueOnError:  utils.GetPtr("false"),
-						TimeoutMS:        utils.GetPtr(21600000),
-						FileReference:    testutils.CreateFileReference(6, 3, 8, 29),
+						ID:              utils.GetPtr("job2"),
+						Name:            utils.GetPtr("Job 2"),
+						ContinueOnError: utils.GetPtr("false"),
+						TimeoutMS:       utils.GetPtr(21600000),
+						FileReference:   testutils.CreateFileReference(6, 3, 8, 29),
 					},
 					{
-						ID:               utils.GetPtr("job3"),
-						Name:             utils.GetPtr("Job 3"),
-						ContinueOnError:  utils.GetPtr("${{ inputs.continue-on-error || github.event_name == 'schedule' }}"),
-						TimeoutMS:        utils.GetPtr(21600000),
-						FileReference:    testutils.CreateFileReference(9, 3, 11, 90),
+						ID:              utils.GetPtr("job3"),
+						Name:            utils.GetPtr("Job 3"),
+						ContinueOnError: utils.GetPtr("${{ inputs.continue-on-error || github.event_name == 'schedule' }}"),
+						TimeoutMS:       utils.GetPtr(21600000),
+						FileReference:   testutils.CreateFileReference(9, 3, 11, 90),
 					},
 				}),
 			},
@@ -485,6 +485,109 @@ func TestGitHub(t *testing.T) {
 							},
 						},
 						FileReference: testutils.CreateFileReference(4, 3, 34, 33),
+					},
+				}),
+			},
+		},
+		{
+			Filename:    "workflow-call.yaml",
+			TestdataDir: "../fixtures/github/testdata",
+			Expected: &models.Pipeline{
+				Name: utils.GetPtr("workflow-call"),
+				Jobs: SortJobs([]*models.Job{
+					{
+						ID:   utils.GetPtr("call-local-workflow"),
+						Name: utils.GetPtr("call-local-workflow"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								SCM:          consts.GitHubPlatform,
+								Organization: utils.GetPtr(""),
+								Repository:   utils.GetPtr(""),
+								Path:         utils.GetPtr("./../fixtures/github/dependant-jobs.yaml"),
+								Type:         models.SourceTypeLocal,
+							},
+							Version:     utils.GetPtr(""),
+							VersionType: models.None,
+							Parameters: map[string]any{
+								"param": "value",
+							},
+							Secrets: &models.SecretsRef{
+								Secrets: map[string]any{
+									"test": "${{ secrets.test }}",
+								},
+							},
+							Pipeline: &models.Pipeline{
+								Name: utils.GetPtr("dependable jobs"),
+								Jobs: SortJobs([]*models.Job{
+									{
+										ID:            utils.GetPtr("dependable-job"),
+										Name:          utils.GetPtr("Dependable Job"),
+										TimeoutMS:     utils.GetPtr(21600000),
+										FileReference: testutils.CreateFileReference(4, 3, 5, 25),
+									},
+									{
+										ID:        utils.GetPtr("dependant-job"),
+										Name:      utils.GetPtr("Dependant Job"),
+										TimeoutMS: utils.GetPtr(21600000),
+										Dependencies: []*models.JobDependency{
+											{
+												JobID: utils.GetPtr("dependable-job"),
+											},
+										},
+										FileReference: testutils.CreateFileReference(7, 3, 9, 27),
+									},
+								}),
+							},
+						},
+						FileReference: testutils.CreateFileReference(4, 3, 9, 32),
+					},
+					{
+						ID:   utils.GetPtr("call-remote-workflow"),
+						Name: utils.GetPtr("call-remote-workflow"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								SCM:          consts.GitHubPlatform,
+								Organization: utils.GetPtr("org"),
+								Repository:   utils.GetPtr("repo"),
+								Path:         utils.GetPtr("path.yaml"),
+								Type:         models.SourceTypeRemote,
+							},
+							Version:     utils.GetPtr("main"),
+							VersionType: models.BranchVersion,
+							Parameters: map[string]any{
+								"param": "value",
+							},
+							Secrets: &models.SecretsRef{
+								Inherit: true,
+							},
+							Pipeline: &models.Pipeline{
+								Name: utils.GetPtr("continue-on-error-jobs"),
+								Jobs: SortJobs([]*models.Job{
+									{
+										ID:              utils.GetPtr("job1"),
+										Name:            utils.GetPtr("Job 1"),
+										ContinueOnError: utils.GetPtr("true"),
+										TimeoutMS:       utils.GetPtr(21600000),
+										FileReference:   testutils.CreateFileReference(3, 3, 5, 28),
+									},
+									{
+										ID:              utils.GetPtr("job2"),
+										Name:            utils.GetPtr("Job 2"),
+										ContinueOnError: utils.GetPtr("false"),
+										TimeoutMS:       utils.GetPtr(21600000),
+										FileReference:   testutils.CreateFileReference(6, 3, 8, 29),
+									},
+									{
+										ID:              utils.GetPtr("job3"),
+										Name:            utils.GetPtr("Job 3"),
+										ContinueOnError: utils.GetPtr("${{ inputs.continue-on-error || github.event_name == 'schedule' }}"),
+										TimeoutMS:       utils.GetPtr(21600000),
+										FileReference:   testutils.CreateFileReference(9, 3, 11, 90),
+									},
+								}),
+							},
+						},
+						FileReference: testutils.CreateFileReference(10, 3, 14, 21),
 					},
 				}),
 			},
