@@ -41,17 +41,17 @@ func handleImport(imports *models.Import, credentials *models.Credentials) ([]by
 	}
 
 	if imports.Source.Type == models.SourceTypeRemote && imports.Source.Organization != nil && imports.Source.Repository != nil && imports.Source.Path != nil && imports.Version != nil {
-		return loadRemotePipeline(*imports.Source.Organization, *imports.Source.Repository, *imports.Version, *imports.Source.Path, credentials)
+		return loadRemoteFile(*imports.Source.Organization, *imports.Source.Repository, *imports.Version, *imports.Source.Path, credentials)
 	}
 
 	if imports.Source.Type == models.SourceTypeLocal && imports.Source.Path != nil {
-		return loadLocalPipeline(*imports.Source.Path)
+		return loadLocalFile(*imports.Source.Path)
 	}
 
 	return nil, nil
 }
 
-func loadRemotePipeline(org, repo, version, path string, credentials *models.Credentials) ([]byte, error) {
+func loadRemoteFile(org, repo, version, path string, credentials *models.Credentials) ([]byte, error) {
 	if org == "" || repo == "" || path == "" {
 		return nil, nil
 	}
@@ -69,7 +69,7 @@ func loadRemotePipeline(org, repo, version, path string, credentials *models.Cre
 	return buf, nil
 }
 
-func loadLocalPipeline(path string) ([]byte, error) {
+func loadLocalFile(path string) ([]byte, error) {
 	if path == "" {
 		return nil, nil
 	}
