@@ -33,7 +33,7 @@ func mergePipelines(pipeline *models.Pipeline, importedPipeline *enhancers.Impor
 
 	for _, job := range pipeline.Jobs {
 		if *job.Name == importedPipeline.JobName {
-			job.Import.Pipeline = importedPipeline.Pipeline
+			job.Imports.Pipeline = importedPipeline.Pipeline
 		}
 	}
 

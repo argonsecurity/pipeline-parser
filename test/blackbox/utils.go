@@ -66,8 +66,8 @@ func SortJobs(jobs []*models.Job) []*models.Job {
 	})
 
 	for _, job := range jobs {
-		if job.Import != nil && job.Import.Pipeline != nil && job.Import.Pipeline.Jobs != nil {
-			job.Import.Pipeline.Jobs = SortJobs(job.Import.Pipeline.Jobs)
+		if job.Imports != nil && job.Imports.Pipeline != nil && job.Imports.Pipeline.Jobs != nil {
+			job.Imports.Pipeline.Jobs = SortJobs(job.Imports.Pipeline.Jobs)
 		}
 	}
 	return jobs
