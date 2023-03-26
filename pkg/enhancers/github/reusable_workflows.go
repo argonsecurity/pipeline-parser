@@ -19,8 +19,8 @@ func getReusableWorkflows(pipeline *models.Pipeline, credentials *models.Credent
 	var errs error
 	importedPipelines := []*enhancers.ImportedPipeline{}
 	for _, job := range pipeline.Jobs {
-		if job.Imports != nil {
-			importedPipelineBuf, err := handleImport(job.Imports, credentials)
+		if job.Import != nil {
+			importedPipelineBuf, err := handleImport(job.Import, credentials)
 			if err != nil {
 				errs = errors.Wrap(errs, fmt.Sprintf("error importing pipeline for job %s: %s", *job.Name, err.Error()))
 			}
@@ -34,17 +34,17 @@ func getReusableWorkflows(pipeline *models.Pipeline, credentials *models.Credent
 	return importedPipelines, errs
 }
 
-func handleImport(imports *models.Import, credentials *models.Credentials) ([]byte, error) {
-	if imports == nil || imports.Source == nil {
+func handleImport(jobImport *models.Import, credentials *models.Credentials) ([]byte, error) {
+	if jobImport == nil || jobImport.Source == nil {
 		return nil, nil
 	}
 
-	if imports.Source.Type == models.SourceTypeRemote && imports.Source.Organization != nil && imports.Source.Repository != nil && imports.Source.Path != nil && imports.Version != nil {
-		return loadRemoteFile(*imports.Source.Organization, *imports.Source.Repository, *imports.Version, *imports.Source.Path, credentials)
+	if jobImport.Source.Type == models.SourceTypeRemote && jobImport.Source.Organization != nil && jobImport.Source.Repository != nil && jobImport.Source.Path != nil && jobImport.Version != nil {
+		return loadRemoteFile(*jobImport.Source.Organization, *jobImport.Source.Repository, *jobImport.Version, *jobImport.Source.Path, credentials)
 	}
 
-	if imports.Source.Type == models.SourceTypeLocal && imports.Source.Path != nil {
-		return loadLocalFile(*imports.Source.Path)
+	if jobImport.Source.Type == models.SourceTypeLocal && jobImport.Source.Path != nil {
+		return loadLocalFile(*jobImport.Source.Path)
 	}
 
 	return nil, nil

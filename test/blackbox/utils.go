@@ -64,6 +64,12 @@ func SortJobs(jobs []*models.Job) []*models.Job {
 	sort.Slice(jobs, func(i, j int) bool {
 		return *jobs[i].ID < *jobs[j].ID
 	})
+
+	for _, job := range jobs {
+		if job.Import != nil && job.Import.Pipeline != nil && job.Import.Pipeline.Jobs != nil {
+			job.Import.Pipeline.Jobs = SortJobs(job.Import.Pipeline.Jobs)
+		}
+	}
 	return jobs
 }
 

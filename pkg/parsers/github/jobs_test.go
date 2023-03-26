@@ -626,7 +626,7 @@ func Test_parseReusableWorkflowCallJob(t *testing.T) {
 					},
 					FileReference: testutils.CreateFileReference(6, 7, 8, 9),
 				},
-				Imports: &models.Import{
+				Import: &models.Import{
 					Source: &models.ImportSource{
 						SCM:          consts.GitHubPlatform,
 						Organization: utils.GetPtr("org"),

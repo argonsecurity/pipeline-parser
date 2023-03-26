@@ -29,7 +29,7 @@ func Test_getReusableWorkflows(t *testing.T) {
 					Jobs: []*models.Job{
 						{
 							Name: utils.GetPtr("remote"),
-							Imports: &models.Import{
+							Import: &models.Import{
 								Source: &models.ImportSource{
 									Organization: utils.GetPtr("org"),
 									Repository:   utils.GetPtr("repo"),
@@ -41,7 +41,7 @@ func Test_getReusableWorkflows(t *testing.T) {
 						},
 						{
 							Name: utils.GetPtr("local"),
-							Imports: &models.Import{
+							Import: &models.Import{
 								Source: &models.ImportSource{
 									Path: utils.GetPtr("testdata/org/repo/version/file"),
 									Type: models.SourceTypeLocal,
@@ -69,7 +69,7 @@ func Test_getReusableWorkflows(t *testing.T) {
 					Jobs: []*models.Job{
 						{
 							Name: utils.GetPtr("remote"),
-							Imports: &models.Import{
+							Import: &models.Import{
 								Source: &models.ImportSource{
 									Organization: utils.GetPtr("org"),
 									Repository:   utils.GetPtr("repo"),
@@ -81,7 +81,7 @@ func Test_getReusableWorkflows(t *testing.T) {
 						},
 						{
 							Name: utils.GetPtr("local"),
-							Imports: &models.Import{
+							Import: &models.Import{
 								Source: &models.ImportSource{
 									Path: utils.GetPtr("testdata/org/repo/version/does-not-exist"),
 									Type: models.SourceTypeLocal,
@@ -109,7 +109,7 @@ func Test_getReusableWorkflows(t *testing.T) {
 					Jobs: []*models.Job{
 						{
 							Name: utils.GetPtr("remote"),
-							Imports: &models.Import{
+							Import: &models.Import{
 								Source: &models.ImportSource{
 									Organization: utils.GetPtr("org"),
 									Repository:   utils.GetPtr("repo"),
@@ -121,7 +121,7 @@ func Test_getReusableWorkflows(t *testing.T) {
 						},
 						{
 							Name: utils.GetPtr("local"),
-							Imports: &models.Import{
+							Import: &models.Import{
 								Source: &models.ImportSource{
 									Path: utils.GetPtr("testdata/org/repo/version/file"),
 									Type: models.SourceTypeLocal,

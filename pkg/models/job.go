@@ -56,7 +56,7 @@ type Job struct {
 	Metadata             Metadata                 `json:"metadata,omitempty"`
 	Matrix               *Matrix                  `json:"matrix,omitempty"`
 	FileReference        *FileReference           `json:"file_reference,omitempty"`
-	Imports              *Import                  `json:"imports,omitempty"`
+	Import               *Import                  `json:"import,omitempty"`
 }
 
 type Matrix struct {
