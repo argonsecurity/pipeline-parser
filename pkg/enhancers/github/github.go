@@ -18,7 +18,7 @@ func (g *GitHubEnhancer) LoadImportedPipelines(data *models.Pipeline, credential
 	return importedPipelines, errs
 }
 
-func (g *GitHubEnhancer) Enhance(data *models.Pipeline, importedPipelines []*enhancers.ImportedPipeline, credentials *models.Credentials) (*models.Pipeline, error) {
+func (g *GitHubEnhancer) Enhance(data *models.Pipeline, importedPipelines []*enhancers.ImportedPipeline) (*models.Pipeline, error) {
 	for _, importedPipeline := range importedPipelines {
 		data = mergePipelines(data, importedPipeline)
 	}

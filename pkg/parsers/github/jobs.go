@@ -201,7 +201,7 @@ func parseJobUses(uses string) (org string, repo string, path string, version st
 	}
 
 	result := githubWorkflowCallRegex.FindStringSubmatch(uses)
-	if len(result) == 0 {
+	if len(result) < 4 {
 		return
 	}
 

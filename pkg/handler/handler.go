@@ -76,7 +76,7 @@ func handle[T any](data []byte, handler Handler[T], credentials *models.Credenti
 		importedPipeline.Pipeline = parsedImportedPipeline
 	}
 
-	enhancedPipeline, err := handler.GetEnhancer().Enhance(parsedPipeline, importedPipelines, credentials)
+	enhancedPipeline, err := handler.GetEnhancer().Enhance(parsedPipeline, importedPipelines)
 	if err != nil {
 		fmt.Printf("Error while enhancing pipeline:\n%v", err)
 	}

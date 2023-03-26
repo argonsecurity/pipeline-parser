@@ -10,5 +10,5 @@ type ImportedPipeline struct {
 
 type Enhancer interface {
 	LoadImportedPipelines(data *models.Pipeline, credentials *models.Credentials) ([]*ImportedPipeline, error)
-	Enhance(data *models.Pipeline, importedPipelines []*ImportedPipeline, credentials *models.Credentials) (*models.Pipeline, error)
+	Enhance(data *models.Pipeline, importedPipelines []*ImportedPipeline) (*models.Pipeline, error)
 }

@@ -11,6 +11,6 @@ func (b *BitbucketEnhancer) LoadImportedPipelines(data *models.Pipeline, credent
 	return nil, nil
 }
 
-func (b *BitbucketEnhancer) Enhance(data *models.Pipeline, importedPipelines []*enhancers.ImportedPipeline, credentials *models.Credentials) (*models.Pipeline, error) {
+func (b *BitbucketEnhancer) Enhance(data *models.Pipeline, importedPipelines []*enhancers.ImportedPipeline) (*models.Pipeline, error) {
 	return data, nil
 }

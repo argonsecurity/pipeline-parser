@@ -11,6 +11,6 @@ func (a *AzureEnhancer) LoadImportedPipelines(data *models.Pipeline, credentials
 	return nil, nil
 }
 
-func (a *AzureEnhancer) Enhance(data *models.Pipeline, importedPipelines []*enhancers.ImportedPipeline, credentials *models.Credentials) (*models.Pipeline, error) {
+func (a *AzureEnhancer) Enhance(data *models.Pipeline, importedPipelines []*enhancers.ImportedPipeline) (*models.Pipeline, error) {
 	return data, nil
 }

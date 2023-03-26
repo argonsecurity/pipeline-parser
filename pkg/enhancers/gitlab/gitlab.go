@@ -11,6 +11,6 @@ func (g *GitLabEnhancer) LoadImportedPipelines(data *models.Pipeline, credential
 	return nil, nil
 }
 
-func (g *GitLabEnhancer) Enhance(data *models.Pipeline, importedPipelines []*enhancers.ImportedPipeline, credentials *models.Credentials) (*models.Pipeline, error) {
+func (g *GitLabEnhancer) Enhance(data *models.Pipeline, importedPipelines []*enhancers.ImportedPipeline) (*models.Pipeline, error) {
 	return data, nil
 }

@@ -7,9 +7,8 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
-	"github.com/argonsecurity/pipeline-parser/pkg/http"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
-	"github.com/argonsecurity/pipeline-parser/pkg/utils"
+	"github.com/imroc/req/v3"
 )
 
 var (
@@ -61,11 +60,17 @@ func loadRemoteFile(org, repo, version, path string, credentials *models.Credent
 	}
 
 	url := fmt.Sprintf("%s/%s/%s/%s/%s", GithubBaseURL, org, repo, version, path)
-	buf, err := getHttpClient(credentials).Get(url, nil, nil)
+	client := getHttpClient(credentials)
+	resp, err := client.R().Get(url)
 	if err != nil {
 		return nil, err
 	}
 
+	if resp.IsErrorState() {
+		return nil, errors.New(resp.Response.Status)
+	}
+
+	buf := resp.Bytes()
 	return buf, nil
 }
 
@@ -78,7 +83,7 @@ func loadLocalFile(path string) ([]byte, error) {
 		return nil, err
 	}
 
-	buf, err := utils.ReadFile(path)
+	buf, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -86,14 +91,12 @@ func loadLocalFile(path string) ([]byte, error) {
 	return buf, nil
 }
 
-func getHttpClient(credentials *models.Credentials) *http.HTTPClient {
+func getHttpClient(credentials *models.Credentials) *req.Client {
+	client := req.C()
 	if credentials == nil {
-		return http.NewHTTPClient(nil)
+		return client
 	}
 
-	headers := map[string]string{
-		"Authorization": fmt.Sprintf("token %s", credentials.Token),
-	}
+	return client.SetCommonHeader("Authorization", fmt.Sprintf("token %s", credentials.Token))
 
-	return http.NewHTTPClient(headers)
 }
