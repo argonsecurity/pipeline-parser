@@ -122,7 +122,7 @@ func parseReusableWorkflowCallJob(jobName string, job *githubModels.ReusableWork
 	if job.Uses != "" {
 		org, repo, path, version, versionType, sourceType := parseJobUses(job.Uses)
 		secretsMap, inherit := parseSecrets(job.Secrets)
-		parsedJob.Import = &models.Import{
+		parsedJob.Imports = &models.Import{
 			Source: &models.ImportSource{
 				SCM:          consts.GitHubPlatform,
 				Organization: &org,

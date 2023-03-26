@@ -498,7 +498,7 @@ func TestGitHub(t *testing.T) {
 					{
 						ID:   utils.GetPtr("call-local-workflow"),
 						Name: utils.GetPtr("call-local-workflow"),
-						Import: &models.Import{
+						Imports: &models.Import{
 							Source: &models.ImportSource{
 								SCM:          consts.GitHubPlatform,
 								Organization: utils.GetPtr(""),
@@ -544,7 +544,7 @@ func TestGitHub(t *testing.T) {
 					{
 						ID:   utils.GetPtr("call-remote-workflow"),
 						Name: utils.GetPtr("call-remote-workflow"),
-						Import: &models.Import{
+						Imports: &models.Import{
 							Source: &models.ImportSource{
 								SCM:          consts.GitHubPlatform,
 								Organization: utils.GetPtr("org"),

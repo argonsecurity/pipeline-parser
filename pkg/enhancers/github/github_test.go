@@ -25,8 +25,8 @@ func Test_mergePipelines(t *testing.T) {
 				pipeline: &models.Pipeline{
 					Jobs: []*models.Job{
 						{
-							Name:   utils.GetPtr("job1"),
-							Import: &models.Import{},
+							Name:    utils.GetPtr("job1"),
+							Imports: &models.Import{},
 						},
 					},
 				},
@@ -41,7 +41,7 @@ func Test_mergePipelines(t *testing.T) {
 				Jobs: []*models.Job{
 					{
 						Name: utils.GetPtr("job1"),
-						Import: &models.Import{
+						Imports: &models.Import{
 							Pipeline: &models.Pipeline{
 								Name: utils.GetPtr("imported"),
 							},
@@ -56,8 +56,8 @@ func Test_mergePipelines(t *testing.T) {
 				pipeline: &models.Pipeline{
 					Jobs: []*models.Job{
 						{
-							Name:   utils.GetPtr("job1"),
-							Import: &models.Import{},
+							Name:    utils.GetPtr("job1"),
+							Imports: &models.Import{},
 						},
 					},
 				},
@@ -71,8 +71,8 @@ func Test_mergePipelines(t *testing.T) {
 			want: &models.Pipeline{
 				Jobs: []*models.Job{
 					{
-						Name:   utils.GetPtr("job1"),
-						Import: &models.Import{},
+						Name:    utils.GetPtr("job1"),
+						Imports: &models.Import{},
 					},
 				},
 			},
