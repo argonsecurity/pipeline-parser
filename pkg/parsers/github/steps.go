@@ -11,9 +11,6 @@ import (
 )
 
 var (
-	sha1Regex   = regexp.MustCompile(`[0-9a-fA-F]{40}`)
-	semverRegex = regexp.MustCompile(`v?([0-9]+)(\.[0-9]+)?(\.[0-9]+)?(-([0-9A-Za-z\-]+(\.[0-9A-Za-z\-]+)*))?(\+([0-9A-Za-z\-]+(\.[0-9A-Za-z\-]+)*))?`)
-
 	githubActionNameRegex = regexp.MustCompile(`(.+?)(?:@(.+)|$)`)
 )
 
@@ -84,21 +81,12 @@ func parseJobStep(step githubModels.Step) *models.Step {
 func parseActionHeader(header string) (string, string, models.VersionType) {
 	result := githubActionNameRegex.FindStringSubmatch(header)
 	actionName := result[1]
-	versionType := models.None
 	version := ""
 	if len(result) == 3 {
 		version = result[2]
 	}
 
-	if version != "" {
-		if sha1Regex.MatchString(version) {
-			versionType = models.CommitSHA
-		} else if semverRegex.MatchString(version) {
-			versionType = models.TagVersion
-		} else {
-			versionType = models.BranchVersion
-		}
-	}
+	versionType := detectVersionType(version)
 
 	return actionName, version, versionType
 }

@@ -2,11 +2,13 @@ package blackbox
 
 import (
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"path/filepath"
 	"sort"
 	"testing"
 
-	"github.com/argonsecurity/pipeline-parser/pkg/consts"
+	githubEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/github"
 	"github.com/argonsecurity/pipeline-parser/pkg/handler"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/go-test/deep"
@@ -17,10 +19,16 @@ func readFile(filename string) []byte {
 	return b
 }
 
-func executeTestCases(t *testing.T, testCases []TestCase, folder string, platform consts.Platform) {
+func executeTestCases(t *testing.T, testCases []TestCase, folder string, platform models.Platform) {
 	for _, testCase := range testCases {
+		if testCase.TestdataDir != "" {
+			h := http.FileServer(http.Dir(testCase.TestdataDir))
+			ts := httptest.NewServer(h)
+			githubEnhancer.GithubBaseURL = ts.URL
+		}
+
 		buf := readFile(filepath.Join("../fixtures", folder, testCase.Filename))
-		pipeline, err := handler.Handle(buf, platform)
+		pipeline, err := handler.Handle(buf, platform, &models.Credentials{})
 		if err != nil {
 			if !testCase.ShouldFail {
 				t.Errorf("%s: %s", testCase.Filename, err)
@@ -56,6 +64,12 @@ func SortJobs(jobs []*models.Job) []*models.Job {
 	sort.Slice(jobs, func(i, j int) bool {
 		return *jobs[i].ID < *jobs[j].ID
 	})
+
+	for _, job := range jobs {
+		if job.Import != nil && job.Import.Pipeline != nil && job.Import.Pipeline.Jobs != nil {
+			job.Import.Pipeline.Jobs = SortJobs(job.Import.Pipeline.Jobs)
+		}
+	}
 	return jobs
 }
 

@@ -1,16 +1,15 @@
-package enhancers
+package general
 
 import (
-	"github.com/argonsecurity/pipeline-parser/pkg/consts"
-	"github.com/argonsecurity/pipeline-parser/pkg/enhancers/config"
+	"github.com/argonsecurity/pipeline-parser/pkg/enhancers/general/config"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 )
 
 var (
-	platformToEnhancerMapping = map[consts.Platform]*config.EnhancementConfiguration{}
+	platformToEnhancerMapping = map[models.Platform]*config.EnhancementConfiguration{}
 )
 
-func Enhance(pipeline *models.Pipeline, platform consts.Platform) (*models.Pipeline, error) {
+func Enhance(pipeline *models.Pipeline, platform models.Platform) (*models.Pipeline, error) {
 	platformConfig := platformToEnhancerMapping[platform]
 
 	if pipeline.Jobs != nil {

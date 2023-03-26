@@ -1,5 +1,7 @@
 package models
 
+type Platform string
+
 type EnvironmentVariables map[string]any
 type EnvironmentVariablesRef struct {
 	EnvironmentVariables `json:"environment_variables,omitempty"`

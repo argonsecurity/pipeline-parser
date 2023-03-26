@@ -1,0 +1,14 @@
+name: workflow-call
+
+jobs:
+  call-local-workflow:
+    uses: ./../fixtures/github/dependant-jobs.yaml
+    with:
+      param: value
+    secrets:
+      test: ${{ secrets.test }}
+  call-remote-workflow:
+    uses: org/repo/path.yaml@main
+    with:
+      param: value
+    secrets: inherit

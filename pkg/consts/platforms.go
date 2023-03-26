@@ -1,15 +1,15 @@
 package consts
 
-type Platform string
+import "github.com/argonsecurity/pipeline-parser/pkg/models"
 
 const (
-	GitHubPlatform    Platform = "github"
-	GitLabPlatform    Platform = "gitlab"
-	AzurePlatform     Platform = "azure"
-	BitbucketPlatform Platform = "bitbucket"
+	GitHubPlatform    models.Platform = "github"
+	GitLabPlatform    models.Platform = "gitlab"
+	AzurePlatform     models.Platform = "azure"
+	BitbucketPlatform models.Platform = "bitbucket"
 )
 
-var Platforms = []Platform{
+var Platforms = []models.Platform{
 	GitHubPlatform,
 	GitLabPlatform,
 	AzurePlatform,
