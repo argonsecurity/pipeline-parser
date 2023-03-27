@@ -47,7 +47,7 @@ func Handle(data []byte, platform models.Platform, credentials *models.Credentia
 		return nil, err
 	}
 
-	return generalEnhancer.Enhance(pipeline, platform)
+	return pipeline, nil
 }
 
 func handle[T any](data []byte, handler Handler[T], credentials *models.Credentials) (*models.Pipeline, error) {
@@ -81,5 +81,5 @@ func handle[T any](data []byte, handler Handler[T], credentials *models.Credenti
 		fmt.Printf("Error while enhancing pipeline:\n%v", err)
 	}
 
-	return enhancedPipeline, nil
+	return generalEnhancer.Enhance(enhancedPipeline, handler.GetPlatform())
 }
