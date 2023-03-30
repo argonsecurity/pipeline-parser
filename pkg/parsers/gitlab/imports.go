@@ -26,7 +26,9 @@ func parseImports(include *gitlabModels.Include) []*models.Import {
 
 	imports := []*models.Import{}
 	for _, item := range *include {
-		imports = append(imports, parseIncludeItem(item))
+		if importItem := parseIncludeItem(item); importItem != nil {
+			imports = append(imports, importItem)
+		}
 	}
 	return imports
 }
