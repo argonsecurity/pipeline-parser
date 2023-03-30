@@ -729,7 +729,7 @@ func TestGitLab(t *testing.T) {
 							Repository:   utils.GetPtr(""),
 						},
 						Version:       utils.GetPtr(""),
-						VersionType:   models.BranchVersion,
+						VersionType:   models.None,
 						FileReference: testutils.CreateFileReference(1, 10, 1, 41),
 					},
 				},

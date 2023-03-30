@@ -114,7 +114,7 @@ func Test_parseRemoteImport(t *testing.T) {
 				},
 				FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				Version:       utils.GetPtr(""),
-				VersionType:   models.BranchVersion,
+				VersionType:   models.None,
 			},
 		},
 	}
@@ -395,7 +395,7 @@ func Test_parseIncludeItem(t *testing.T) {
 					Organization: utils.GetPtr(""),
 				},
 				Version:       utils.GetPtr(""),
-				VersionType:   models.BranchVersion,
+				VersionType:   models.None,
 				FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 			},
 		},
@@ -537,13 +537,13 @@ func Test_parseImports(t *testing.T) {
 						FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 					},
 					{
-						Remote:        "https://gitlab.com/group/subgroup/project/-/raw/master/.gitlab-ci.yml",
+						Remote:        "https://gitlab.com/group/subgroup/project/-/raw/f7b05602eb1bf22dc808838622c5d8d00b39d473/.gitlab-ci.yml",
 						FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 					},
 					{
 						File:          ".gitlab-ci.yml",
 						Project:       "group/subgroup/project",
-						Ref:           "master",
+						Ref:           "v1",
 						FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 					},
 					{
@@ -569,8 +569,8 @@ func Test_parseImports(t *testing.T) {
 						Repository:   utils.GetPtr("subgroup/project"),
 						Organization: utils.GetPtr("group"),
 					},
-					Version:       utils.GetPtr("master"),
-					VersionType:   models.BranchVersion,
+					Version:       utils.GetPtr("f7b05602eb1bf22dc808838622c5d8d00b39d473"),
+					VersionType:   models.CommitSHA,
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
 				{
@@ -582,8 +582,8 @@ func Test_parseImports(t *testing.T) {
 						Organization: utils.GetPtr("group"),
 					},
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
-					Version:       utils.GetPtr("master"),
-					VersionType:   models.BranchVersion,
+					Version:       utils.GetPtr("v1"),
+					VersionType:   models.TagVersion,
 				},
 				{
 					Source: &models.ImportSource{
