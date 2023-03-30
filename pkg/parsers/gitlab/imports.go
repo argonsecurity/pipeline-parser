@@ -11,6 +11,10 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
+const (
+	TEMPLATE_URL_FORMAT = "https://gitlab.com/gitlab-org/gitlab/-/raw/master/lib/gitlab/ci/templates/%s"
+)
+
 var (
 	gitlabRemotePipelineRegex = regexp.MustCompile(`https://gitlab\.com/(?P<group>[\w-_]+)/(?P<project>.*?)/(?:-/)?raw/(?P<ref>.*?)/(?P<filePath>.*\.ya?ml)`)
 )
@@ -124,7 +128,7 @@ func parseTemplateImport(item *gitlabModels.IncludeItem) *models.Import {
 		return nil
 	}
 
-	fullTemplateUrl := fmt.Sprintf("https://gitlab.com/gitlab-org/gitlab/-/raw/master/lib/gitlab/ci/templates/%s", item.Template)
+	fullTemplateUrl := fmt.Sprintf(TEMPLATE_URL_FORMAT, item.Template)
 	item.Remote = fullTemplateUrl
 	return parseRemoteImport(item)
 }
