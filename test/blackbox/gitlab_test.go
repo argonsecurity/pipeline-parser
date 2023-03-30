@@ -716,6 +716,27 @@ func TestGitLab(t *testing.T) {
 				},
 			}),
 		},
+		{
+			Filename: "invalid-import.yaml",
+			Expected: &models.Pipeline{
+				Imports: []*models.Import{
+					{
+						Source: &models.ImportSource{
+							SCM:          consts.GitLabPlatform,
+							Type:         models.SourceTypeRemote,
+							Path:         utils.GetPtr(""),
+							Organization: utils.GetPtr(""),
+							Repository:   utils.GetPtr(""),
+						},
+						Version:       utils.GetPtr(""),
+						VersionType:   models.BranchVersion,
+						FileReference: testutils.CreateFileReference(1, 10, 1, 41),
+					},
+				},
+				Jobs:     []*models.Job{},
+				Defaults: &models.Defaults{},
+			},
+		},
 	}
 
 	executeTestCases(t, testCases, "gitlab", consts.GitLabPlatform)
