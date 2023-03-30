@@ -8,6 +8,7 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	parserUtils "github.com/argonsecurity/pipeline-parser/pkg/parsers/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
@@ -74,6 +75,7 @@ func parseRemoteImport(item *gitlabModels.IncludeItem) *models.Import {
 	}
 
 	group, project, ref, filePath := extractRemotePipelineInfo(item.Remote)
+	versionType := parserUtils.DetectVersionType(ref)
 	return &models.Import{
 		Source: &models.ImportSource{
 			SCM:          consts.GitLabPlatform,
@@ -83,7 +85,7 @@ func parseRemoteImport(item *gitlabModels.IncludeItem) *models.Import {
 			Path:         utils.GetPtr(filePath),
 		},
 		Version:       utils.GetPtr(ref),
-		VersionType:   models.BranchVersion,
+		VersionType:   versionType,
 		FileReference: item.FileReference,
 	}
 }
@@ -119,7 +121,7 @@ func parseFileImport(item *gitlabModels.IncludeItem) *models.Import {
 
 	if item.Ref != "" {
 		importData.Version = &item.Ref
-		importData.VersionType = models.BranchVersion
+		importData.VersionType = parserUtils.DetectVersionType(item.Ref)
 	}
 
 	return importData

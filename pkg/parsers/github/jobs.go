@@ -7,6 +7,7 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	parserUtils "github.com/argonsecurity/pipeline-parser/pkg/parsers/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
@@ -214,6 +215,6 @@ func parseJobUses(uses string) (org string, repo string, path string, version st
 		version = result[4]
 	}
 
-	versionType = detectVersionType(version)
+	versionType = parserUtils.DetectVersionType(version)
 	return
 }

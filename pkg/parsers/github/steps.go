@@ -86,7 +86,7 @@ func parseActionHeader(header string) (string, string, models.VersionType) {
 		version = result[2]
 	}
 
-	versionType := detectVersionType(version)
+	versionType := parserUtils.DetectVersionType(version)
 
 	return actionName, version, versionType
 }
