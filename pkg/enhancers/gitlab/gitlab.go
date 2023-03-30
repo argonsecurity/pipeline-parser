@@ -99,6 +99,10 @@ func handleLocalImport(importData *models.Import) (*enhancers.ImportedPipeline, 
 }
 
 func (g *GitLabEnhancer) Enhance(data *models.Pipeline, importedPipelines []*enhancers.ImportedPipeline) (*models.Pipeline, error) {
+	if data == nil {
+		return data, nil
+	}
+
 	for i, importData := range data.Imports {
 		importedPipeline := importedPipelines[i]
 		if importedPipeline != nil {
