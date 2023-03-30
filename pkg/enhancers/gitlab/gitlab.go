@@ -25,8 +25,13 @@ func (g *GitLabEnhancer) LoadImportedPipelines(data *models.Pipeline, credential
 		for _, importData := range data.Imports {
 			importedPipeline, err := handleImport(importData, credentials)
 			if err != nil {
+				if errs == nil {
+					errs = errors.New("got error(s) importing pipeline(s):")
+				}
 				errs = errors.Wrap(errs, fmt.Sprintf("error importing pipeline: %s", err.Error()))
 			}
+
+			// We append nil imported pipelines to maintain the order of the imported pipelines
 			importedPipelines = append(importedPipelines, importedPipeline)
 		}
 	}

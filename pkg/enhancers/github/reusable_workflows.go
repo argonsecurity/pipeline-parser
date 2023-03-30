@@ -22,6 +22,9 @@ func getReusableWorkflows(pipeline *models.Pipeline, credentials *models.Credent
 		if job.Imports != nil {
 			importedPipelineBuf, err := handleImport(job.Imports, credentials)
 			if err != nil {
+				if errs == nil {
+					errs = errors.New("got error(s) importing pipeline(s):")
+				}
 				errs = errors.Wrap(errs, fmt.Sprintf("error importing pipeline for job %s: %s", *job.Name, err.Error()))
 			}
 			importedPipelines = append(importedPipelines, &enhancers.ImportedPipeline{
