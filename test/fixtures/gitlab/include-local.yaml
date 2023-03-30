@@ -1,1 +1,1 @@
-include: /test/fixtures/gitlab/gradle.yaml
+include: /../../test/fixtures/gitlab/gradle.yaml

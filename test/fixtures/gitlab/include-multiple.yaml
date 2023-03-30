@@ -1,7 +1,7 @@
 include:
-  - file: /lib/gitlab/ci/templates/Gradle.gitlab-ci.yml
+  - file: /imported.yaml
     project: gitlab-org/gitlab
     ref: master
-  - https://gitlab.com/gitlab-org/gitlab/-/raw/master/lib/gitlab/ci/templates/Gradle.gitlab-ci.yml
-  - /test/fixtures/gitlab/gradle.yaml
+  - https://gitlab.com/gitlab-org/gitlab/-/raw/master/imported.yaml
+  - /../../test/fixtures/gitlab/gradle.yaml
   - template: Android.gitlab-ci.yml

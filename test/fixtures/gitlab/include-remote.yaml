@@ -1,1 +1,1 @@
-include: https://gitlab.com/gitlab-org/gitlab/-/raw/master/lib/gitlab/ci/templates/Gradle.gitlab-ci.yml
+include: https://gitlab.com/gitlab-org/gitlab/-/raw/master/imported.yaml

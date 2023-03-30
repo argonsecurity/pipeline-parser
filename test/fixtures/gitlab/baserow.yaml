@@ -175,8 +175,6 @@
 #       re-use on master knowing they are safe.
 #
 
-include: "/.gitlab/ci_includes/jobs.yml"
-
 stages:
   - build
   - test
@@ -228,4 +226,3 @@ build-ci-util-image:
     matrix:
       - key1: [value1, value2]
       - key2: value
-
