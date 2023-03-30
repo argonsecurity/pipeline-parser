@@ -4,3 +4,4 @@ include:
     ref: master
   - https://gitlab.com/gitlab-org/gitlab/-/raw/master/lib/gitlab/ci/templates/Gradle.gitlab-ci.yml
   - /test/fixtures/gitlab/gradle.yaml
+  - template: Android.gitlab-ci.yml

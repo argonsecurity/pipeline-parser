@@ -314,6 +314,10 @@ func TestLoad(t *testing.T) {
 						Local:         "/test/fixtures/gitlab/gradle.yaml",
 						FileReference: testutils.CreateFileReference(6, 5, 6, 38),
 					},
+					{
+						Template:      "Android.gitlab-ci.yml",
+						FileReference: testutils.CreateFileReference(7, 5, 7, 36),
+					},
 				},
 			},
 		},
