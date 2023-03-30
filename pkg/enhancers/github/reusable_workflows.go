@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	GithubBaseURL = "https://raw.githubusercontent.com"
+	GITHUB_BASE_URL = "https://raw.githubusercontent.com"
 )
 
 func getReusableWorkflows(pipeline *models.Pipeline, credentials *models.Credentials) ([]*enhancers.ImportedPipeline, error) {
@@ -62,7 +62,7 @@ func loadRemoteFile(org, repo, version, path string, credentials *models.Credent
 		version = "main"
 	}
 
-	url := fmt.Sprintf("%s/%s/%s/%s/%s", GithubBaseURL, org, repo, version, path)
+	url := fmt.Sprintf("%s/%s/%s/%s/%s", GITHUB_BASE_URL, org, repo, version, path)
 	client := utils.GetHttpClient(credentials)
 	resp, err := client.R().Get(url)
 	if err != nil {

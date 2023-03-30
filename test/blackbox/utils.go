@@ -25,7 +25,7 @@ func executeTestCases(t *testing.T, testCases []TestCase, folder string, platfor
 		if testCase.TestdataDir != "" {
 			h := http.FileServer(http.Dir(testCase.TestdataDir))
 			ts := httptest.NewServer(h)
-			githubEnhancer.GithubBaseURL = ts.URL
+			githubEnhancer.GITHUB_BASE_URL = ts.URL
 			gitlabEnhancer.GITLAB_BASE_URL = ts.URL
 		}
 
