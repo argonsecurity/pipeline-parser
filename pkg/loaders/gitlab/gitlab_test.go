@@ -194,7 +194,8 @@ func TestLoad(t *testing.T) {
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
 				Include: &models.Include{
 					{
-						Local: "/.gitlab/ci_includes/jobs.yml",
+						Local:         "/.gitlab/ci_includes/jobs.yml",
+						FileReference: testutils.CreateFileReference(178, 10, 178, 39),
 					},
 				},
 				Stages: []string{
@@ -267,6 +268,52 @@ func TestLoad(t *testing.T) {
 						"BACKEND_IMAGE_NAME":         "backend",
 					},
 					FileReference: testutils.CreateFileReference(186, 1, 200, 32),
+				},
+			},
+		},
+		{
+			Name:     "Include Local",
+			Filename: "../../../test/fixtures/gitlab/include-local.yaml",
+			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
+				Include: &models.Include{
+					{
+						Local:         "/test/fixtures/gitlab/gradle.yaml",
+						FileReference: testutils.CreateFileReference(1, 10, 1, 43),
+					},
+				},
+			},
+		},
+		{
+			Name:     "Include Remote",
+			Filename: "../../../test/fixtures/gitlab/include-remote.yaml",
+			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
+				Include: &models.Include{
+					{
+						Remote:        "https://gitlab.com/gitlab-org/gitlab/-/raw/master/lib/gitlab/ci/templates/Gradle.gitlab-ci.yml",
+						FileReference: testutils.CreateFileReference(1, 10, 1, 104),
+					},
+				},
+			},
+		},
+		{
+			Name:     "Include Multiple",
+			Filename: "../../../test/fixtures/gitlab/include-multiple.yaml",
+			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
+				Include: &models.Include{
+					{
+						File:          "/lib/gitlab/ci/templates/Gradle.gitlab-ci.yml",
+						Ref:           "master",
+						Project:       "gitlab-org/gitlab",
+						FileReference: testutils.CreateFileReference(2, 5, 4, 16),
+					},
+					{
+						Remote:        "https://gitlab.com/gitlab-org/gitlab/-/raw/master/lib/gitlab/ci/templates/Gradle.gitlab-ci.yml",
+						FileReference: testutils.CreateFileReference(5, 5, 5, 99),
+					},
+					{
+						Local:         "/test/fixtures/gitlab/gradle.yaml",
+						FileReference: testutils.CreateFileReference(6, 5, 6, 38),
+					},
 				},
 			},
 		},
