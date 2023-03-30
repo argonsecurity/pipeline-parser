@@ -101,6 +101,7 @@ func Test_getReusableWorkflows(t *testing.T) {
 					Data:    nil,
 				},
 			},
+			wantErr: true,
 		},
 		{
 			name: "remote does not exist",
@@ -141,6 +142,7 @@ func Test_getReusableWorkflows(t *testing.T) {
 					Data:    []byte("file data"),
 				},
 			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
