@@ -8,11 +8,11 @@ import (
 
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
-	"github.com/imroc/req/v3"
+	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 )
 
 var (
-	GithubBaseURL = "https://raw.githubusercontent.com"
+	GITHUB_BASE_URL = "https://raw.githubusercontent.com"
 )
 
 func getReusableWorkflows(pipeline *models.Pipeline, credentials *models.Credentials) ([]*enhancers.ImportedPipeline, error) {
@@ -22,6 +22,9 @@ func getReusableWorkflows(pipeline *models.Pipeline, credentials *models.Credent
 		if job.Imports != nil {
 			importedPipelineBuf, err := handleImport(job.Imports, credentials)
 			if err != nil {
+				if errs == nil {
+					errs = errors.New("got error(s) importing pipeline(s):")
+				}
 				errs = errors.Wrap(errs, fmt.Sprintf("error importing pipeline for job %s: %s", *job.Name, err.Error()))
 			}
 			importedPipelines = append(importedPipelines, &enhancers.ImportedPipeline{
@@ -59,8 +62,8 @@ func loadRemoteFile(org, repo, version, path string, credentials *models.Credent
 		version = "main"
 	}
 
-	url := fmt.Sprintf("%s/%s/%s/%s/%s", GithubBaseURL, org, repo, version, path)
-	client := getHttpClient(credentials)
+	url := fmt.Sprintf("%s/%s/%s/%s/%s", GITHUB_BASE_URL, org, repo, version, path)
+	client := utils.GetHttpClient(credentials)
 	resp, err := client.R().Get(url)
 	if err != nil {
 		return nil, err
@@ -89,14 +92,4 @@ func loadLocalFile(path string) ([]byte, error) {
 	}
 
 	return buf, nil
-}
-
-func getHttpClient(credentials *models.Credentials) *req.Client {
-	client := req.C()
-	if credentials == nil {
-		return client
-	}
-
-	return client.SetCommonHeader("Authorization", fmt.Sprintf("token %s", credentials.Token))
-
 }

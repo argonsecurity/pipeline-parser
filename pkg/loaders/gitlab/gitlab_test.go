@@ -144,16 +144,6 @@ func TestLoad(t *testing.T) {
 			Name:     "Terraform",
 			Filename: "../../../test/fixtures/gitlab/terraform.yaml",
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
-				Include: &models.Include{
-					{
-						Template:      "Terraform/Base.latest.gitlab-ci.yml",
-						FileReference: testutils.CreateFileReference(7, 5, 7, 50),
-					},
-					{
-						Template:      "Jobs/SAST-IaC.latest.gitlab-ci.yml",
-						FileReference: testutils.CreateFileReference(8, 5, 8, 49),
-					},
-				},
 				Stages: []string{
 					"validate",
 					"test",
@@ -163,17 +153,17 @@ func TestLoad(t *testing.T) {
 				Jobs: map[string]*models.Job{
 					"validate": {
 						Extends:       ".terraform:validate",
-						FileReference: testutils.CreateFileReference(20, 1, 22, 10),
+						FileReference: testutils.CreateFileReference(16, 1, 18, 10),
 						Needs:         &job.Needs{},
 					},
 					"fmt": {
 						Extends:       ".terraform:fmt",
-						FileReference: testutils.CreateFileReference(16, 1, 18, 10),
+						FileReference: testutils.CreateFileReference(12, 1, 14, 10),
 						Needs:         &job.Needs{},
 					},
 					"build": {
 						Extends:       ".terraform:build",
-						FileReference: testutils.CreateFileReference(24, 1, 25, 28),
+						FileReference: testutils.CreateFileReference(20, 1, 21, 28),
 					},
 					"deploy": {
 						Extends: ".terraform:deploy",
@@ -192,11 +182,6 @@ func TestLoad(t *testing.T) {
 			Name:     "Baserow",
 			Filename: "../../../test/fixtures/gitlab/baserow.yaml",
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
-				Include: &models.Include{
-					{
-						Local: "/.gitlab/ci_includes/jobs.yml",
-					},
-				},
 				Stages: []string{
 					"build",
 					"test",
@@ -207,7 +192,7 @@ func TestLoad(t *testing.T) {
 					"build-ci-util-image": {
 						Image: &common.Image{
 							Name:          "docker:20.10.12",
-							FileReference: testutils.CreateFileReference(204, 3, 204, 25),
+							FileReference: testutils.CreateFileReference(202, 3, 202, 25),
 						},
 						Stage:    "build",
 						Services: []any{"docker:20.10.12-dind"},
@@ -216,13 +201,13 @@ func TestLoad(t *testing.T) {
 								"DOCKER_BUILDKIT": "1",
 								"DOCKER_HOST":     "tcp://docker:2376",
 							},
-							FileReference: testutils.CreateFileReference(207, 1, 210, 37),
+							FileReference: testutils.CreateFileReference(205, 1, 208, 37),
 						},
 						BeforeScript: &common.Script{
 							Commands: []string{
 								"echo \"$CI_REGISTRY_PASSWORD\" | \\\n  docker login -u \"$CI_REGISTRY_USER\" \"$CI_REGISTRY\" --password-stdin\n",
 							},
-							FileReference: testutils.CreateFileReference(211, 3, 214, 7),
+							FileReference: testutils.CreateFileReference(209, 3, 212, 7),
 						},
 						Script: &common.Script{
 							Commands: []string{
@@ -230,19 +215,19 @@ func TestLoad(t *testing.T) {
 								"docker build -t $CI_UTIL_IMAGE .",
 								"docker push $CI_UTIL_IMAGE",
 							},
-							FileReference: testutils.CreateFileReference(215, 3, 218, 33),
+							FileReference: testutils.CreateFileReference(213, 3, 216, 33),
 						},
 						When: "manual",
 						Only: &job.Controls{
 							Changes:       []string{".gitlab/ci_util_image/*"},
-							FileReference: testutils.CreateFileReference(220, 3, 222, 32),
+							FileReference: testutils.CreateFileReference(218, 3, 220, 32),
 						},
 						Except: &job.Controls{
 							Refs: []string{
 								"pipelines",
 								"tags",
 							},
-							FileReference: testutils.CreateFileReference(223, 3, 226, 13),
+							FileReference: testutils.CreateFileReference(221, 3, 224, 13),
 						},
 						Parallel: &job.Parallel{
 							Matrix: &job.Matrix{
@@ -254,7 +239,7 @@ func TestLoad(t *testing.T) {
 								},
 							},
 						},
-						FileReference: testutils.CreateFileReference(203, 1, 230, 20),
+						FileReference: testutils.CreateFileReference(201, 1, 228, 20),
 					},
 				},
 				Variables: &common.EnvironmentVariablesRef{
@@ -266,7 +251,57 @@ func TestLoad(t *testing.T) {
 						"TESTED_IMAGE_PREFIX":        "ci-tested-",
 						"BACKEND_IMAGE_NAME":         "backend",
 					},
-					FileReference: testutils.CreateFileReference(186, 1, 200, 32),
+					FileReference: testutils.CreateFileReference(184, 1, 198, 32),
+				},
+			},
+		},
+		{
+			Name:     "Include Local",
+			Filename: "../../../test/fixtures/gitlab/include-local.yaml",
+			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
+				Include: &models.Include{
+					{
+						Local:         "/../../test/fixtures/gitlab/gradle.yaml",
+						FileReference: testutils.CreateFileReference(1, 10, 1, 49),
+					},
+				},
+			},
+		},
+		{
+			Name:     "Include Remote",
+			Filename: "../../../test/fixtures/gitlab/include-remote.yaml",
+			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
+				Include: &models.Include{
+					{
+						Remote:        "https://gitlab.com/gitlab-org/gitlab/-/raw/master/imported.yaml",
+						FileReference: testutils.CreateFileReference(1, 10, 1, 73),
+					},
+				},
+			},
+		},
+		{
+			Name:     "Include Multiple",
+			Filename: "../../../test/fixtures/gitlab/include-multiple.yaml",
+			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
+				Include: &models.Include{
+					{
+						File:          "/imported.yaml",
+						Ref:           "master",
+						Project:       "gitlab-org/gitlab",
+						FileReference: testutils.CreateFileReference(2, 5, 4, 16),
+					},
+					{
+						Remote:        "https://gitlab.com/gitlab-org/gitlab/-/raw/master/imported.yaml",
+						FileReference: testutils.CreateFileReference(5, 5, 5, 68),
+					},
+					{
+						Local:         "/../../test/fixtures/gitlab/gradle.yaml",
+						FileReference: testutils.CreateFileReference(6, 5, 6, 44),
+					},
+					{
+						Template:      "Android.gitlab-ci.yml",
+						FileReference: testutils.CreateFileReference(7, 5, 7, 36),
+					},
 				},
 			},
 		},

@@ -1,0 +1,7 @@
+include:
+  - file: /imported.yaml
+    project: gitlab-org/gitlab
+    ref: master
+  - https://gitlab.com/gitlab-org/gitlab/-/raw/master/imported.yaml
+  - /../../test/fixtures/gitlab/gradle.yaml
+  - template: Android.gitlab-ci.yml

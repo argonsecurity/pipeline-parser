@@ -69,6 +69,9 @@ func handle[T any](data []byte, handler Handler[T], credentials *models.Credenti
 	}
 
 	for _, importedPipeline := range importedPipelines {
+		if importedPipeline == nil {
+			continue
+		}
 		parsedImportedPipeline, err := handle(importedPipeline.Data, handler, credentials)
 		if err != nil {
 			fmt.Printf("Failed parsing imported pipeline for job %s - %v", importedPipeline.JobName, err)

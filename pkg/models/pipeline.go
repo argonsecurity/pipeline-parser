@@ -5,7 +5,7 @@ type Pipeline struct {
 	Name       *string      `json:"name,omitempty"`
 	Triggers   *Triggers    `json:"triggers,omitempty"`
 	Jobs       []*Job       `json:"jobs,omitempty"`
-	Imports    []string     `json:"imports,omitempty"`
+	Imports    []*Import    `json:"imports,omitempty"`
 	Parameters []*Parameter `json:"parameters,omitempty"`
 	Defaults   *Defaults    `json:"defaults,omitempty"`
 }

@@ -1,6 +1,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/loaders/utils"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
@@ -11,7 +13,7 @@ type Include []IncludeItem
 
 func (i *Include) UnmarshalYAML(node *yaml.Node) error {
 	if node.Tag == consts.StringTag {
-		*i = Include{IncludeItem{Local: node.Value}}
+		*i = Include{parseIncludeString(node)}
 		return nil
 	}
 
@@ -24,10 +26,10 @@ func (i *Include) UnmarshalYAML(node *yaml.Node) error {
 }
 
 type IncludeItem struct {
-	Project  string   `yaml:"project"`
-	Ref      string   `yaml:"ref"`
-	Template string   `yaml:"template"`
-	File     []string `yaml:"file"`
+	Project  string `yaml:"project"`
+	Ref      string `yaml:"ref"`
+	Template string `yaml:"template"`
+	File     string `yaml:"file"`
 
 	Local  string `yaml:"local"`
 	Remote string `yaml:"remote"`
@@ -37,6 +39,11 @@ type IncludeItem struct {
 
 func (it *IncludeItem) UnmarshalYAML(node *yaml.Node) error {
 	it.FileReference = utils.GetFileReference(node)
+	if node.Tag == consts.StringTag {
+		*it = parseIncludeString(node)
+		return nil
+	}
+
 	return utils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		switch key {
 		case "project":
@@ -44,7 +51,7 @@ func (it *IncludeItem) UnmarshalYAML(node *yaml.Node) error {
 		case "ref":
 			it.Ref = value.Value
 		case "file":
-			return utils.ParseSequenceOrOne(value, &it.File)
+			it.File = value.Value
 		case "template":
 			it.Template = value.Value
 		case "local":
@@ -54,4 +61,17 @@ func (it *IncludeItem) UnmarshalYAML(node *yaml.Node) error {
 		}
 		return nil
 	}, "IncludeItem")
+}
+
+func parseIncludeString(node *yaml.Node) IncludeItem {
+	it := IncludeItem{}
+	it.FileReference = utils.GetFileReference(node)
+
+	if strings.HasPrefix(node.Value, "https://") {
+		it.Remote = node.Value
+		return it
+	}
+
+	it.Local = node.Value
+	return it
 }

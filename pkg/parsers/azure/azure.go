@@ -20,7 +20,6 @@ func (g *AzureParser) Parse(azurePipeline *azureModels.Pipeline) (*models.Pipeli
 	pipeline.Defaults = parsePipelineDefaults(azurePipeline)
 	pipeline.Triggers = parsePipelineTriggers(azurePipeline)
 	pipeline.Parameters = parseParameters(azurePipeline.Parameters)
-	pipeline.Imports = parseExtends(azurePipeline.Extends)
 
 	var jobs []*models.Job
 
