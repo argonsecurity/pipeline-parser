@@ -212,6 +212,18 @@ func TestAzure(t *testing.T) {
 						Runner: &models.Runner{},
 					},
 				},
+				Imports: []*models.Import{
+					{
+						Source: &models.ImportSource{
+							Path:            utils.GetPtr("parameters.yml"),
+							RepositoryAlias: utils.GetPtr(""),
+						},
+						Parameters: map[string]any{
+							"foo": "bar",
+						},
+						FileReference: testutils.CreateFileReference(43, 3, 45, 13),
+					},
+				},
 			},
 		},
 		{

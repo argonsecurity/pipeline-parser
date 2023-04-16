@@ -8,11 +8,12 @@ const (
 )
 
 type ImportSource struct {
-	SCM          Platform   `json:"scm,omitempty"`
-	Organization *string    `json:"organization,omitempty"`
-	Repository   *string    `json:"repository,omitempty"`
-	Path         *string    `json:"path,omitempty"`
-	Type         SourceType `json:"type,omitempty"`
+	SCM             Platform   `json:"scm,omitempty"`
+	Organization    *string    `json:"organization,omitempty"`
+	Repository      *string    `json:"repository,omitempty"`
+	Path            *string    `json:"path,omitempty"`
+	Type            SourceType `json:"type,omitempty"`
+	RepositoryAlias *string    `json:"alias,omitempty"`
 }
 
 type Import struct {
