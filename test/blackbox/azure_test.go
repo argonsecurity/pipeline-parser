@@ -165,24 +165,24 @@ func TestAzure(t *testing.T) {
 					{
 						Name:          utils.GetPtr("myString"),
 						Default:       "a string",
-						FileReference: testutils.CreateFileReference(3, 3, 5, 20),
+						FileReference: testutils.CreateFileReference(3, 5, 5, 22),
 					},
 					{
 						Name:          utils.GetPtr("myMultiString"),
 						Default:       "default",
 						Options:       []string{"default", "ubuntu"},
-						FileReference: testutils.CreateFileReference(6, 3, 11, 11),
+						FileReference: testutils.CreateFileReference(6, 5, 11, 15),
 					},
 					{
 						Name:          utils.GetPtr("myNumber"),
 						Default:       2,
 						Options:       []string{"1", "2", "4", "8", "16"},
-						FileReference: testutils.CreateFileReference(12, 3, 20, 7),
+						FileReference: testutils.CreateFileReference(12, 5, 20, 11),
 					},
 					{
 						Name:          utils.GetPtr("myBoolean"),
 						Default:       true,
-						FileReference: testutils.CreateFileReference(21, 3, 23, 16),
+						FileReference: testutils.CreateFileReference(21, 5, 23, 18),
 					},
 					{
 						Name: utils.GetPtr("myObject"),
@@ -196,14 +196,14 @@ func TestAzure(t *testing.T) {
 								"count": 3,
 							},
 						},
-						FileReference: testutils.CreateFileReference(24, 3, 36, 15),
+						FileReference: testutils.CreateFileReference(24, 5, 36, 17),
 					},
 					{
 						Name: utils.GetPtr("myStep"),
 						Default: map[string]any{
 							"script": "echo my step",
 						},
-						FileReference: testutils.CreateFileReference(37, 3, 40, 25),
+						FileReference: testutils.CreateFileReference(37, 5, 40, 27),
 					},
 				},
 				Jobs: []*models.Job{
