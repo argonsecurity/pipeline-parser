@@ -18,6 +18,12 @@ func parseStages(stages *azureModels.Stages) []*models.Job {
 		}
 	}
 
+	for _, stage := range stages.TemplateStages {
+		if stage.Template.Template != "" {
+			jobs = append(jobs, parseTemplateStage(stage))
+		}
+	}
+
 	return jobs
 }
 
@@ -45,4 +51,18 @@ func parseStage(stage *azureModels.Stage) []*models.Job {
 	}
 
 	return parsedJobs
+}
+
+func parseTemplateStage(stage *azureModels.TemplateStage) *models.Job {
+	return &models.Job{
+		ID: &stage.Template.Template,
+		Imports: &models.Import{
+			Source: &models.ImportSource{
+				Path: &stage.Template.Template,
+			},
+			Parameters:    stage.Parameters,
+			FileReference: stage.FileReference,
+		},
+		FileReference: stage.FileReference,
+	}
 }

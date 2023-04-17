@@ -167,6 +167,7 @@ func TestAzure(t *testing.T) {
 							},
 							FileReference: testutils.CreateFileReference(34, 3, 38, 28),
 						},
+						FileReference: testutils.CreateFileReference(34, 3, 38, 28),
 					},
 					{
 						ID: utils.GetPtr("jobs/build.yml"),
@@ -182,6 +183,7 @@ func TestAzure(t *testing.T) {
 							},
 							FileReference: testutils.CreateFileReference(40, 3, 44, 29),
 						},
+						FileReference: testutils.CreateFileReference(40, 3, 44, 29),
 					},
 					{
 						ID: utils.GetPtr("jobs/build.yml"),
@@ -198,6 +200,7 @@ func TestAzure(t *testing.T) {
 							},
 							FileReference: testutils.CreateFileReference(45, 3, 50, 15),
 						},
+						FileReference: testutils.CreateFileReference(45, 3, 50, 15),
 					},
 				},
 			},
@@ -325,8 +328,31 @@ func TestAzure(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
-						Name:   utils.GetPtr("default"),
-						Runner: &models.Runner{},
+						ID: utils.GetPtr("stages/build.yml"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path: utils.GetPtr("stages/build.yml"),
+							},
+							FileReference: testutils.CreateFileReference(10, 3, 12, 17),
+							Parameters: map[string]any{
+								"param": "value",
+							},
+						},
+						FileReference: testutils.CreateFileReference(10, 3, 12, 17),
+					},
+					{
+						ID: utils.GetPtr("stages/test.yml"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path: utils.GetPtr("stages/test.yml"),
+							},
+							FileReference: testutils.CreateFileReference(14, 3, 17, 33),
+							Parameters: map[string]any{
+								"name":     "Full",
+								"testFile": "tests/fullSuite.js",
+							},
+						},
+						FileReference: testutils.CreateFileReference(14, 3, 17, 33),
 					},
 				},
 			},
@@ -519,6 +545,19 @@ func TestAzure(t *testing.T) {
 							},
 						},
 						FileReference: testutils.CreateFileReference(19, 5, 23, 53),
+					},
+				},
+			},
+		},
+		{
+			Filename: "default-job.yaml",
+			Expected: &models.Pipeline{
+				Name:     utils.GetPtr("stages"),
+				Defaults: &models.Defaults{},
+				Jobs: []*models.Job{
+					{
+						Name:   utils.GetPtr("default"),
+						Runner: &models.Runner{},
 					},
 				},
 			},

@@ -48,6 +48,7 @@ func parseTemplateJob(job *azureModels.TemplateJob) *models.Job {
 			FileReference: job.FileReference,
 			Parameters:    job.Parameters,
 		},
+		FileReference: job.FileReference,
 	}
 
 	return parsedJob
