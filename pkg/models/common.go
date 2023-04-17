@@ -6,6 +6,7 @@ type EnvironmentVariables map[string]any
 type EnvironmentVariablesRef struct {
 	EnvironmentVariables `json:"environment_variables,omitempty"`
 	FileReference        *FileReference `json:"file_reference,omitempty"`
+	Imports              *Import        `json:"imports,omitempty"`
 }
 
 type Condition struct {

@@ -482,6 +482,15 @@ func TestAzure(t *testing.T) {
 							"var1": "value1",
 							"var2": "value2",
 						},
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path: utils.GetPtr("variables/var.yml"),
+							},
+							Parameters: map[string]any{
+								"param": "value",
+							},
+							FileReference: testutils.CreateFileReference(9, 3, 11, 17),
+						},
 						FileReference: testutils.CreateFileReference(3, 3, 11, 17),
 					},
 				},
