@@ -65,6 +65,10 @@ func parsePipelineDefaults(pipeline *azureModels.Pipeline) *models.Defaults {
 		defaults.EnvironmentVariables = parseVariables(pipeline.Variables)
 	}
 
+	if pipeline.Resources != nil {
+		defaults.Resources = parseResources(pipeline.Resources)
+	}
+
 	return defaults
 }
 

@@ -248,8 +248,21 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "resources.yaml",
 			Expected: &models.Pipeline{
-				Name:     utils.GetPtr("resources"),
-				Defaults: &models.Defaults{},
+				Name: utils.GetPtr("resources"),
+				Defaults: &models.Defaults{
+					Resources: &models.Resources{
+						Repositories: []*models.ImportSource{
+							{
+								RepositoryAlias: utils.GetPtr("common"),
+								Repository:      utils.GetPtr("CommonTools"),
+								Organization:    utils.GetPtr("Contoso"),
+								Type:            models.SourceTypeRemote,
+								SCM:             consts.GitHubPlatform,
+								Reference:       utils.GetPtr(""),
+							},
+						},
+					},
+				},
 				Jobs: []*models.Job{
 					{
 						Name:   utils.GetPtr("default"),

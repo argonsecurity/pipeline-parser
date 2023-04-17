@@ -73,7 +73,7 @@ type ResourcePipelineRef struct {
 
 type Repository struct {
 	Repository    string      `yaml:"repository,omitempty"`
-	Endpoint      string      `yaml:"endpoint,omitempty"`
+	Endpoint      string      `yaml:"endpoint,omitempty"` // currently not supported for templates
 	Trigger       *TriggerRef `yaml:"trigger,omitempty"`
 	Name          string      `yaml:"name,omitempty"`
 	Type          string      `yaml:"type,omitempty"`
@@ -229,18 +229,18 @@ func (r *Resources) UnmarshalYAML(node *yaml.Node) error {
 				return err
 			}
 			r.Repositories = repositories
-		// case "webhooks":
-		// 	var webhooks []*WebhookRef
-		// 	if err := value.Decode(&webhooks); err != nil {
-		// 		return err
-		// 	}
-		// 	r.Webhooks = webhooks
-		// case "packages":
-		// 	var packages []*PackageRef
-		// 	if err := value.Decode(&packages); err != nil {
-		// 		return err
-		// 	}
-		// 	r.Packages = packages
+			// case "webhooks":
+			// 	var webhooks []*WebhookRef
+			// 	if err := value.Decode(&webhooks); err != nil {
+			// 		return err
+			// 	}
+			// 	r.Webhooks = webhooks
+			// case "packages":
+			// 	var packages []*PackageRef
+			// 	if err := value.Decode(&packages); err != nil {
+			// 		return err
+			// 	}
+			// 	r.Packages = packages
 		}
 		return nil
 	}, "Resources")

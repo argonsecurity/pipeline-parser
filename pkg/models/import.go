@@ -14,6 +14,7 @@ type ImportSource struct {
 	Path            *string    `json:"path,omitempty"`
 	Type            SourceType `json:"type,omitempty"`
 	RepositoryAlias *string    `json:"alias,omitempty"`
+	Reference       *string    `json:"reference,omitempty"`
 }
 
 type Import struct {
