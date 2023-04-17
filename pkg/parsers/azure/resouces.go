@@ -28,6 +28,8 @@ func parseResources(resources *azureModels.Resources) *models.Resources {
 			Organization:    &parts[0],
 		})
 	}
+
+	parsedResources.FileReference = resources.FileReference
 	return parsedResources
 }
 

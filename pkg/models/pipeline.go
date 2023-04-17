@@ -20,7 +20,8 @@ type Scans struct {
 }
 
 type Resources struct {
-	Repositories []*ImportSource `json:"repositories,omitempty"`
+	Repositories  []*ImportSource `json:"repositories,omitempty"`
+	FileReference *FileReference  `json:"file_reference,omitempty"`
 }
 
 type Defaults struct {

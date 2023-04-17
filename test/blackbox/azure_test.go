@@ -153,6 +153,52 @@ func TestAzure(t *testing.T) {
 						},
 						FileReference: testutils.CreateFileReference(4, 3, 20, 19),
 					},
+					{
+						ID: utils.GetPtr("jobs/build.yml"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path: utils.GetPtr("jobs/build.yml"),
+							},
+							Parameters: map[string]any{
+								"name": "macOS",
+								"pool": map[string]any{
+									"vmImage": "macOS-latest",
+								},
+							},
+							FileReference: testutils.CreateFileReference(34, 3, 38, 28),
+						},
+					},
+					{
+						ID: utils.GetPtr("jobs/build.yml"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path: utils.GetPtr("jobs/build.yml"),
+							},
+							Parameters: map[string]any{
+								"name": "Linux",
+								"pool": map[string]any{
+									"vmImage": "ubuntu-latest",
+								},
+							},
+							FileReference: testutils.CreateFileReference(40, 3, 44, 29),
+						},
+					},
+					{
+						ID: utils.GetPtr("jobs/build.yml"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path: utils.GetPtr("jobs/build.yml"),
+							},
+							Parameters: map[string]any{
+								"name": "Windows",
+								"pool": map[string]any{
+									"vmImage": "windows-latest",
+								},
+								"sign": true,
+							},
+							FileReference: testutils.CreateFileReference(45, 3, 50, 15),
+						},
+					},
 				},
 			},
 		},
@@ -261,6 +307,7 @@ func TestAzure(t *testing.T) {
 								Reference:       utils.GetPtr(""),
 							},
 						},
+						FileReference: testutils.CreateFileReference(3, 1, 57, 20),
 					},
 				},
 				Jobs: []*models.Job{

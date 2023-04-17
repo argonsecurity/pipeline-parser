@@ -37,9 +37,9 @@ func TestParseResource(t *testing.T) {
 							Repository: "test",
 							Name:       "org/repo",
 						},
-						FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 					},
 				},
+				FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 			},
 			expectedResources: &models.Resources{
 				Repositories: []*models.ImportSource{
@@ -52,6 +52,7 @@ func TestParseResource(t *testing.T) {
 						Organization:    utils.GetPtr("org"),
 					},
 				},
+				FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 			},
 		},
 		{
@@ -65,9 +66,9 @@ func TestParseResource(t *testing.T) {
 							Type:       "github",
 							Name:       "org/repo",
 						},
-						FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 					},
 				},
+				FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 			},
 			expectedResources: &models.Resources{
 				Repositories: []*models.ImportSource{
@@ -80,6 +81,7 @@ func TestParseResource(t *testing.T) {
 						Organization:    utils.GetPtr("org"),
 					},
 				},
+				FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 			},
 		},
 		{
@@ -93,9 +95,9 @@ func TestParseResource(t *testing.T) {
 							Type:       "git",
 							Name:       "org/repo",
 						},
-						FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 					},
 				},
+				FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 			},
 			expectedResources: &models.Resources{
 				Repositories: []*models.ImportSource{
@@ -108,6 +110,7 @@ func TestParseResource(t *testing.T) {
 						Organization:    utils.GetPtr("org"),
 					},
 				},
+				FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 			},
 		},
 	}
