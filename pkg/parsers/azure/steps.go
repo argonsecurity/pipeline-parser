@@ -71,6 +71,19 @@ func parseStep(step azureModels.Step) *models.Step {
 		parsedStep.Disabled = utils.GetPtr(!slices.Contains(consts.TrueValues, *step.Enabled))
 	}
 
+	if step.Template.Template != "" {
+		if parsedStep.ID == nil {
+			parsedStep.ID = &step.Template.Template
+		}
+		parsedStep.Imports = &models.Import{
+			Source: &models.ImportSource{
+				Path: &step.Template.Template,
+			},
+			Parameters:    step.Template.Parameters,
+			FileReference: step.FileReference,
+		}
+	}
+
 	return parsedStep
 }
 
