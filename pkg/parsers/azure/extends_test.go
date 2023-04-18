@@ -31,6 +31,7 @@ func TestParseExtends(t *testing.T) {
 				Source: &models.ImportSource{
 					Path:            utils.GetPtr("template1"),
 					RepositoryAlias: utils.GetPtr(""),
+					Type:            models.SourceTypeLocal,
 				},
 			}},
 		},
@@ -45,6 +46,7 @@ func TestParseExtends(t *testing.T) {
 				Source: &models.ImportSource{
 					Path:            utils.GetPtr("template1"),
 					RepositoryAlias: utils.GetPtr("repo1"),
+					Type:            models.SourceTypeRemote,
 				},
 			}},
 		},
@@ -74,6 +76,7 @@ func TestParseExtends(t *testing.T) {
 					Source: &models.ImportSource{
 						Path:            utils.GetPtr("template1"),
 						RepositoryAlias: utils.GetPtr("repo1"),
+						Type:            models.SourceTypeRemote,
 					},
 				},
 				{
@@ -83,6 +86,7 @@ func TestParseExtends(t *testing.T) {
 					Source: &models.ImportSource{
 						Path:            utils.GetPtr("template2"),
 						RepositoryAlias: utils.GetPtr("repo2"),
+						Type:            models.SourceTypeRemote,
 					},
 				},
 			},

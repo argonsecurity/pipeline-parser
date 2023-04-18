@@ -266,6 +266,7 @@ func TestAzure(t *testing.T) {
 						Source: &models.ImportSource{
 							Path:            utils.GetPtr("parameters.yml"),
 							RepositoryAlias: utils.GetPtr(""),
+							Type:            models.SourceTypeLocal,
 						},
 						Parameters: map[string]any{
 							"foo": "bar",
@@ -595,6 +596,7 @@ func TestAzure(t *testing.T) {
 						Source: &models.ImportSource{
 							Path:            utils.GetPtr("blueprints/template.yml"),
 							RepositoryAlias: utils.GetPtr("CeTemplates"),
+							Type:            models.SourceTypeRemote,
 						},
 						Parameters: map[string]any{
 							"runMode": "${{parameters.runMode}}",
@@ -618,12 +620,14 @@ func TestAzure(t *testing.T) {
 						Source: &models.ImportSource{
 							Path:            utils.GetPtr("/pipelines/steps/pre-build-steps.yml"),
 							RepositoryAlias: utils.GetPtr("self"),
+							Type:            models.SourceTypeLocal,
 						},
 					},
 					{
 						Source: &models.ImportSource{
 							Path:            utils.GetPtr("test-steps2.yml"),
 							RepositoryAlias: utils.GetPtr(""),
+							Type:            models.SourceTypeLocal,
 						},
 						Parameters: map[string]any{
 							"bar": "foo",

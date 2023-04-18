@@ -15,13 +15,13 @@ func parseExtends(extends *azureModels.Extends) []*models.Import {
 
 	path, alias := parseTemplateString(extends.Template.Template)
 	parameters, paramImports := parseExtendParameters(extends.Parameters)
-
 	imports := []*models.Import{{
 		FileReference: extends.FileReference,
 		Parameters:    parameters,
 		Source: &models.ImportSource{
 			Path:            &path,
 			RepositoryAlias: &alias,
+			Type:            calculateSourceType(alias),
 		},
 	}}
 
@@ -62,6 +62,7 @@ func parseExtendParameters(params map[string]any) (parameters map[string]any, im
 					Source: &models.ImportSource{
 						Path:            &path,
 						RepositoryAlias: &alias,
+						Type:            calculateSourceType(alias),
 					},
 				})
 				imports = append(imports, paramImports...)
@@ -85,4 +86,11 @@ func tryToParseTemplate(input any) (azureModels.Template, bool) {
 func isArray(input any) bool {
 	_, ok := input.([]any)
 	return ok
+}
+
+func calculateSourceType(alias string) models.SourceType {
+	if alias == "self" || alias == "" {
+		return models.SourceTypeLocal
+	}
+	return models.SourceTypeRemote
 }
