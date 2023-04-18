@@ -681,6 +681,34 @@ func TestLoad(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:     "parameter templates",
+			filename: "../../../test/fixtures/azure/parameter-templates.yaml",
+			expectedPipeline: &models.Pipeline{
+				Name: "parameter templates",
+				Extends: &models.Extends{
+					Template: models.Template{
+						Template: "parameters.yml",
+						Parameters: map[string]any{
+							"foo": "bar",
+							"testSteps": models.Template{
+								Template: "test-steps.yml",
+								Parameters: map[string]any{
+									"foo": "bar2",
+								},
+							},
+							"testSteps2": models.Template{
+								Template: "test-steps2.yml",
+								Parameters: map[string]any{
+									"bar": "foo",
+								},
+							},
+						},
+					},
+					FileReference: testutils.CreateFileReference(4, 3, 16, 19),
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

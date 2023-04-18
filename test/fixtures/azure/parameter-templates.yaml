@@ -1,0 +1,16 @@
+name: "parameter templates"
+
+extends:
+  template: parameters.yml
+  parameters:
+    foo: bar
+
+    testSteps:
+      - template: test-steps.yml
+        parameters:
+          foo: bar2
+
+    testSteps2:
+      - template: test-steps2.yml
+        parameters:
+          bar: foo
