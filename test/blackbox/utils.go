@@ -20,7 +20,7 @@ func readFile(filename string) []byte {
 	return b
 }
 
-func executeTestCases(t *testing.T, testCases []TestCase, folder string, platform models.Platform) {
+func executeTestCases(t *testing.T, testCases []TestCase, folder string, platform models.Platform, organization string) {
 	for _, testCase := range testCases {
 		if testCase.TestdataDir != "" {
 			h := http.FileServer(http.Dir(testCase.TestdataDir))
@@ -30,7 +30,7 @@ func executeTestCases(t *testing.T, testCases []TestCase, folder string, platfor
 		}
 
 		buf := readFile(filepath.Join("../fixtures", folder, testCase.Filename))
-		pipeline, err := handler.Handle(buf, platform, &models.Credentials{})
+		pipeline, err := handler.Handle(buf, platform, &models.Credentials{}, organization)
 		if err != nil {
 			if !testCase.ShouldFail {
 				t.Errorf("%s: %s", testCase.Filename, err)

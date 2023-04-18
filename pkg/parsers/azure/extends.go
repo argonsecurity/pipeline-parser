@@ -5,6 +5,7 @@ import (
 
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -48,7 +49,7 @@ func parseExtendParameters(params map[string]any) (parameters map[string]any, im
 
 	for key, param := range params {
 		items := []any{param}
-		if isArray(param) {
+		if utils.IsArray(param) {
 			items = append(items, param.([]any)...)
 		}
 		for _, item := range items {
@@ -81,11 +82,6 @@ func parseExtendParameters(params map[string]any) (parameters map[string]any, im
 func tryToParseTemplate(input any) (azureModels.Template, bool) {
 	var azureTemplate azureModels.Template
 	return azureTemplate, mapstructure.Decode(input, &azureTemplate) == nil
-}
-
-func isArray(input any) bool {
-	_, ok := input.([]any)
-	return ok
 }
 
 func calculateSourceType(alias string) models.SourceType {
