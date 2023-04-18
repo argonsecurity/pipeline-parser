@@ -5,6 +5,7 @@ import (
 
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/mitchellh/mapstructure"
 )
 
 func parseExtends(extends *azureModels.Extends) []*models.Import {
@@ -46,26 +47,42 @@ func parseExtendParameters(params map[string]any) (parameters map[string]any, im
 	}
 
 	for key, param := range params {
-		value, ok := param.(azureModels.Template)
-		if ok {
-			path, alias := parseTemplateString(value.Template)
-			parameters, paramImports := parseExtendParameters(value.Parameters)
+		items := []any{param}
+		if isArray(param) {
+			items = append(items, param.([]any)...)
+		}
+		for _, item := range items {
+			value, ok := tryToParseTemplate(item)
+			if ok {
+				path, alias := parseTemplateString(value.Template)
+				parameters, paramImports := parseExtendParameters(value.Parameters)
 
-			imports = append(imports, &models.Import{
-				Parameters: parameters,
-				Source: &models.ImportSource{
-					Path:            &path,
-					RepositoryAlias: &alias,
-				},
-			})
-			imports = append(imports, paramImports...)
-			continue
+				imports = append(imports, &models.Import{
+					Parameters: parameters,
+					Source: &models.ImportSource{
+						Path:            &path,
+						RepositoryAlias: &alias,
+					},
+				})
+				imports = append(imports, paramImports...)
+				continue
+			}
+			if parameters == nil {
+				parameters = make(map[string]any)
+			}
+			parameters[key] = item
 		}
-		if parameters == nil {
-			parameters = make(map[string]any)
-		}
-		parameters[key] = param
 	}
 
 	return parameters, imports
+}
+
+func tryToParseTemplate(input any) (azureModels.Template, bool) {
+	var azureTemplate azureModels.Template
+	return azureTemplate, mapstructure.Decode(input, &azureTemplate) == nil
+}
+
+func isArray(input any) bool {
+	_, ok := input.([]any)
+	return ok
 }

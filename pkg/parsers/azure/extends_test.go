@@ -56,9 +56,9 @@ func TestParseExtends(t *testing.T) {
 					Template: "template1@repo1",
 					Parameters: map[string]any{
 						"foo": "bar",
-						"testSteps": azureModels.Template{
-							Template: "template2@repo2",
-							Parameters: map[string]any{
+						"testSteps": map[string]any{
+							"template": "template2@repo2",
+							"parameters": map[string]any{
 								"foo2": "bar2",
 							},
 						},

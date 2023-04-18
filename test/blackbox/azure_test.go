@@ -562,6 +562,76 @@ func TestAzure(t *testing.T) {
 				},
 			},
 		},
+		{
+			Filename: "extends.yaml",
+			Expected: &models.Pipeline{
+				Name:     utils.GetPtr(""),
+				Triggers: nil,
+				Defaults: &models.Defaults{
+					Resources: &models.Resources{
+						Repositories: []*models.ImportSource{
+							{
+								RepositoryAlias: utils.GetPtr("CeTemplates"),
+								Repository:      utils.GetPtr("Templates"),
+								Organization:    utils.GetPtr("ORG"),
+								Type:            models.SourceTypeRemote,
+								SCM:             consts.AzurePlatform,
+								Reference:       utils.GetPtr(""),
+							},
+						},
+						FileReference: testutils.CreateFileReference(6, 1, 10, 26),
+					},
+				},
+				Jobs: []*models.Job{
+					{
+						Name: utils.GetPtr("default"),
+						Runner: &models.Runner{
+							OS: utils.GetPtr("windows"),
+						},
+					},
+				},
+				Imports: []*models.Import{
+					{
+						Source: &models.ImportSource{
+							Path:            utils.GetPtr("blueprints/template.yml"),
+							RepositoryAlias: utils.GetPtr("CeTemplates"),
+						},
+						Parameters: map[string]any{
+							"runMode": "${{parameters.runMode}}",
+							"preBuildSteps": []any{
+								map[string]any{
+									"template": "/pipelines/steps/pre-build-steps.yml@self",
+								},
+							},
+							"testSteps2": []any{
+								map[string]any{
+									"template": "test-steps2.yml",
+									"parameters": map[string]any{
+										"bar": "foo",
+									},
+								},
+							},
+						},
+						FileReference: testutils.CreateFileReference(13, 3, 23, 19),
+					},
+					{
+						Source: &models.ImportSource{
+							Path:            utils.GetPtr("/pipelines/steps/pre-build-steps.yml"),
+							RepositoryAlias: utils.GetPtr("self"),
+						},
+					},
+					{
+						Source: &models.ImportSource{
+							Path:            utils.GetPtr("test-steps2.yml"),
+							RepositoryAlias: utils.GetPtr(""),
+						},
+						Parameters: map[string]any{
+							"bar": "foo",
+						},
+					},
+				},
+			},
+		},
 	}
 
 	executeTestCases(t, testCases, "azure", consts.AzurePlatform)
