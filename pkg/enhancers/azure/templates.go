@@ -25,22 +25,64 @@ func getTemplates(pipeline *models.Pipeline, credentials *models.Credentials, or
 	if pipeline.Defaults != nil && pipeline.Defaults.Resources != nil {
 		resources = pipeline.Defaults.Resources
 	}
+	// main imports (extends field)
 	for _, imported := range pipeline.Imports {
-		if imported != nil && imported.Source != nil && imported.Source.Path != nil {
-			importedPipelineBuf, err := handleImport(imported, resources, credentials, organization)
-			if err != nil {
-				if errs == nil {
-					errs = errors.New("got error(s) importing pipeline(s):")
-				}
-				errs = errors.Wrap(errs, fmt.Sprintf("error importing pipeline %s: %s", *imported.Source.Path, err.Error()))
+		importedPipelines, errs = appendImports(importedPipelines, imported, resources, credentials, organization, errs)
+	}
+
+	// job imports (job, step, variable imports)
+	for _, job := range pipeline.Jobs {
+		if job != nil {
+			if job.Imports != nil {
+				importedPipelines, errs = appendImports(importedPipelines, job.Imports, resources, credentials, organization, errs)
 			}
-			importedPipelines = append(importedPipelines, &enhancers.ImportedPipeline{
-				JobName: *imported.Source.Path,
-				Data:    importedPipelineBuf,
-			})
 		}
 
+		if job.EnvironmentVariables != nil && job.EnvironmentVariables.Imports != nil {
+			importedPipelines, errs = appendImports(importedPipelines, job.EnvironmentVariables.Imports, resources, credentials, organization, errs)
+		}
+
+		if len(job.Steps) > 0 {
+			for _, step := range job.Steps {
+				if step != nil && step.Imports != nil {
+					importedPipelines, errs = appendImports(importedPipelines, step.Imports, resources, credentials, organization, errs)
+				}
+				if step != nil && step.EnvironmentVariables != nil && step.EnvironmentVariables.Imports != nil {
+					importedPipelines, errs = appendImports(importedPipelines, step.EnvironmentVariables.Imports, resources, credentials, organization, errs)
+				}
+			}
+		}
+
+		if len(job.PreSteps) > 0 {
+			for _, step := range job.PreSteps {
+				if step != nil && step.Imports != nil {
+					importedPipelines, errs = appendImports(importedPipelines, step.Imports, resources, credentials, organization, errs)
+				}
+				if step != nil && step.EnvironmentVariables != nil && step.EnvironmentVariables.Imports != nil {
+					importedPipelines, errs = appendImports(importedPipelines, step.EnvironmentVariables.Imports, resources, credentials, organization, errs)
+				}
+			}
+		}
+
+		if len(job.PostSteps) > 0 {
+			for _, step := range job.PostSteps {
+				if step != nil && step.Imports != nil {
+					importedPipelines, errs = appendImports(importedPipelines, step.Imports, resources, credentials, organization, errs)
+				}
+				if step != nil && step.EnvironmentVariables != nil && step.EnvironmentVariables.Imports != nil {
+					importedPipelines, errs = appendImports(importedPipelines, step.EnvironmentVariables.Imports, resources, credentials, organization, errs)
+				}
+			}
+		}
 	}
+
+	// import from default variables
+	if pipeline.Defaults != nil &&
+		pipeline.Defaults.EnvironmentVariables != nil &&
+		pipeline.Defaults.EnvironmentVariables.Imports != nil {
+		importedPipelines, errs = appendImports(importedPipelines, pipeline.Defaults.EnvironmentVariables.Imports, resources, credentials, organization, errs)
+	}
+
 	return importedPipelines, errs
 }
 
@@ -133,4 +175,44 @@ func generateRequestUrl(proj, repo, path, version, organization string) string {
 		url = url + VERSION_QUERY + version
 	}
 	return url
+}
+
+func getImportedData(
+	imported *models.Import,
+	resources *models.Resources,
+	credentials *models.Credentials,
+	organization string) (*enhancers.ImportedPipeline, error) {
+	if imported != nil && imported.Source != nil && imported.Source.Path != nil {
+		importedPipelineBuf, err := handleImport(imported, resources, credentials, organization)
+		if err != nil {
+			return nil, err
+		}
+		return &enhancers.ImportedPipeline{
+			JobName:             *imported.Source.Path,
+			OriginFileReference: imported.FileReference,
+			Data:                importedPipelineBuf,
+		}, nil
+	}
+	return nil, nil
+}
+
+func appendImports(
+	list []*enhancers.ImportedPipeline,
+	imports *models.Import,
+	resources *models.Resources,
+	credentials *models.Credentials,
+	organization string,
+	errs error) ([]*enhancers.ImportedPipeline, error) {
+	importedPipeline, err := getImportedData(imports, resources, credentials, organization)
+	if err != nil {
+		if errs == nil {
+			errs = errors.New("got error(s) importing pipeline(s):")
+		}
+		errs = errors.Wrap(errs, fmt.Sprintf("error importing pipeline %s: %s", *imports.Source.Path, err.Error()))
+	}
+	if importedPipeline != nil {
+		list = append(list, importedPipeline)
+	}
+
+	return list, errs
 }

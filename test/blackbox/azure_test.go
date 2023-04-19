@@ -277,16 +277,6 @@ func TestAzure(t *testing.T) {
 						Parameters: map[string]any{
 							"foo": "bar",
 						},
-						Pipeline: &models.Pipeline{
-							Name:     utils.GetPtr(""),
-							Defaults: &models.Defaults{},
-							Jobs: []*models.Job{
-								{
-									Name:   utils.GetPtr("default"),
-									Runner: &models.Runner{},
-								},
-							},
-						},
 						FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 					},
 				},
@@ -646,16 +636,6 @@ func TestAzure(t *testing.T) {
 							RepositoryAlias: utils.GetPtr("self"),
 							Type:            models.SourceTypeLocal,
 						},
-						Pipeline: &models.Pipeline{
-							Name: utils.GetPtr(""),
-							Jobs: []*models.Job{
-								{
-									Name:   utils.GetPtr("default"),
-									Runner: &models.Runner{},
-								},
-							},
-							Defaults: &models.Defaults{},
-						},
 						FileReference: testutils.CreateFileReference(13, 3, 23, 19),
 					},
 					{
@@ -666,16 +646,6 @@ func TestAzure(t *testing.T) {
 						},
 						Parameters: map[string]any{
 							"bar": "foo",
-						},
-						Pipeline: &models.Pipeline{
-							Name: utils.GetPtr(""),
-							Jobs: []*models.Job{
-								{
-									Name:   utils.GetPtr("default"),
-									Runner: &models.Runner{},
-								},
-							},
-							Defaults: &models.Defaults{},
 						},
 						FileReference: testutils.CreateFileReference(13, 3, 23, 19),
 					},

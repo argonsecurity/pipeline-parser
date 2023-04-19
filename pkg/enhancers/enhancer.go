@@ -3,9 +3,10 @@ package enhancers
 import "github.com/argonsecurity/pipeline-parser/pkg/models"
 
 type ImportedPipeline struct {
-	JobName  string
-	Data     []byte
-	Pipeline *models.Pipeline
+	JobName             string
+	OriginFileReference *models.FileReference
+	Data                []byte
+	Pipeline            *models.Pipeline
 }
 
 type Enhancer interface {
