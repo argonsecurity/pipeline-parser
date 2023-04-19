@@ -1,6 +1,8 @@
 package azure
 
 import (
+	"reflect"
+
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -141,4 +143,41 @@ func fillStepsImports(steps []*models.Step, importedPipeline *enhancers.Imported
 		}
 	}
 	return false
+}
+
+func (a *AzureEnhancer) InheritParentPipelineData(parent, child *models.Pipeline) *models.Pipeline {
+	// pass resources config from parent to imported template (incase they are used to import more templates)
+	if parent == nil || child == nil {
+		return child
+	}
+	var combinedRepositories []*models.ImportSource
+	if child.Defaults != nil &&
+		child.Defaults.Resources != nil &&
+		len(child.Defaults.Resources.Repositories) > 0 {
+		combinedRepositories = append(combinedRepositories, child.Defaults.Resources.Repositories...)
+
+	}
+	if parent.Defaults != nil &&
+		parent.Defaults.Resources != nil &&
+		len(parent.Defaults.Resources.Repositories) > 0 {
+		for _, repo := range parent.Defaults.Resources.Repositories {
+			if !utils.SliceContainsBy(combinedRepositories, repo, compareRepositories) {
+				combinedRepositories = append(combinedRepositories, repo)
+			}
+		}
+	}
+	if len(combinedRepositories) > 0 {
+		if child.Defaults == nil {
+			child.Defaults = &models.Defaults{}
+		}
+		if child.Defaults.Resources == nil {
+			child.Defaults.Resources = &models.Resources{}
+		}
+		child.Defaults.Resources.Repositories = combinedRepositories
+	}
+	return child
+}
+
+func compareRepositories(a, b *models.ImportSource) bool {
+	return reflect.DeepEqual(a, b)
 }

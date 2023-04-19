@@ -14,3 +14,7 @@ func (b *BitbucketEnhancer) LoadImportedPipelines(data *models.Pipeline, credent
 func (b *BitbucketEnhancer) Enhance(data *models.Pipeline, importedPipelines []*enhancers.ImportedPipeline) (*models.Pipeline, error) {
 	return data, nil
 }
+
+func (b *BitbucketEnhancer) InheritParentPipelineData(parent, child *models.Pipeline) *models.Pipeline {
+	return child
+}

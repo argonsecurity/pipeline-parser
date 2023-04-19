@@ -112,3 +112,7 @@ func (g *GitLabEnhancer) Enhance(data *models.Pipeline, importedPipelines []*enh
 
 	return data, nil
 }
+
+func (g *GitLabEnhancer) InheritParentPipelineData(parent, child *models.Pipeline) *models.Pipeline {
+	return child
+}

@@ -32,13 +32,13 @@ func Handle(data []byte, platform models.Platform, credentials *models.Credentia
 
 	switch platform {
 	case consts.GitHubPlatform:
-		pipeline, err = handle[githubModels.Workflow](data, &GitHubHandler{}, credentials, organization)
+		pipeline, err = handle[githubModels.Workflow](data, &GitHubHandler{}, credentials, organization, nil)
 	case consts.GitLabPlatform:
-		pipeline, err = handle[gitlabModels.GitlabCIConfiguration](data, &GitLabHandler{}, credentials, organization)
+		pipeline, err = handle[gitlabModels.GitlabCIConfiguration](data, &GitLabHandler{}, credentials, organization, nil)
 	case consts.AzurePlatform:
-		pipeline, err = handle[azureModels.Pipeline](data, &AzureHandler{}, credentials, organization)
+		pipeline, err = handle[azureModels.Pipeline](data, &AzureHandler{}, credentials, organization, nil)
 	case consts.BitbucketPlatform:
-		pipeline, err = handle[bitbucketModels.Pipeline](data, &BitbucketHandler{}, credentials, organization)
+		pipeline, err = handle[bitbucketModels.Pipeline](data, &BitbucketHandler{}, credentials, organization, nil)
 	default:
 		return nil, consts.NewErrInvalidPlatform(platform)
 	}
@@ -50,7 +50,7 @@ func Handle(data []byte, platform models.Platform, credentials *models.Credentia
 	return pipeline, nil
 }
 
-func handle[T any](data []byte, handler Handler[T], credentials *models.Credentials, organization string) (*models.Pipeline, error) {
+func handle[T any](data []byte, handler Handler[T], credentials *models.Credentials, organization string, parentPipeline *models.Pipeline) (*models.Pipeline, error) {
 	pipeline, err := handler.GetLoader().Load(data)
 	if err != nil {
 		return nil, err
@@ -63,6 +63,8 @@ func handle[T any](data []byte, handler Handler[T], credentials *models.Credenti
 
 	enhancer := handler.GetEnhancer()
 
+	parsedPipeline = enhancer.InheritParentPipelineData(parentPipeline, parsedPipeline)
+
 	importedPipelines, err := enhancer.LoadImportedPipelines(parsedPipeline, credentials, organization)
 	if err != nil {
 		fmt.Printf("Failed getting imported pipelines:\n%v", err)
@@ -72,7 +74,7 @@ func handle[T any](data []byte, handler Handler[T], credentials *models.Credenti
 		if importedPipeline == nil {
 			continue
 		}
-		parsedImportedPipeline, err := handle(importedPipeline.Data, handler, credentials, organization)
+		parsedImportedPipeline, err := handle(importedPipeline.Data, handler, credentials, organization, parsedPipeline)
 		if err != nil {
 			fmt.Printf("Failed parsing imported pipeline for job %s - %v", importedPipeline.JobName, err)
 		}

@@ -37,3 +37,7 @@ func mergePipelines(pipeline *models.Pipeline, importedPipeline *enhancers.Impor
 
 	return pipeline
 }
+
+func (g *GitHubEnhancer) InheritParentPipelineData(parent, child *models.Pipeline) *models.Pipeline {
+	return child
+}

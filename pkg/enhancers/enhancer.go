@@ -10,6 +10,7 @@ type ImportedPipeline struct {
 }
 
 type Enhancer interface {
+	InheritParentPipelineData(parent, child *models.Pipeline) *models.Pipeline
 	LoadImportedPipelines(data *models.Pipeline, credentials *models.Credentials, organization string) ([]*ImportedPipeline, error)
 	Enhance(data *models.Pipeline, importedPipelines []*ImportedPipeline) (*models.Pipeline, error)
 }
