@@ -25,6 +25,14 @@ func getTemplates(pipeline *models.Pipeline, credentials *models.Credentials, or
 	if pipeline.Defaults != nil && pipeline.Defaults.Resources != nil {
 		resources = pipeline.Defaults.Resources
 	}
+
+	// import from default variables
+	if pipeline.Defaults != nil &&
+		pipeline.Defaults.EnvironmentVariables != nil &&
+		pipeline.Defaults.EnvironmentVariables.Imports != nil {
+		importedPipelines, errs = appendImports(importedPipelines, pipeline.Defaults.EnvironmentVariables.Imports, resources, credentials, organization, errs)
+	}
+
 	// main imports (extends field)
 	for _, imported := range pipeline.Imports {
 		importedPipelines, errs = appendImports(importedPipelines, imported, resources, credentials, organization, errs)
@@ -42,45 +50,19 @@ func getTemplates(pipeline *models.Pipeline, credentials *models.Credentials, or
 			importedPipelines, errs = appendImports(importedPipelines, job.EnvironmentVariables.Imports, resources, credentials, organization, errs)
 		}
 
-		if len(job.Steps) > 0 {
-			for _, step := range job.Steps {
-				if step != nil && step.Imports != nil {
-					importedPipelines, errs = appendImports(importedPipelines, step.Imports, resources, credentials, organization, errs)
-				}
-				if step != nil && step.EnvironmentVariables != nil && step.EnvironmentVariables.Imports != nil {
-					importedPipelines, errs = appendImports(importedPipelines, step.EnvironmentVariables.Imports, resources, credentials, organization, errs)
-				}
-			}
+		if len(job.PreSteps) > 0 {
+			importedPipelines, errs = iterateSteps(job.PreSteps, importedPipelines, resources, credentials, organization, errs)
 		}
 
-		if len(job.PreSteps) > 0 {
-			for _, step := range job.PreSteps {
-				if step != nil && step.Imports != nil {
-					importedPipelines, errs = appendImports(importedPipelines, step.Imports, resources, credentials, organization, errs)
-				}
-				if step != nil && step.EnvironmentVariables != nil && step.EnvironmentVariables.Imports != nil {
-					importedPipelines, errs = appendImports(importedPipelines, step.EnvironmentVariables.Imports, resources, credentials, organization, errs)
-				}
-			}
+		if len(job.Steps) > 0 {
+			importedPipelines, errs = iterateSteps(job.Steps, importedPipelines, resources, credentials, organization, errs)
+
 		}
 
 		if len(job.PostSteps) > 0 {
-			for _, step := range job.PostSteps {
-				if step != nil && step.Imports != nil {
-					importedPipelines, errs = appendImports(importedPipelines, step.Imports, resources, credentials, organization, errs)
-				}
-				if step != nil && step.EnvironmentVariables != nil && step.EnvironmentVariables.Imports != nil {
-					importedPipelines, errs = appendImports(importedPipelines, step.EnvironmentVariables.Imports, resources, credentials, organization, errs)
-				}
-			}
-		}
-	}
+			importedPipelines, errs = iterateSteps(job.PostSteps, importedPipelines, resources, credentials, organization, errs)
 
-	// import from default variables
-	if pipeline.Defaults != nil &&
-		pipeline.Defaults.EnvironmentVariables != nil &&
-		pipeline.Defaults.EnvironmentVariables.Imports != nil {
-		importedPipelines, errs = appendImports(importedPipelines, pipeline.Defaults.EnvironmentVariables.Imports, resources, credentials, organization, errs)
+		}
 	}
 
 	return importedPipelines, errs
@@ -212,6 +194,25 @@ func appendImports(
 	}
 	if importedPipeline != nil {
 		list = append(list, importedPipeline)
+	}
+
+	return list, errs
+}
+
+func iterateSteps(
+	steps []*models.Step,
+	list []*enhancers.ImportedPipeline,
+	resources *models.Resources,
+	credentials *models.Credentials,
+	organization string,
+	errs error) ([]*enhancers.ImportedPipeline, error) {
+	for _, step := range steps {
+		if step != nil && step.Imports != nil {
+			list, errs = appendImports(list, step.Imports, resources, credentials, organization, errs)
+		}
+		if step != nil && step.EnvironmentVariables != nil && step.EnvironmentVariables.Imports != nil {
+			list, errs = appendImports(list, step.EnvironmentVariables.Imports, resources, credentials, organization, errs)
+		}
 	}
 
 	return list, errs

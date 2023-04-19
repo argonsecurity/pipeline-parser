@@ -8,6 +8,7 @@ import (
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
+	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
@@ -366,6 +367,165 @@ func Test_getTemplates(t *testing.T) {
 				},
 			},
 			wantErr: true,
+		},
+		{
+			name: "happy flow - all import locations (imports, defaults, jobs, steps, envs)",
+			args: args{
+				pipeline: &models.Pipeline{
+					Defaults: &models.Defaults{
+						EnvironmentVariables: &models.EnvironmentVariablesRef{
+							Imports: &models.Import{
+								Source: &models.ImportSource{
+									Path: utils.GetPtr("testdata/file"),
+									Type: models.SourceTypeLocal,
+								},
+								FileReference: testutils.CreateFileReference(1, 1, 1, 1),
+							},
+						},
+					},
+					Imports: []*models.Import{
+						{
+							Source: &models.ImportSource{
+								Path: utils.GetPtr("testdata/file"),
+								Type: models.SourceTypeLocal,
+							},
+							FileReference: testutils.CreateFileReference(1, 1, 1, 2),
+						},
+					},
+					Jobs: []*models.Job{
+						{
+							Imports: &models.Import{
+								Source: &models.ImportSource{
+									Path: utils.GetPtr("testdata/file"),
+									Type: models.SourceTypeLocal,
+								},
+								FileReference: testutils.CreateFileReference(1, 1, 1, 3),
+							},
+							EnvironmentVariables: &models.EnvironmentVariablesRef{
+								Imports: &models.Import{
+									Source: &models.ImportSource{
+										Path: utils.GetPtr("testdata/file"),
+										Type: models.SourceTypeLocal,
+									},
+									FileReference: testutils.CreateAliasFileReference(1, 1, 1, 4, false),
+								},
+							},
+							PreSteps: []*models.Step{
+								{
+									Imports: &models.Import{
+										Source: &models.ImportSource{
+											Path: utils.GetPtr("testdata/file"),
+											Type: models.SourceTypeLocal,
+										},
+										FileReference: testutils.CreateFileReference(1, 1, 1, 5),
+									},
+									EnvironmentVariables: &models.EnvironmentVariablesRef{
+										Imports: &models.Import{
+											Source: &models.ImportSource{
+												Path: utils.GetPtr("testdata/file"),
+												Type: models.SourceTypeLocal,
+											},
+											FileReference: testutils.CreateFileReference(1, 1, 1, 6),
+										},
+									},
+								},
+							},
+							Steps: []*models.Step{
+								{
+									Imports: &models.Import{
+										Source: &models.ImportSource{
+											Path: utils.GetPtr("testdata/file"),
+											Type: models.SourceTypeLocal,
+										},
+										FileReference: testutils.CreateFileReference(1, 1, 1, 7),
+									},
+									EnvironmentVariables: &models.EnvironmentVariablesRef{
+										Imports: &models.Import{
+											Source: &models.ImportSource{
+												Path: utils.GetPtr("testdata/file"),
+												Type: models.SourceTypeLocal,
+											},
+											FileReference: testutils.CreateFileReference(1, 1, 1, 8),
+										},
+									},
+								},
+							},
+							PostSteps: []*models.Step{
+								{
+									Imports: &models.Import{
+										Source: &models.ImportSource{
+											Path: utils.GetPtr("testdata/file"),
+											Type: models.SourceTypeLocal,
+										},
+										FileReference: testutils.CreateFileReference(1, 1, 1, 9),
+									},
+									EnvironmentVariables: &models.EnvironmentVariablesRef{
+										Imports: &models.Import{
+											Source: &models.ImportSource{
+												Path: utils.GetPtr("testdata/file"),
+												Type: models.SourceTypeLocal,
+											},
+											FileReference: testutils.CreateFileReference(1, 1, 1, 10),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: []*enhancers.ImportedPipeline{
+				{
+					JobName:             "testdata/file",
+					Data:                []byte("file content"),
+					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 1),
+				},
+				{
+					JobName:             "testdata/file",
+					Data:                []byte("file content"),
+					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 2),
+				},
+				{
+					JobName:             "testdata/file",
+					Data:                []byte("file content"),
+					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 3),
+				},
+				{
+					JobName:             "testdata/file",
+					Data:                []byte("file content"),
+					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 4),
+				},
+				{
+					JobName:             "testdata/file",
+					Data:                []byte("file content"),
+					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 5),
+				},
+				{
+					JobName:             "testdata/file",
+					Data:                []byte("file content"),
+					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 6),
+				},
+				{
+					JobName:             "testdata/file",
+					Data:                []byte("file content"),
+					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 7),
+				},
+				{
+					JobName:             "testdata/file",
+					Data:                []byte("file content"),
+					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 8),
+				},
+				{
+					JobName:             "testdata/file",
+					Data:                []byte("file content"),
+					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 9),
+				},
+				{
+					JobName:             "testdata/file",
+					Data:                []byte("file content"),
+					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 10),
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
