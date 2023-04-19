@@ -149,6 +149,7 @@ func Test_getReusableWorkflows(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			h := http.FileServer(http.Dir("testdata"))
 			ts := httptest.NewServer(h)
+			defer ts.Close()
 			GITHUB_BASE_URL = ts.URL
 
 			got, err := getReusableWorkflows(tt.args.pipeline, tt.args.credentials)
@@ -299,6 +300,7 @@ func Test_handleImport(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			h := http.FileServer(http.Dir("testdata"))
 			ts := httptest.NewServer(h)
+			defer ts.Close()
 			GITHUB_BASE_URL = ts.URL
 
 			got, err := handleImport(tt.args.imports, tt.args.credentials)
@@ -370,6 +372,7 @@ func Test_loadRemoteFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			h := http.FileServer(http.Dir("testdata"))
 			ts := httptest.NewServer(h)
+			defer ts.Close()
 			GITHUB_BASE_URL = ts.URL
 
 			got, err := loadRemoteFile(tt.args.org, tt.args.repo, tt.args.version, tt.args.path, tt.args.credentials)

@@ -49,6 +49,8 @@ func (g *AzureParser) Parse(azurePipeline *azureModels.Pipeline) (*models.Pipeli
 		pipeline.Jobs[0].Steps = parseSteps(azurePipeline.Steps)
 	}
 
+	// todo: flatten imports ?
+
 	return pipeline, nil
 }
 

@@ -88,6 +88,7 @@ func TestParseExtends(t *testing.T) {
 						RepositoryAlias: utils.GetPtr("repo2"),
 						Type:            models.SourceTypeRemote,
 					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 				},
 			},
 		},

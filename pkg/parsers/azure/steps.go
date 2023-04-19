@@ -75,9 +75,12 @@ func parseStep(step azureModels.Step) *models.Step {
 		if parsedStep.ID == nil {
 			parsedStep.ID = &step.Template.Template
 		}
+		path, alias := parseTemplateString(step.Template.Template)
 		parsedStep.Imports = &models.Import{
 			Source: &models.ImportSource{
-				Path: &step.Template.Template,
+				Path:            &path,
+				Type:            calculateSourceType(alias),
+				RepositoryAlias: &alias,
 			},
 			Parameters:    step.Template.Parameters,
 			FileReference: step.FileReference,

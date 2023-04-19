@@ -8,6 +8,7 @@ import (
 	"sort"
 	"testing"
 
+	azureEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/azure"
 	githubEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/github"
 	gitlabEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/gitlab"
 	"github.com/argonsecurity/pipeline-parser/pkg/handler"
@@ -25,8 +26,10 @@ func executeTestCases(t *testing.T, testCases []TestCase, folder string, platfor
 		if testCase.TestdataDir != "" {
 			h := http.FileServer(http.Dir(testCase.TestdataDir))
 			ts := httptest.NewServer(h)
+			defer ts.Close()
 			githubEnhancer.GITHUB_BASE_URL = ts.URL
 			gitlabEnhancer.GITLAB_BASE_URL = ts.URL
+			azureEnhancer.AZURE_BASE_URL = ts.URL
 		}
 
 		buf := readFile(filepath.Join("../fixtures", folder, testCase.Filename))

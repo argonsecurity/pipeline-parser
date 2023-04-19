@@ -29,9 +29,9 @@ func mergePipelines(pipeline *models.Pipeline, importedPipeline *enhancers.Impor
 		return pipeline
 	}
 
-	for _, job := range pipeline.Jobs {
-		if *job.Name == importedPipeline.JobName {
-			job.Imports.Pipeline = importedPipeline.Pipeline
+	for _, imported := range pipeline.Imports {
+		if *imported.Source.Path == importedPipeline.JobName {
+			imported.Pipeline = importedPipeline.Pipeline
 		}
 	}
 

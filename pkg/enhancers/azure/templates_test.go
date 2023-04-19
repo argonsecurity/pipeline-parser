@@ -12,6 +12,216 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_loadLocalFile(t *testing.T) {
+	type args struct {
+		path string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name: "happy flow - relative path",
+			args: args{
+				path: "../azure/testdata/file",
+			},
+			want:    []byte("file content"),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := loadLocalFile(tt.args.path)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("loadLocalFile() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_generateRequestUrl(t *testing.T) {
+	type args struct {
+		proj         string
+		repo         string
+		path         string
+		version      string
+		organization string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "happy flow - w/o version",
+			args: args{
+				proj:         "proj",
+				repo:         "repo",
+				path:         "file",
+				version:      "",
+				organization: "azure-org",
+			},
+			want: "https://dev.azure.com/azure-org/proj/_apis/git/repositories/repo/items?path=file",
+		},
+		{
+			name: "happy flow - w/ string",
+			args: args{
+				proj:         "proj",
+				repo:         "repo",
+				path:         "file",
+				version:      "refs/head/3",
+				organization: "azure-org",
+			},
+			want: "https://dev.azure.com/azure-org/proj/_apis/git/repositories/repo/items?path=file&versionDescriptor.versionType=tag&version=refs/head/3",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := generateRequestUrl(tt.args.proj, tt.args.repo, tt.args.path, tt.args.version, tt.args.organization)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_extractRemoteParams(t *testing.T) {
+	type args struct {
+		jobImport *models.Import
+		resources *models.Resources
+	}
+	tests := []struct {
+		name         string
+		args         args
+		wantProj     string
+		wantRepo     string
+		wantPath     string
+		wantVersion  string
+		wantPlatform models.Platform
+	}{
+		{
+			name: "happy flow",
+			args: args{
+				jobImport: &models.Import{
+					Source: &models.ImportSource{
+						Path:            utils.GetPtr("file"),
+						SCM:             consts.AzurePlatform,
+						RepositoryAlias: utils.GetPtr("templates"),
+					},
+				},
+				resources: &models.Resources{
+					Repositories: []*models.ImportSource{
+						{
+							RepositoryAlias: utils.GetPtr("templates"),
+							Organization:    utils.GetPtr("proj"),
+							Repository:      utils.GetPtr("repo"),
+							Reference:       utils.GetPtr("refs/head/3"),
+							SCM:             consts.AzurePlatform,
+						},
+					},
+				},
+			},
+			wantProj:     "proj",
+			wantRepo:     "repo",
+			wantPath:     "file",
+			wantVersion:  "refs/head/3",
+			wantPlatform: consts.AzurePlatform,
+		},
+		{
+			name: "happy flow - multiple repos",
+			args: args{
+				jobImport: &models.Import{
+					Source: &models.ImportSource{
+						Path:            utils.GetPtr("file"),
+						SCM:             consts.AzurePlatform,
+						RepositoryAlias: utils.GetPtr("templates"),
+					},
+				},
+				resources: &models.Resources{
+					Repositories: []*models.ImportSource{
+						{
+							RepositoryAlias: utils.GetPtr("templates2"),
+							Organization:    utils.GetPtr("proj"),
+							Repository:      utils.GetPtr("repo"),
+							Reference:       utils.GetPtr("refs/head/3"),
+							SCM:             consts.GitHubPlatform,
+						},
+						{
+							RepositoryAlias: utils.GetPtr("templates"),
+							Organization:    utils.GetPtr("proj"),
+							Repository:      utils.GetPtr("repo"),
+							Reference:       utils.GetPtr("refs/head/3"),
+							SCM:             consts.AzurePlatform,
+						},
+					},
+				},
+			},
+			wantProj:     "proj",
+			wantRepo:     "repo",
+			wantPath:     "file",
+			wantVersion:  "refs/head/3",
+			wantPlatform: consts.AzurePlatform,
+		},
+		{
+			name: "no resources",
+			args: args{
+				jobImport: &models.Import{
+					Source: &models.ImportSource{
+						Path:            utils.GetPtr("file"),
+						SCM:             consts.AzurePlatform,
+						RepositoryAlias: utils.GetPtr("templates"),
+					},
+				},
+			},
+			wantProj:     "",
+			wantRepo:     "",
+			wantPath:     "file",
+			wantVersion:  "",
+			wantPlatform: consts.AzurePlatform,
+		},
+		{
+			name: "no matches",
+			args: args{
+				jobImport: &models.Import{
+					Source: &models.ImportSource{
+						Path:            utils.GetPtr("file"),
+						SCM:             consts.AzurePlatform,
+						RepositoryAlias: utils.GetPtr("templates-2"),
+					},
+				},
+				resources: &models.Resources{
+					Repositories: []*models.ImportSource{
+						{
+							RepositoryAlias: utils.GetPtr("templates"),
+							Organization:    utils.GetPtr("proj"),
+							Repository:      utils.GetPtr("repo"),
+							Reference:       utils.GetPtr("refs/head/3"),
+							SCM:             consts.AzurePlatform,
+						},
+					},
+				},
+			},
+			wantProj:     "",
+			wantRepo:     "",
+			wantPath:     "file",
+			wantVersion:  "",
+			wantPlatform: consts.AzurePlatform,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotProj, gotRepo, gotPath, gotVersion, gotPlatform := extractRemoteParams(tt.args.jobImport, tt.args.resources)
+			assert.Equal(t, tt.wantProj, gotProj)
+			assert.Equal(t, tt.wantRepo, gotRepo)
+			assert.Equal(t, tt.wantPath, gotPath)
+			assert.Equal(t, tt.wantVersion, gotVersion)
+			assert.Equal(t, tt.wantPlatform, gotPlatform)
+		})
+	}
+}
+
 func Test_getTemplates(t *testing.T) {
 	type args struct {
 		pipeline    *models.Pipeline

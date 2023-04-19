@@ -1,0 +1,4 @@
+jobs:
+  - job: PostBuild
+    steps:
+      - script: npm test

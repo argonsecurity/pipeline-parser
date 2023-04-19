@@ -38,12 +38,14 @@ func parseTemplateJob(job *azureModels.TemplateJob) *models.Job {
 	if job == nil {
 		return nil
 	}
-
+	path, alias := parseTemplateString(job.Template.Template)
 	parsedJob := &models.Job{
 		ID: &job.Template.Template,
 		Imports: &models.Import{
 			Source: &models.ImportSource{
-				Path: &job.Template.Template,
+				Path:            &path,
+				Type:            calculateSourceType(alias),
+				RepositoryAlias: &alias,
 			},
 			FileReference: job.FileReference,
 			Parameters:    job.Parameters,

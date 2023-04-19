@@ -6,7 +6,7 @@ import (
 )
 
 func parseStages(stages *azureModels.Stages) []*models.Job {
-	if stages == nil || stages.Stages == nil {
+	if stages == nil || (stages.Stages == nil && stages.TemplateStages == nil) {
 		return nil
 	}
 
@@ -54,11 +54,14 @@ func parseStage(stage *azureModels.Stage) []*models.Job {
 }
 
 func parseTemplateStage(stage *azureModels.TemplateStage) *models.Job {
+	path, alias := parseTemplateString(stage.Template.Template)
 	return &models.Job{
 		ID: &stage.Template.Template,
 		Imports: &models.Import{
 			Source: &models.ImportSource{
-				Path: &stage.Template.Template,
+				Path:            &path,
+				Type:            calculateSourceType(alias),
+				RepositoryAlias: &alias,
 			},
 			Parameters:    stage.Parameters,
 			FileReference: stage.FileReference,

@@ -18,10 +18,13 @@ func parseVariables(variables *azureModels.Variables) *models.EnvironmentVariabl
 			env[variable.Name] = variable.Value
 		}
 
+		path, alias := parseTemplateString(variable.Template.Template)
 		if variable.Template.Template != "" {
 			imports = &models.Import{
 				Source: &models.ImportSource{
-					Path: &variable.Template.Template,
+					Path:            &path,
+					Type:            calculateSourceType(alias),
+					RepositoryAlias: &alias,
 				},
 				Parameters:    variable.Parameters,
 				FileReference: variable.FileReference,

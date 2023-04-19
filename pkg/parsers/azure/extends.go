@@ -15,7 +15,7 @@ func parseExtends(extends *azureModels.Extends) []*models.Import {
 	}
 
 	path, alias := parseTemplateString(extends.Template.Template)
-	parameters, paramImports := parseExtendParameters(extends.Parameters)
+	parameters, paramImports := parseExtendParameters(extends.Parameters, extends.FileReference)
 	imports := []*models.Import{{
 		FileReference: extends.FileReference,
 		Parameters:    parameters,
@@ -42,7 +42,7 @@ func parseTemplateString(template string) (path string, alias string) {
 	return path, alias
 }
 
-func parseExtendParameters(params map[string]any) (parameters map[string]any, imports []*models.Import) {
+func parseExtendParameters(params map[string]any, rootFileRef *models.FileReference) (parameters map[string]any, imports []*models.Import) {
 	if params == nil {
 		return nil, nil
 	}
@@ -56,7 +56,7 @@ func parseExtendParameters(params map[string]any) (parameters map[string]any, im
 			value, ok := tryToParseTemplate(item)
 			if ok {
 				path, alias := parseTemplateString(value.Template)
-				parameters, paramImports := parseExtendParameters(value.Parameters)
+				parameters, paramImports := parseExtendParameters(value.Parameters, rootFileRef)
 
 				imports = append(imports, &models.Import{
 					Parameters: parameters,
@@ -65,6 +65,7 @@ func parseExtendParameters(params map[string]any) (parameters map[string]any, im
 						RepositoryAlias: &alias,
 						Type:            calculateSourceType(alias),
 					},
+					FileReference: rootFileRef,
 				})
 				imports = append(imports, paramImports...)
 				continue
