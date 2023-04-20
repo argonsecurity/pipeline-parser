@@ -38,7 +38,8 @@ func mergePipelines(pipeline *models.Pipeline, importedPipeline *enhancers.Impor
 
 	if pipeline.Imports != nil || len(pipeline.Imports) > 0 {
 		for _, imported := range pipeline.Imports {
-			if utils.CompareFileReferences(imported.FileReference, importedPipeline.OriginFileReference) {
+			if utils.CompareFileReferences(imported.FileReference, importedPipeline.OriginFileReference) &&
+				*imported.Source.Path == importedPipeline.JobName {
 				imported.Pipeline = importedPipeline.Pipeline
 				return pipeline
 			}
@@ -86,6 +87,7 @@ func isDirectImport(job *models.Job, importedPipeline *enhancers.ImportedPipelin
 		job.Imports.Source != nil &&
 		job.Imports.FileReference != nil &&
 		importedPipeline.OriginFileReference != nil &&
+		*job.Imports.Source.Path == importedPipeline.JobName &&
 		utils.CompareFileReferences(job.Imports.FileReference, importedPipeline.OriginFileReference)
 }
 
@@ -94,6 +96,7 @@ func isJobVariableImport(job *models.Job, importedPipeline *enhancers.ImportedPi
 		job.EnvironmentVariables.Imports != nil &&
 		job.EnvironmentVariables.Imports.Source != nil &&
 		job.EnvironmentVariables.Imports.FileReference != nil &&
+		*job.EnvironmentVariables.Imports.Source.Path == importedPipeline.JobName &&
 		utils.CompareFileReferences(job.EnvironmentVariables.Imports.FileReference, importedPipeline.OriginFileReference)
 }
 
@@ -102,6 +105,7 @@ func isDirectStepImport(step *models.Step, importedPipeline *enhancers.ImportedP
 		step.Imports.Source != nil &&
 		step.Imports.FileReference != nil &&
 		importedPipeline.OriginFileReference != nil &&
+		*step.Imports.Source.Path == importedPipeline.JobName &&
 		utils.CompareFileReferences(step.Imports.FileReference, importedPipeline.OriginFileReference)
 }
 
@@ -110,6 +114,7 @@ func isStepVariableImport(step *models.Step, importedPipeline *enhancers.Importe
 		step.EnvironmentVariables.Imports != nil &&
 		step.EnvironmentVariables.Imports.Source != nil &&
 		step.EnvironmentVariables.Imports.FileReference != nil &&
+		*step.EnvironmentVariables.Imports.Source.Path == importedPipeline.JobName &&
 		utils.CompareFileReferences(step.EnvironmentVariables.Imports.FileReference, importedPipeline.OriginFileReference)
 }
 

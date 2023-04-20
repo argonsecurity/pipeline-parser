@@ -176,6 +176,7 @@ func getImportedData(
 			return nil, err
 		}
 		return &enhancers.ImportedPipeline{
+			JobName:             *imported.Source.Path,
 			OriginFileReference: imported.FileReference,
 			Data:                importedPipelineBuf,
 		}, nil

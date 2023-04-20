@@ -269,10 +269,12 @@ func Test_getTemplates(t *testing.T) {
 				{
 					OriginFileReference: testutils.CreateFileReference(0, 1, 2, 3),
 					Data:                []byte("file content"),
+					JobName:             "file",
 				},
 				{
 					OriginFileReference: testutils.CreateFileReference(3, 2, 1, 0),
 					Data:                []byte("file content"),
+					JobName:             "testdata/file",
 				},
 			},
 		},
@@ -472,42 +474,52 @@ func Test_getTemplates(t *testing.T) {
 			},
 			want: []*enhancers.ImportedPipeline{
 				{
+					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
 				{
+					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 2),
 				},
 				{
+					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 3),
 				},
 				{
+					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 4),
 				},
 				{
+					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 5),
 				},
 				{
+					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 6),
 				},
 				{
+					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 7),
 				},
 				{
+					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 8),
 				},
 				{
+					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 9),
 				},
 				{
+					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 10),
 				},
