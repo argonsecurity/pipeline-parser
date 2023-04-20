@@ -10,7 +10,7 @@ import (
 
 type AzureEnhancer struct{}
 
-func (a *AzureEnhancer) LoadImportedPipelines(data *models.Pipeline, credentials *models.Credentials, organization string) ([]*enhancers.ImportedPipeline, error) {
+func (a *AzureEnhancer) LoadImportedPipelines(data *models.Pipeline, credentials *models.Credentials, organization *string) ([]*enhancers.ImportedPipeline, error) {
 	importedPipelines, err := getTemplates(data, credentials, organization)
 	if err != nil {
 		return importedPipelines, err
@@ -38,7 +38,7 @@ func mergePipelines(pipeline *models.Pipeline, importedPipeline *enhancers.Impor
 
 	if pipeline.Imports != nil || len(pipeline.Imports) > 0 {
 		for _, imported := range pipeline.Imports {
-			if *imported.Source.Path == importedPipeline.JobName {
+			if utils.CompareFileReferences(imported.FileReference, importedPipeline.OriginFileReference) {
 				imported.Pipeline = importedPipeline.Pipeline
 				return pipeline
 			}

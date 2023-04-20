@@ -48,9 +48,11 @@ func parseExtendParameters(params map[string]any, rootFileRef *models.FileRefere
 	}
 
 	for key, param := range params {
-		items := []any{param}
+		var items []any
 		if utils.IsArray(param) {
 			items = append(items, param.([]any)...)
+		} else {
+			items = append(items, param)
 		}
 		for _, item := range items {
 			value, ok := tryToParseTemplate(item)

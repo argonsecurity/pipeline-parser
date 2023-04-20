@@ -22,7 +22,7 @@ type Handler[T any] interface {
 	GetEnhancer() enhancers.Enhancer
 }
 
-func Handle(data []byte, platform models.Platform, credentials *models.Credentials, organization string) (*models.Pipeline, error) {
+func Handle(data []byte, platform models.Platform, credentials *models.Credentials, organization *string) (*models.Pipeline, error) {
 	var pipeline *models.Pipeline
 	var err error
 
@@ -50,7 +50,7 @@ func Handle(data []byte, platform models.Platform, credentials *models.Credentia
 	return pipeline, nil
 }
 
-func handle[T any](data []byte, handler Handler[T], credentials *models.Credentials, organization string, parentPipeline *models.Pipeline) (*models.Pipeline, error) {
+func handle[T any](data []byte, handler Handler[T], credentials *models.Credentials, organization *string, parentPipeline *models.Pipeline) (*models.Pipeline, error) {
 	pipeline, err := handler.GetLoader().Load(data)
 	if err != nil {
 		return nil, err

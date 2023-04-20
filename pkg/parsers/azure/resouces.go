@@ -1,8 +1,6 @@
 package azure
 
 import (
-	"strings"
-
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	azureModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/azure/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
@@ -18,14 +16,12 @@ func parseResources(resources *azureModels.Resources) *models.Resources {
 	}
 
 	for _, repo := range resources.Repositories {
-		parts := strings.Split(repo.Repository.Name, "/")
 		parsedResources.Repositories = append(parsedResources.Repositories, &models.ImportSource{
 			RepositoryAlias: &repo.Repository.Repository,
 			Reference:       &repo.Repository.Ref,
 			Type:            parseRepoType(repo.Repository.Type),
 			SCM:             parseRepoSCM(repo.Repository.Type),
-			Repository:      &parts[1],
-			Organization:    &parts[0],
+			Repository:      &repo.Repository.Name,
 		})
 	}
 

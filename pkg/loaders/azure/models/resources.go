@@ -119,6 +119,7 @@ type PackageRef struct {
 	FileReference *models.FileReference
 }
 
+// Currently can't fully load it due to mismatch in the azure pipelines documentation
 type Resources struct {
 	// Builds        []*BuildRef             `yaml:"builds,omitempty"`
 	// Containers    []*ResourceContainerRef `yaml:"containers,omitempty"`

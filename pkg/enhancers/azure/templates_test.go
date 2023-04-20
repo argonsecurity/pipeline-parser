@@ -116,8 +116,7 @@ func Test_extractRemoteParams(t *testing.T) {
 					Repositories: []*models.ImportSource{
 						{
 							RepositoryAlias: utils.GetPtr("templates"),
-							Organization:    utils.GetPtr("proj"),
-							Repository:      utils.GetPtr("repo"),
+							Repository:      utils.GetPtr("proj/repo"),
 							Reference:       utils.GetPtr("refs/head/3"),
 							SCM:             consts.AzurePlatform,
 						},
@@ -144,15 +143,13 @@ func Test_extractRemoteParams(t *testing.T) {
 					Repositories: []*models.ImportSource{
 						{
 							RepositoryAlias: utils.GetPtr("templates2"),
-							Organization:    utils.GetPtr("proj"),
-							Repository:      utils.GetPtr("repo"),
+							Repository:      utils.GetPtr("proj/repo"),
 							Reference:       utils.GetPtr("refs/head/3"),
 							SCM:             consts.GitHubPlatform,
 						},
 						{
 							RepositoryAlias: utils.GetPtr("templates"),
-							Organization:    utils.GetPtr("proj"),
-							Repository:      utils.GetPtr("repo"),
+							Repository:      utils.GetPtr("proj/repo"),
 							Reference:       utils.GetPtr("refs/head/3"),
 							SCM:             consts.AzurePlatform,
 						},
@@ -243,8 +240,7 @@ func Test_getTemplates(t *testing.T) {
 							Repositories: []*models.ImportSource{
 								{
 									RepositoryAlias: utils.GetPtr("templates"),
-									Organization:    utils.GetPtr("proj"),
-									Repository:      utils.GetPtr("repo"),
+									Repository:      utils.GetPtr("proj/repo"),
 									SCM:             consts.AzurePlatform,
 								},
 							},
@@ -252,6 +248,7 @@ func Test_getTemplates(t *testing.T) {
 					},
 					Imports: []*models.Import{
 						{
+							FileReference: testutils.CreateFileReference(0, 1, 2, 3),
 							Source: &models.ImportSource{
 								RepositoryAlias: utils.GetPtr("templates"),
 								Path:            utils.GetPtr("file"),
@@ -259,6 +256,7 @@ func Test_getTemplates(t *testing.T) {
 							},
 						},
 						{
+							FileReference: testutils.CreateFileReference(3, 2, 1, 0),
 							Source: &models.ImportSource{
 								Path: utils.GetPtr("testdata/file"),
 								Type: models.SourceTypeLocal,
@@ -269,12 +267,12 @@ func Test_getTemplates(t *testing.T) {
 			},
 			want: []*enhancers.ImportedPipeline{
 				{
-					JobName: "file",
-					Data:    []byte("file content"),
+					OriginFileReference: testutils.CreateFileReference(0, 1, 2, 3),
+					Data:                []byte("file content"),
 				},
 				{
-					JobName: "testdata/file",
-					Data:    []byte("file content"),
+					OriginFileReference: testutils.CreateFileReference(3, 2, 1, 0),
+					Data:                []byte("file content"),
 				},
 			},
 		},
@@ -287,8 +285,7 @@ func Test_getTemplates(t *testing.T) {
 							Repositories: []*models.ImportSource{
 								{
 									RepositoryAlias: utils.GetPtr("templates"),
-									Organization:    utils.GetPtr("proj"),
-									Repository:      utils.GetPtr("repo"),
+									Repository:      utils.GetPtr("proj/repo"),
 									SCM:             consts.AzurePlatform,
 								},
 							},
@@ -332,8 +329,7 @@ func Test_getTemplates(t *testing.T) {
 							Repositories: []*models.ImportSource{
 								{
 									RepositoryAlias: utils.GetPtr("templates"),
-									Organization:    utils.GetPtr("proj"),
-									Repository:      utils.GetPtr("other"),
+									Repository:      utils.GetPtr("proj/other"),
 									SCM:             consts.AzurePlatform,
 								},
 							},
@@ -476,52 +472,42 @@ func Test_getTemplates(t *testing.T) {
 			},
 			want: []*enhancers.ImportedPipeline{
 				{
-					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
 				{
-					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 2),
 				},
 				{
-					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 3),
 				},
 				{
-					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 4),
 				},
 				{
-					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 5),
 				},
 				{
-					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 6),
 				},
 				{
-					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 7),
 				},
 				{
-					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 8),
 				},
 				{
-					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 9),
 				},
 				{
-					JobName:             "testdata/file",
 					Data:                []byte("file content"),
 					OriginFileReference: testutils.CreateFileReference(1, 1, 1, 10),
 				},
@@ -535,7 +521,7 @@ func Test_getTemplates(t *testing.T) {
 			defer ts.Close()
 			AZURE_BASE_URL = ts.URL
 
-			got, err := getTemplates(tt.args.pipeline, tt.args.credentials, "azure-org")
+			got, err := getTemplates(tt.args.pipeline, tt.args.credentials, utils.GetPtr("azure-org"))
 
 			if tt.wantErr {
 				assert.Error(t, err)

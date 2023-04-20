@@ -18,7 +18,7 @@ var (
 	VERSION_QUERY  = "&versionDescriptor.versionType=tag&version="
 )
 
-func getTemplates(pipeline *models.Pipeline, credentials *models.Credentials, organization string) ([]*enhancers.ImportedPipeline, error) {
+func getTemplates(pipeline *models.Pipeline, credentials *models.Credentials, organization *string) ([]*enhancers.ImportedPipeline, error) {
 	var errs error
 	importedPipelines := []*enhancers.ImportedPipeline{}
 	var resources *models.Resources
@@ -68,7 +68,7 @@ func getTemplates(pipeline *models.Pipeline, credentials *models.Credentials, or
 	return importedPipelines, errs
 }
 
-func handleImport(jobImport *models.Import, resources *models.Resources, credentials *models.Credentials, organization string) ([]byte, error) {
+func handleImport(jobImport *models.Import, resources *models.Resources, credentials *models.Credentials, organization *string) ([]byte, error) {
 	if jobImport == nil || jobImport.Source == nil {
 		return nil, nil
 	}
@@ -84,12 +84,12 @@ func handleImport(jobImport *models.Import, resources *models.Resources, credent
 	return nil, nil
 }
 
-func loadRemoteFile(jobImport *models.Import, resources *models.Resources, credentials *models.Credentials, organization string) ([]byte, error) {
+func loadRemoteFile(jobImport *models.Import, resources *models.Resources, credentials *models.Credentials, organization *string) ([]byte, error) {
 	project, repo, path, version, _ := extractRemoteParams(jobImport, resources)
-	if project == "" || repo == "" || path == "" || organization == "" {
+	if project == "" || repo == "" || path == "" || organization == nil || *organization == "" {
 		return nil, nil
 	}
-	url := generateRequestUrl(project, repo, path, version, organization)
+	url := generateRequestUrl(project, repo, path, version, *organization)
 	client := utils.GetHttpClientWithBasicAuth(credentials)
 	resp, err := client.R().Get(url)
 	if err != nil {
@@ -130,12 +130,18 @@ func extractRemoteParams(jobImport *models.Import, resources *models.Resources) 
 	if jobImport.Source.SCM != "" {
 		platform = jobImport.Source.SCM
 	}
+
 	if resources != nil && len(resources.Repositories) > 0 {
 		for _, item := range resources.Repositories {
 			// atm we only support current azure organization import (no github import or import from another azure org)
-			if item != nil && item.SCM == consts.AzurePlatform && *item.RepositoryAlias == *jobImport.Source.RepositoryAlias {
-				repo = *item.Repository
-				proj = *item.Organization
+			if item != nil && item.SCM == consts.AzurePlatform && *item.RepositoryAlias == *jobImport.Source.RepositoryAlias && item.Repository != nil {
+				parts := strings.Split(*item.Repository, "/")
+				if len(parts) == 1 {
+					repo = parts[0]
+				} else {
+					proj = parts[0]
+					repo = parts[1]
+				}
 				if item.Reference != nil {
 					version = *item.Reference
 				}
@@ -163,14 +169,13 @@ func getImportedData(
 	imported *models.Import,
 	resources *models.Resources,
 	credentials *models.Credentials,
-	organization string) (*enhancers.ImportedPipeline, error) {
+	organization *string) (*enhancers.ImportedPipeline, error) {
 	if imported != nil && imported.Source != nil && imported.Source.Path != nil {
 		importedPipelineBuf, err := handleImport(imported, resources, credentials, organization)
 		if err != nil {
 			return nil, err
 		}
 		return &enhancers.ImportedPipeline{
-			JobName:             *imported.Source.Path,
 			OriginFileReference: imported.FileReference,
 			Data:                importedPipelineBuf,
 		}, nil
@@ -183,7 +188,7 @@ func appendImports(
 	imports *models.Import,
 	resources *models.Resources,
 	credentials *models.Credentials,
-	organization string,
+	organization *string,
 	errs error) ([]*enhancers.ImportedPipeline, error) {
 	importedPipeline, err := getImportedData(imports, resources, credentials, organization)
 	if err != nil {
@@ -204,7 +209,7 @@ func iterateSteps(
 	list []*enhancers.ImportedPipeline,
 	resources *models.Resources,
 	credentials *models.Credentials,
-	organization string,
+	organization *string,
 	errs error) ([]*enhancers.ImportedPipeline, error) {
 	for _, step := range steps {
 		if step != nil && step.Imports != nil {

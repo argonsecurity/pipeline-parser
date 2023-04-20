@@ -68,7 +68,7 @@ pipeline-parser --platform azure azure-pipelines.yml`,
 					if err != nil {
 						return nil
 					}
-					pipeline, err := handler.Handle(buf, models.Platform(platform), &models.Credentials{Token: token}, organization)
+					pipeline, err := handler.Handle(buf, models.Platform(platform), &models.Credentials{Token: token}, &organization)
 					if err != nil {
 						return err
 					}
@@ -87,7 +87,7 @@ pipeline-parser --platform azure azure-pipelines.yml`,
 	command.PersistentFlags().StringVarP(&output, outputFlagName, outputShortFlagName, outputDefaultValue, outputUsage)
 	command.PersistentFlags().StringVar(&fileSuffix, fileSuffixFlagName, fileSuffixDefaultValue, fileSuffixUsage)
 	command.PersistentFlags().StringVar(&token, tokenFlagName, tokenDefaultValue, tokenUsage)
-	command.PersistentFlags().StringVar(&token, tokenFlagName, tokenDefaultValue, tokenUsage)
+	command.PersistentFlags().StringVar(&organization, organizationFlagName, organizationDefaultValue, organizationUsage)
 
 	return command
 }

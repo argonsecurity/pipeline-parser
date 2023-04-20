@@ -33,7 +33,7 @@ func executeTestCases(t *testing.T, testCases []TestCase, folder string, platfor
 		}
 
 		buf := readFile(filepath.Join("../fixtures", folder, testCase.Filename))
-		pipeline, err := handler.Handle(buf, platform, &models.Credentials{}, organization)
+		pipeline, err := handler.Handle(buf, platform, &models.Credentials{}, &organization)
 		if err != nil {
 			if !testCase.ShouldFail {
 				t.Errorf("%s: %s", testCase.Filename, err)

@@ -310,8 +310,7 @@ func TestAzure(t *testing.T) {
 						Repositories: []*models.ImportSource{
 							{
 								RepositoryAlias: utils.GetPtr("common"),
-								Repository:      utils.GetPtr("CommonTools"),
-								Organization:    utils.GetPtr("Contoso"),
+								Repository:      utils.GetPtr("Contoso/CommonTools"),
 								Type:            models.SourceTypeRemote,
 								SCM:             consts.GitHubPlatform,
 								Reference:       utils.GetPtr(""),
@@ -587,8 +586,7 @@ func TestAzure(t *testing.T) {
 						Repositories: []*models.ImportSource{
 							{
 								RepositoryAlias: utils.GetPtr("CeTemplates"),
-								Repository:      utils.GetPtr("Templates"),
-								Organization:    utils.GetPtr("ORG"),
+								Repository:      utils.GetPtr("ORG/Templates"),
 								Type:            models.SourceTypeRemote,
 								SCM:             consts.AzurePlatform,
 								Reference:       utils.GetPtr(""),
@@ -614,19 +612,6 @@ func TestAzure(t *testing.T) {
 						},
 						Parameters: map[string]any{
 							"runMode": "${{parameters.runMode}}",
-							"preBuildSteps": []any{
-								map[string]any{
-									"template": "/pipelines/steps/pre-build-steps.yml@self",
-								},
-							},
-							"testSteps2": []any{
-								map[string]any{
-									"template": "test-steps2.yml",
-									"parameters": map[string]any{
-										"bar": "foo",
-									},
-								},
-							},
 						},
 						FileReference: testutils.CreateFileReference(13, 3, 23, 19),
 					},

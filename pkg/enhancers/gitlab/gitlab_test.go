@@ -362,7 +362,7 @@ func TestGitLabEnhancer_LoadImportedPipelines(t *testing.T) {
 		GITLAB_BASE_URL = ts.URL
 		t.Run(tt.name, func(t *testing.T) {
 			g := &GitLabEnhancer{}
-			got, err := g.LoadImportedPipelines(tt.args.data, tt.args.credentials, "")
+			got, err := g.LoadImportedPipelines(tt.args.data, tt.args.credentials, utils.GetPtr(""))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GitLabEnhancer.LoadImportedPipelines() error = %v, wantErr %v", err, tt.wantErr)
 				return
