@@ -7,19 +7,21 @@ import (
 	"github.com/imroc/req/v3"
 )
 
+// ToDo: change to SetCommonBearerAuthToken and test
 func GetHttpClient(credentials *models.Credentials) *req.Client {
-	return createClient(credentials, "token")
-}
-
-func GetHttpClientWithBasicAuth(credentials *models.Credentials) *req.Client {
-	return createClient(credentials, "basic")
-}
-
-func createClient(credentials *models.Credentials, auth string) *req.Client {
 	client := req.C()
 	if credentials == nil {
 		return client
 	}
 
-	return client.SetCommonHeader("Authorization", fmt.Sprintf("%s %s", auth, credentials.Token))
+	return client.SetCommonHeader("Authorization", fmt.Sprintf("token %s", credentials.Token))
+}
+
+func GetHttpClientWithBasicAuth(credentials *models.Credentials) *req.Client {
+	client := req.C()
+	if credentials == nil {
+		return client
+	}
+
+	return client.SetCommonBasicAuth("imroc", credentials.Token)
 }
