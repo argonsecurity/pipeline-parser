@@ -23,5 +23,5 @@ func GetHttpClientWithBasicAuth(credentials *models.Credentials) *req.Client {
 		return client
 	}
 
-	return client.SetCommonBasicAuth("imroc", credentials.Token)
+	return client.SetCommonBasicAuth("", credentials.Token)
 }
