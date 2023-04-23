@@ -22,7 +22,7 @@ type Handler[T any] interface {
 	GetEnhancer() enhancers.Enhancer
 }
 
-func Handle(data []byte, platform models.Platform, credentials *models.Credentials, organization *string) (*models.Pipeline, error) {
+func Handle(data []byte, platform models.Platform, credentials *models.Credentials, organization, baseUrl *string) (*models.Pipeline, error) {
 	var pipeline *models.Pipeline
 	var err error
 
@@ -32,13 +32,13 @@ func Handle(data []byte, platform models.Platform, credentials *models.Credentia
 
 	switch platform {
 	case consts.GitHubPlatform:
-		pipeline, err = handle[githubModels.Workflow](data, &GitHubHandler{}, credentials, organization, nil)
+		pipeline, err = handle[githubModels.Workflow](data, &GitHubHandler{}, credentials, organization, baseUrl, nil)
 	case consts.GitLabPlatform:
-		pipeline, err = handle[gitlabModels.GitlabCIConfiguration](data, &GitLabHandler{}, credentials, organization, nil)
+		pipeline, err = handle[gitlabModels.GitlabCIConfiguration](data, &GitLabHandler{}, credentials, organization, baseUrl, nil)
 	case consts.AzurePlatform:
-		pipeline, err = handle[azureModels.Pipeline](data, &AzureHandler{}, credentials, organization, nil)
+		pipeline, err = handle[azureModels.Pipeline](data, &AzureHandler{}, credentials, organization, baseUrl, nil)
 	case consts.BitbucketPlatform:
-		pipeline, err = handle[bitbucketModels.Pipeline](data, &BitbucketHandler{}, credentials, organization, nil)
+		pipeline, err = handle[bitbucketModels.Pipeline](data, &BitbucketHandler{}, credentials, organization, baseUrl, nil)
 	default:
 		return nil, consts.NewErrInvalidPlatform(platform)
 	}
@@ -50,7 +50,7 @@ func Handle(data []byte, platform models.Platform, credentials *models.Credentia
 	return pipeline, nil
 }
 
-func handle[T any](data []byte, handler Handler[T], credentials *models.Credentials, organization *string, parentPipeline *models.Pipeline) (*models.Pipeline, error) {
+func handle[T any](data []byte, handler Handler[T], credentials *models.Credentials, organization, baseUrl *string, parentPipeline *models.Pipeline) (*models.Pipeline, error) {
 	pipeline, err := handler.GetLoader().Load(data)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func handle[T any](data []byte, handler Handler[T], credentials *models.Credenti
 
 	parsedPipeline = enhancer.InheritParentPipelineData(parentPipeline, parsedPipeline)
 
-	importedPipelines, err := enhancer.LoadImportedPipelines(parsedPipeline, credentials, organization)
+	importedPipelines, err := enhancer.LoadImportedPipelines(parsedPipeline, credentials, organization, baseUrl)
 	if err != nil {
 		fmt.Printf("Failed getting imported pipelines:\n%v", err)
 	}
@@ -74,7 +74,7 @@ func handle[T any](data []byte, handler Handler[T], credentials *models.Credenti
 		if importedPipeline == nil {
 			continue
 		}
-		parsedImportedPipeline, err := handle(importedPipeline.Data, handler, credentials, organization, parsedPipeline)
+		parsedImportedPipeline, err := handle(importedPipeline.Data, handler, credentials, organization, baseUrl, parsedPipeline)
 		if err != nil {
 			fmt.Printf("Failed parsing imported pipeline for job %s - %v", importedPipeline.JobName, err)
 		}

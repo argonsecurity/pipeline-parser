@@ -10,8 +10,8 @@ import (
 
 type AzureEnhancer struct{}
 
-func (a *AzureEnhancer) LoadImportedPipelines(data *models.Pipeline, credentials *models.Credentials, organization *string) ([]*enhancers.ImportedPipeline, error) {
-	importedPipelines, err := getTemplates(data, credentials, organization)
+func (a *AzureEnhancer) LoadImportedPipelines(data *models.Pipeline, credentials *models.Credentials, organization, baseUrl *string) ([]*enhancers.ImportedPipeline, error) {
+	importedPipelines, err := getTemplates(data, credentials, organization, baseUrl)
 	if err != nil {
 		return importedPipelines, err
 	}

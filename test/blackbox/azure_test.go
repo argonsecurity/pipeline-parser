@@ -700,5 +700,5 @@ func TestAzure(t *testing.T) {
 		},
 	}
 
-	executeTestCases(t, testCases, "azure", consts.AzurePlatform, "azure-org")
+	executeTestCases(t, testCases, "azure", consts.AzurePlatform, "azure-org", "https://dev.azure.com")
 }

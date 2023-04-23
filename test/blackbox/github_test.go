@@ -593,5 +593,5 @@ func TestGitHub(t *testing.T) {
 			},
 		},
 	}
-	executeTestCases(t, testCases, "github", consts.GitHubPlatform, "")
+	executeTestCases(t, testCases, "github", consts.GitHubPlatform, "", "")
 }

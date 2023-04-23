@@ -82,7 +82,7 @@ func Test_generateRequestUrl(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := generateRequestUrl(tt.args.proj, tt.args.repo, tt.args.path, tt.args.version, tt.args.organization)
+			got := generateRequestUrl(tt.args.proj, tt.args.repo, tt.args.path, tt.args.version, tt.args.organization, "https://dev.azure.com")
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -531,9 +531,9 @@ func Test_getTemplates(t *testing.T) {
 			h := http.FileServer(http.Dir("testdata"))
 			ts := httptest.NewServer(h)
 			defer ts.Close()
-			AZURE_BASE_URL = ts.URL
+			AZURE_SAAS_BASE_URL = ts.URL
 
-			got, err := getTemplates(tt.args.pipeline, tt.args.credentials, utils.GetPtr("azure-org"))
+			got, err := getTemplates(tt.args.pipeline, tt.args.credentials, utils.GetPtr("azure-org"), &AZURE_SAAS_BASE_URL)
 
 			if tt.wantErr {
 				assert.Error(t, err)

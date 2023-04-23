@@ -342,5 +342,5 @@ func TestBitbucket(t *testing.T) {
 		},
 	}
 
-	executeTestCases(t, testCases, "bitbucket", consts.BitbucketPlatform, "")
+	executeTestCases(t, testCases, "bitbucket", consts.BitbucketPlatform, "", "")
 }

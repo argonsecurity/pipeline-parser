@@ -21,7 +21,7 @@ func readFile(filename string) []byte {
 	return b
 }
 
-func executeTestCases(t *testing.T, testCases []TestCase, folder string, platform models.Platform, organization string) {
+func executeTestCases(t *testing.T, testCases []TestCase, folder string, platform models.Platform, organization, baseUrl string) {
 	for _, testCase := range testCases {
 		if testCase.TestdataDir != "" {
 			h := http.FileServer(http.Dir(testCase.TestdataDir))
@@ -29,11 +29,11 @@ func executeTestCases(t *testing.T, testCases []TestCase, folder string, platfor
 			defer ts.Close()
 			githubEnhancer.GITHUB_BASE_URL = ts.URL
 			gitlabEnhancer.GITLAB_BASE_URL = ts.URL
-			azureEnhancer.AZURE_BASE_URL = ts.URL
+			azureEnhancer.AZURE_SAAS_BASE_URL = ts.URL
 		}
 
 		buf := readFile(filepath.Join("../fixtures", folder, testCase.Filename))
-		pipeline, err := handler.Handle(buf, platform, &models.Credentials{}, &organization)
+		pipeline, err := handler.Handle(buf, platform, &models.Credentials{}, &organization, &baseUrl)
 		if err != nil {
 			if !testCase.ShouldFail {
 				t.Errorf("%s: %s", testCase.Filename, err)
