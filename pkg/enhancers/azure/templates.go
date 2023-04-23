@@ -93,7 +93,8 @@ func loadRemoteFile(jobImport *models.Import, resources *models.Resources, crede
 		*baseUrl = AZURE_SAAS_BASE_URL
 	}
 	url := generateRequestUrl(project, repo, path, version, *organization, *baseUrl)
-	fmt.Println(url)
+
+	fmt.Printf("fetching template from %s\n", url)
 	client := utils.GetHttpClientWithBasicAuth(credentials)
 	resp, err := client.R().Get(url)
 	if err != nil {
