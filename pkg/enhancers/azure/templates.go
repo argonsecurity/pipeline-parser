@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	AZURE_SAAS_BASE_URL = "https://dev.azure.com"
-	ITEMS_API           = "/{ORGANIZATION}/{PROJECT}/_apis/git/repositories/{REPOSITORY}/items?path={PATH}"
+	AZURE_SAAS_BASE_URL = "https://dev.azure.com/"
+	ITEMS_API           = "{ORGANIZATION}/{PROJECT}/_apis/git/repositories/{REPOSITORY}/items?path={PATH}"
 	VERSION_QUERY       = "&versionDescriptor.versionType=tag&version="
 )
 
