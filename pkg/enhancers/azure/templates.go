@@ -14,7 +14,7 @@ import (
 
 var (
 	AZURE_SAAS_BASE_URL = "https://dev.azure.com/"
-	ITEMS_API           = "{ORGANIZATION}/{PROJECT}/_apis/git/repositories/{REPOSITORY}/items?path={PATH}"
+	ITEMS_API           = "{PROJECT}/_apis/git/repositories/{REPOSITORY}/items?path={PATH}"
 	VERSION_QUERY       = "&versionDescriptor.versionType=tag&version="
 )
 
@@ -158,8 +158,14 @@ func extractRemoteParams(jobImport *models.Import, resources *models.Resources) 
 }
 
 func generateRequestUrl(proj, repo, path, version, organization, baseUrl string) string {
-	url := baseUrl + ITEMS_API
-	url = strings.Replace(url, "{ORGANIZATION}", organization, 1)
+	url := baseUrl
+	if !strings.HasSuffix(url, "/") {
+		url = url + "/"
+	}
+	if !strings.Contains(url, organization) {
+		url = url + organization + "/"
+	}
+	url = url + ITEMS_API
 	url = strings.Replace(url, "{PROJECT}", proj, 1)
 	url = strings.Replace(url, "{REPOSITORY}", repo, 1)
 	url = strings.Replace(url, "{PATH}", path, 1)

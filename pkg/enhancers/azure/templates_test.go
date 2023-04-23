@@ -82,7 +82,7 @@ func Test_generateRequestUrl(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := generateRequestUrl(tt.args.proj, tt.args.repo, tt.args.path, tt.args.version, tt.args.organization, "https://dev.azure.com")
+			got := generateRequestUrl(tt.args.proj, tt.args.repo, tt.args.path, tt.args.version, tt.args.organization, "https://dev.azure.com/")
 			assert.Equal(t, tt.want, got)
 		})
 	}
