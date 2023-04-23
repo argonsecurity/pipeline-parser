@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	AZURE_BASE_URL = "https://dev.azure.com"
+	// AZURE_BASE_URL = "https://dev.azure.com"
+	AZURE_BASE_URL = "http://azure-devops.aquaseclabs.com/"
 	ITEMS_API      = "/{ORGANIZATION}/{PROJECT}/_apis/git/repositories/{REPOSITORY}/items?path={PATH}"
 	VERSION_QUERY  = "&versionDescriptor.versionType=tag&version="
 )
