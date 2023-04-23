@@ -111,9 +111,13 @@ func (s *Steps) UnmarshalYAML(node *yaml.Node) error {
 
 func parseStep(node *yaml.Node) (Step, error) {
 	var step Step
+	step.FileReference = loadersUtils.GetFileReference(node)
 	if err := node.Decode(&step); err != nil {
+		if node.Tag == consts.StringTag {
+			step.Bash = node.Value
+			return step, nil
+		}
 		return step, err
 	}
-	step.FileReference = loadersUtils.GetFileReference(node)
 	return step, nil
 }

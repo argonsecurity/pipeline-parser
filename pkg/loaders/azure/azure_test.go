@@ -452,7 +452,7 @@ func TestLoad(t *testing.T) {
 				},
 				Pool: &models.Pool{
 					VmImage:       "ubuntu-latest",
-					FileReference: testutils.CreateFileReference(50, 3, 51, 25),
+					FileReference: testutils.CreateFileReference(52, 3, 53, 25),
 				},
 				Steps: &models.Steps{
 					{
@@ -548,7 +548,7 @@ func TestLoad(t *testing.T) {
 							},
 							FileReference: testutils.CreateFileReference(45, 3, 46, 13), // End column should be 24
 						},
-						FileReference: testutils.CreateFileReference(42, 3, 46, 13), // End column should be 24
+						FileReference: testutils.CreateFileReference(42, 3, 46, 23), // End column should be 24
 					},
 					{
 						Template: models.Template{
@@ -558,6 +558,10 @@ func TestLoad(t *testing.T) {
 							},
 						},
 						FileReference: testutils.CreateFileReference(47, 3, 49, 15),
+					},
+					{
+						Bash: "${{ parameters.trivyStep }}",
+						FileReference: testutils.CreateFileReference(50, 3, 50, 30),
 					},
 				},
 			},

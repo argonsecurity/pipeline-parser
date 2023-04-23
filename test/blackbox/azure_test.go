@@ -484,7 +484,7 @@ func TestAzure(t *testing.T) {
 								Metadata: models.Metadata{
 									Build: true,
 								},
-								FileReference: testutils.CreateFileReference(42, 3, 46, 13), // End Column is supposed to be 23
+								FileReference: testutils.CreateFileReference(42, 3, 46, 23), // End Column is supposed to be 23
 							},
 							{
 								ID:   utils.GetPtr("steps/build.yml"),
@@ -501,6 +501,15 @@ func TestAzure(t *testing.T) {
 									FileReference: testutils.CreateFileReference(47, 3, 49, 15),
 								},
 								FileReference: testutils.CreateFileReference(47, 3, 49, 15),
+							},
+							{
+								Name: utils.GetPtr(""),
+								Type: models.ShellStepType,
+								Shell: &models.Shell{
+									Type:   utils.GetPtr("bash"),
+									Script: utils.GetPtr("${{ parameters.trivyStep }}"),
+								},
+								FileReference: testutils.CreateFileReference(50, 3, 50, 30),
 							},
 						},
 						Metadata: models.Metadata{
