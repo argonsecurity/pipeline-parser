@@ -18,7 +18,7 @@ var (
 
 type GitLabEnhancer struct{}
 
-func (g *GitLabEnhancer) LoadImportedPipelines(data *models.Pipeline, credentials *models.Credentials) ([]*enhancers.ImportedPipeline, error) {
+func (g *GitLabEnhancer) LoadImportedPipelines(data *models.Pipeline, credentials *models.Credentials, _, _ *string) ([]*enhancers.ImportedPipeline, error) {
 	var errs error
 	importedPipelines := []*enhancers.ImportedPipeline{}
 	if data.Imports != nil {
@@ -111,4 +111,8 @@ func (g *GitLabEnhancer) Enhance(data *models.Pipeline, importedPipelines []*enh
 	}
 
 	return data, nil
+}
+
+func (g *GitLabEnhancer) InheritParentPipelineData(parent, child *models.Pipeline) *models.Pipeline {
+	return child
 }

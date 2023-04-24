@@ -47,6 +47,8 @@ steps:
 - template: steps/build.yml # Template reference
   parameters:
     key: value
+- ${{ parameters.trivyStep }}
+
 pool:
   vmImage: ubuntu-latest
 container: ubuntu:18.04

@@ -11,10 +11,24 @@ func parseVariables(variables *azureModels.Variables) *models.EnvironmentVariabl
 	}
 
 	env := make(models.EnvironmentVariables)
+	var imports *models.Import
 
 	for _, variable := range *variables {
 		if variable.Name != "" {
 			env[variable.Name] = variable.Value
+		}
+
+		path, alias := parseTemplateString(variable.Template.Template)
+		if variable.Template.Template != "" {
+			imports = &models.Import{
+				Source: &models.ImportSource{
+					Path:            &path,
+					Type:            calculateSourceType(alias),
+					RepositoryAlias: &alias,
+				},
+				Parameters:    variable.Parameters,
+				FileReference: variable.FileReference,
+			}
 		}
 	}
 
@@ -30,6 +44,7 @@ func parseVariables(variables *azureModels.Variables) *models.EnvironmentVariabl
 				Column: (*variables)[len(*variables)-1].FileReference.EndRef.Column,
 			},
 		},
+		Imports: imports,
 	}
 
 }

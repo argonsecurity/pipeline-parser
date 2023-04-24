@@ -1,0 +1,7 @@
+stages:
+  - stage: build_stage
+    jobs:
+      - job: build
+        steps:
+          - script: echo this builds the project
+            displayName: "Build"

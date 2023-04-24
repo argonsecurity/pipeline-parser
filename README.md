@@ -39,10 +39,21 @@ if err != nil {
 }
 
 // Parse the pipeline from the specific platform to the common pipeline object
-pipeline, err := handler.Handle(buf, consts.GitHubPlatform)
+pipeline, err := handler.Handle(buf, consts.GitHubPlatform, scmCredentials, organization, baseProviderUrl)
 ```
 
 ### CLI Usage
+
+#### CLI flags
+
+|      Flag       | Value  |                                       Description                                       | Default  |
+| :-------------: | :----: | :-------------------------------------------------------------------------------------: | :------: |
+|  platform (-p)  | string |                                  CI platform to parse                                   | `github` |
+|   output (-o)   | string |                                      Output target                                      | `stdout` |
+|   file-suffix   | string | File suffix for output file. This flag is useless if 'output' flag is not set to 'file' | `parsed` |
+|      token      | string |                 SCM token to use for fetching remote files if necessary                 |          |
+|  organization   | string |      The target organization when fetching remote files (used for Azure Pipelines)      |          |
+| baseProviderUrl | string |       base api url for the pipeline provider (used for parsing remote templates)        |          |
 
 #### Parse GitHub Workflow yaml
 

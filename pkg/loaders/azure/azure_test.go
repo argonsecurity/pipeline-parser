@@ -230,14 +230,14 @@ func TestLoad(t *testing.T) {
 						Name:          "myString",
 						Type:          "string",
 						Default:       "a string",
-						FileReference: testutils.CreateFileReference(3, 3, 5, 20),
+						FileReference: testutils.CreateFileReference(3, 5, 5, 22),
 					},
 					{
 						Name:          "myMultiString",
 						Type:          "string",
 						Default:       "default",
 						Values:        []string{"default", "ubuntu"},
-						FileReference: testutils.CreateFileReference(6, 3, 11, 11),
+						FileReference: testutils.CreateFileReference(6, 5, 11, 15),
 					},
 					{
 						Name:          "myNumber",
@@ -275,6 +275,15 @@ func TestLoad(t *testing.T) {
 						},
 						FileReference: testutils.CreateFileReference(37, 3, 40, 25),
 					},
+				},
+				Extends: &models.Extends{
+					Template: models.Template{
+						Template: "parameters.yml",
+						Parameters: map[string]any{
+							"foo": "bar",
+						},
+					},
+					FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 				},
 			},
 		},
@@ -317,8 +326,14 @@ func TestLoad(t *testing.T) {
 							},
 							FileReference: testutils.CreateFileReference(14, 3, 17, 33),
 						},
+						{
+							Template: models.Template{
+								Template: "${{ parameters.stages }}",
+							},
+							FileReference: testutils.CreateFileReference(19, 3, 19, 27),
+						},
 					},
-					FileReference: testutils.CreateFileReference(3, -1, 17, 33),
+					FileReference: testutils.CreateFileReference(3, -1, 19, 27),
 				},
 			},
 		},
@@ -428,6 +443,12 @@ func TestLoad(t *testing.T) {
 							},
 							FileReference: testutils.CreateFileReference(45, 3, 46, 15),
 						},
+						{
+							Template: models.Template{
+								Template: "${{ parameters.jobs }}",
+							},
+							FileReference: testutils.CreateFileReference(51, 3, 51, 15),
+						},
 					},
 					FileReference: testutils.CreateFileReference(3, -1, 50, 15),
 				},
@@ -443,7 +464,7 @@ func TestLoad(t *testing.T) {
 				},
 				Pool: &models.Pool{
 					VmImage:       "ubuntu-latest",
-					FileReference: testutils.CreateFileReference(50, 3, 51, 25),
+					FileReference: testutils.CreateFileReference(52, 3, 53, 25),
 				},
 				Steps: &models.Steps{
 					{
@@ -539,7 +560,7 @@ func TestLoad(t *testing.T) {
 							},
 							FileReference: testutils.CreateFileReference(45, 3, 46, 13), // End column should be 24
 						},
-						FileReference: testutils.CreateFileReference(42, 3, 46, 13), // End column should be 24
+						FileReference: testutils.CreateFileReference(42, 3, 46, 23), // End column should be 24
 					},
 					{
 						Template: models.Template{
@@ -550,129 +571,160 @@ func TestLoad(t *testing.T) {
 						},
 						FileReference: testutils.CreateFileReference(47, 3, 49, 15),
 					},
+					{
+						Bash:          "${{ parameters.trivyStep }}",
+						FileReference: testutils.CreateFileReference(50, 3, 50, 30),
+					},
 				},
 			},
 		},
 		// This test is currently not supported due to missing support for the "resources" keyword
-
-		// {
-		// 	name:     "resources",
-		// 	filename: "../../../test/fixtures/azure/resources.yaml",
-		// 	expectedPipeline: &models.Pipeline{
-		// 		Name: "resources",
-		// 		Resources: &models.Resources{
-		// 			Builds: []*models.BuildRef{
-		// 				{
-		// 					Build: &models.Build{
-		// 						Build:      "Spaceworkz",
-		// 						Type:       "Jenkins",
-		// 						Connection: "MyJenkinsServer",
-		// 						Source:     "SpaceworkzProj",
-		// 						Trigger:    "true",
-		// 					},
-		// 					FileReference: testutils.CreateFileReference(5, 5, 9, 18),
-		// 				},
-		// 			},
-		// 			Containers: []*models.ResourceContainerRef{
-		// 				{
-		// 					ResourceContainer: &models.ResourceContainer{
-		// 						Container: "linux",
-		// 						JobContainer: models.JobContainer{
-		// 							Image: "ubuntu:16.04",
-		// 						},
-		// 					},
-		// 					FileReference: testutils.CreateFileReference(11, 5, 12, 24),
-		// 				},
-		// 				{
-		// 					ResourceContainer: &models.ResourceContainer{
-		// 						Container: "windows",
-		// 						JobContainer: models.JobContainer{
-		// 							Image:    "myprivate.azurecr.io/windowsservercore:1803",
-		// 							Endpoint: "my_acr_connection",
-		// 						},
-		// 					},
-		// 					FileReference: testutils.CreateFileReference(13, 5, 15, 32),
-		// 				},
-		// 				{
-		// 					ResourceContainer: &models.ResourceContainer{
-		// 						Container: "my_service",
-		// 						JobContainer: models.JobContainer{
-		// 							Image:   "my_service:tag",
-		// 							Ports:   []string{"8080:80", "6379"},
-		// 							Volumes: []string{"/src/dir:/dst/dir"},
-		// 						},
-		// 					},
-		// 					FileReference: testutils.CreateFileReference(16, 5, 22, 24),
-		// 				},
-		// 			},
-		// 			Pipelines: []*models.ResourcePipelineRef{
-		// 				{
-		// 					ResourcePipeline: &models.ResourcePipeline{
-		// 						Pipeline: "SmartHotel",
-		// 						Project:  "DevOpsProject",
-		// 						Source:   "SmartHotel-CI",
-		// 						Trigger: &models.TriggerRef{
-		// 							Trigger: &models.Trigger{
-		// 								Branches: models.Filter{
-		// 									Include: []string{"releases/*", "main"},
-		// 									Exclude: []string{"topic/*"},
-		// 								},
-		// 								Tags: models.Filter{
-		// 									Include: []string{"Verified", "Signed"},
-		// 								},
-		// 								Stages: models.Filter{
-		// 									Include: []string{"Production", "PreProduction"},
-		// 								},
-		// 							},
-		// 							FileReference: testutils.CreateFileReference(27, 5, 39, 22),
-		// 						},
-		// 					},
-		// 					FileReference: testutils.CreateFileReference(24, 5, 39, 22),
-		// 				},
-		// 			},
-		// 			Repositories: []*models.RepositoryRef{
-		// 				{
-		// 					Repository: &models.Repository{
-		// 						Repository: "common",
-		// 						Type:       "github",
-		// 						Name:       "Contoso/CommonTools",
-		// 						Endpoint:   "MyContosoServiceConnection",
-		// 					},
-		// 					FileReference: testutils.CreateFileReference(41, 5, 44, 41),
-		// 				},
-		// 			},
-		// 			Webhooks: []*models.WebhookRef{
-		// 				{
-		// 					Webhook: &models.Webhook{
-		// 						Webhook:    "MyWebhookTriggerAlias",
-		// 						Connection: "IncomingWebhookConnection",
-		// 						Filters: []models.Path{
-		// 							{
-		// 								Path:  "JSONParameterPath",
-		// 								Value: "JSONParameterExpectedValue",
-		// 							},
-		// 						},
-		// 					},
-		// 					FileReference: testutils.CreateFileReference(46, 5, 50, 42),
-		// 				},
-		// 			},
-		// 			Packages: []*models.PackageRef{
-		// 				{
-		// 					Package: &models.Package{
-		// 						Package:    "myPackageAlias",
-		// 						Type:       "Npm",
-		// 						Connection: "GitHubConnectionName",
-		// 						Name:       "nugetTest/nodeapp",
-		// 						Version:    "1.0.1",
-		// 						Trigger:    "true",
-		// 					},
-		// 					FileReference: testutils.CreateFileReference(52, 7, 57, 20),
-		// 				},
-		// 			},
-		// 			FileReference: testutils.CreateFileReference(3, 1, 57, 20),
-		// 		},
-		//	 },
-		// },
+		{
+			name:     "resources",
+			filename: "../../../test/fixtures/azure/resources.yaml",
+			expectedPipeline: &models.Pipeline{
+				Name: "resources",
+				Resources: &models.Resources{
+					// Builds: []*models.BuildRef{
+					// 	{
+					// 		Build: &models.Build{
+					// 			Build:      "Spaceworkz",
+					// 			Type:       "Jenkins",
+					// 			Connection: "MyJenkinsServer",
+					// 			Source:     "SpaceworkzProj",
+					// 			Trigger:    "true",
+					// 		},
+					// 		FileReference: testutils.CreateFileReference(5, 5, 9, 18),
+					// 	},
+					// },
+					// Containers: []*models.ResourceContainerRef{
+					// 	{
+					// 		ResourceContainer: &models.ResourceContainer{
+					// 			Container: "linux",
+					// 			JobContainer: models.JobContainer{
+					// 				Image: "ubuntu:16.04",
+					// 			},
+					// 		},
+					// 		FileReference: testutils.CreateFileReference(11, 5, 12, 24),
+					// 	},
+					// 	{
+					// 		ResourceContainer: &models.ResourceContainer{
+					// 			Container: "windows",
+					// 			JobContainer: models.JobContainer{
+					// 				Image:    "myprivate.azurecr.io/windowsservercore:1803",
+					// 				Endpoint: "my_acr_connection",
+					// 			},
+					// 		},
+					// 		FileReference: testutils.CreateFileReference(13, 5, 15, 32),
+					// 	},
+					// 	{
+					// 		ResourceContainer: &models.ResourceContainer{
+					// 			Container: "my_service",
+					// 			JobContainer: models.JobContainer{
+					// 				Image:   "my_service:tag",
+					// 				Ports:   []string{"8080:80", "6379"},
+					// 				Volumes: []string{"/src/dir:/dst/dir"},
+					// 			},
+					// 		},
+					// 		FileReference: testutils.CreateFileReference(16, 5, 22, 24),
+					// 	},
+					// },
+					// Pipelines: []*models.ResourcePipelineRef{
+					// 	{
+					// 		ResourcePipeline: &models.ResourcePipeline{
+					// 			Pipeline: "SmartHotel",
+					// 			Project:  "DevOpsProject",
+					// 			Source:   "SmartHotel-CI",
+					// 			Trigger: &models.TriggerRef{
+					// 				Trigger: &models.Trigger{
+					// 					Branches: models.Filter{
+					// 						Include: []string{"releases/*", "main"},
+					// 						Exclude: []string{"topic/*"},
+					// 					},
+					// 					Tags: models.Filter{
+					// 						Include: []string{"Verified", "Signed"},
+					// 					},
+					// 					Stages: models.Filter{
+					// 						Include: []string{"Production", "PreProduction"},
+					// 					},
+					// 				},
+					// 				FileReference: testutils.CreateFileReference(27, 5, 39, 22),
+					// 			},
+					// 		},
+					// 		FileReference: testutils.CreateFileReference(24, 5, 39, 22),
+					// 	},
+					// },
+					Repositories: []*models.RepositoryRef{
+						{
+							Repository: &models.Repository{
+								Repository: "common",
+								Type:       "github",
+								Name:       "Contoso/CommonTools",
+								Endpoint:   "MyContosoServiceConnection",
+							},
+							FileReference: testutils.CreateFileReference(41, 5, 44, 41),
+						},
+					},
+					// Webhooks: []*models.WebhookRef{
+					// 	{
+					// 		Webhook: &models.Webhook{
+					// 			Webhook:    "MyWebhookTriggerAlias",
+					// 			Connection: "IncomingWebhookConnection",
+					// 			Filters: []models.Path{
+					// 				{
+					// 					Path:  "JSONParameterPath",
+					// 					Value: "JSONParameterExpectedValue",
+					// 				},
+					// 			},
+					// 		},
+					// 		FileReference: testutils.CreateFileReference(46, 5, 50, 42),
+					// 	},
+					// },
+					// Packages: []*models.PackageRef{
+					// 	{
+					// 		Package: &models.Package{
+					// 			Package:    "myPackageAlias",
+					// 			Type:       "Npm",
+					// 			Connection: "GitHubConnectionName",
+					// 			Name:       "nugetTest/nodeapp",
+					// 			Version:    "1.0.1",
+					// 			Trigger:    "true",
+					// 		},
+					// 		FileReference: testutils.CreateFileReference(52, 7, 57, 20),
+					// 	},
+					// },
+					FileReference: testutils.CreateFileReference(3, 1, 57, 20),
+				},
+			},
+		},
+		{
+			name:     "parameter templates",
+			filename: "../../../test/fixtures/azure/parameter-templates.yaml",
+			expectedPipeline: &models.Pipeline{
+				Name: "parameter templates",
+				Extends: &models.Extends{
+					Template: models.Template{
+						Template: "parameters.yml",
+						Parameters: map[string]any{
+							"foo": "bar",
+							"testSteps": models.Template{
+								Template: "test-steps.yml",
+								Parameters: map[string]any{
+									"foo": "bar2",
+								},
+							},
+							"testSteps2": models.Template{
+								Template: "test-steps2.yml",
+								Parameters: map[string]any{
+									"bar": "foo",
+								},
+							},
+						},
+					},
+					FileReference: testutils.CreateFileReference(4, 3, 16, 19),
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

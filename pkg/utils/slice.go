@@ -58,3 +58,12 @@ func SliceToMap[T comparable, U any](s []T, cb func(v T) U) map[T]U {
 	}
 	return result
 }
+
+func SliceContainsBy[T comparable](s []T, v T, cb func(y, u T) bool) bool {
+	for _, item := range s {
+		if cb(item, v) {
+			return true
+		}
+	}
+	return false
+}

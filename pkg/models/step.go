@@ -36,6 +36,7 @@ type Step struct {
 	Metadata             Metadata                 `json:"metadata,omitempty"`
 	AfterScript          *Shell                   `json:"after_script,omitempty"`
 	FileReference        *FileReference           `json:"file_reference,omitempty"`
+	Imports              *Import                  `json:"imports,omitempty"`
 }
 
 type Task struct {

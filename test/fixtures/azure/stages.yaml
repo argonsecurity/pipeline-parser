@@ -15,3 +15,5 @@ stages:
   parameters:
     name: Full
     testFile: tests/fullSuite.js
+
+- ${{ parameters.stages }} # Parameter reference

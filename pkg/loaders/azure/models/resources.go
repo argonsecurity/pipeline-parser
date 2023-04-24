@@ -73,7 +73,7 @@ type ResourcePipelineRef struct {
 
 type Repository struct {
 	Repository    string      `yaml:"repository,omitempty"`
-	Endpoint      string      `yaml:"endpoint,omitempty"`
+	Endpoint      string      `yaml:"endpoint,omitempty"` // currently not supported for templates
 	Trigger       *TriggerRef `yaml:"trigger,omitempty"`
 	Name          string      `yaml:"name,omitempty"`
 	Type          string      `yaml:"type,omitempty"`
@@ -119,13 +119,14 @@ type PackageRef struct {
 	FileReference *models.FileReference
 }
 
+// Currently can't fully load it due to mismatch in the azure pipelines documentation
 type Resources struct {
-	Builds        []*BuildRef             `yaml:"builds,omitempty"`
-	Containers    []*ResourceContainerRef `yaml:"containers,omitempty"`
-	Pipelines     []*ResourcePipelineRef  `yaml:"pipelines,omitempty"`
-	Repositories  []*RepositoryRef        `yaml:"repositories,omitempty"`
-	Webhooks      []*WebhookRef           `yaml:"webhooks,omitempty"`
-	Packages      []*PackageRef           `yaml:"packages,omitempty"`
+	// Builds        []*BuildRef             `yaml:"builds,omitempty"`
+	// Containers    []*ResourceContainerRef `yaml:"containers,omitempty"`
+	// Pipelines     []*ResourcePipelineRef  `yaml:"pipelines,omitempty"`
+	Repositories []*RepositoryRef `yaml:"repositories,omitempty"`
+	// Webhooks      []*WebhookRef           `yaml:"webhooks,omitempty"`
+	// Packages      []*PackageRef           `yaml:"packages,omitempty"`
 	FileReference *models.FileReference
 }
 
@@ -205,42 +206,42 @@ func (r *Resources) UnmarshalYAML(node *yaml.Node) error {
 	r.FileReference.StartRef.Column -= 2 // The "resources" node is not accessible, this is a patch
 	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		switch key {
-		case "builds":
-			var builds []*BuildRef
-			if err := value.Decode(&builds); err != nil {
-				return err
-			}
-			r.Builds = builds
-		case "containers":
-			var containers []*ResourceContainerRef
-			if err := value.Decode(&containers); err != nil {
-				return err
-			}
-			r.Containers = containers
-		case "pipelines":
-			var pipelines []*ResourcePipelineRef
-			if err := value.Decode(&pipelines); err != nil {
-				return err
-			}
-			r.Pipelines = pipelines
+		// case "builds":
+		// 	var builds []*BuildRef
+		// 	if err := value.Decode(&builds); err != nil {
+		// 		return err
+		// 	}
+		// 	r.Builds = builds
+		// case "containers":
+		// 	var containers []*ResourceContainerRef
+		// 	if err := value.Decode(&containers); err != nil {
+		// 		return err
+		// 	}
+		// 	r.Containers = containers
+		// case "pipelines":
+		// 	var pipelines []*ResourcePipelineRef
+		// 	if err := value.Decode(&pipelines); err != nil {
+		// 		return err
+		// 	}
+		// 	r.Pipelines = pipelines
 		case "repositories":
 			var repositories []*RepositoryRef
 			if err := value.Decode(&repositories); err != nil {
 				return err
 			}
 			r.Repositories = repositories
-		case "webhooks":
-			var webhooks []*WebhookRef
-			if err := value.Decode(&webhooks); err != nil {
-				return err
-			}
-			r.Webhooks = webhooks
-		case "packages":
-			var packages []*PackageRef
-			if err := value.Decode(&packages); err != nil {
-				return err
-			}
-			r.Packages = packages
+			// case "webhooks":
+			// 	var webhooks []*WebhookRef
+			// 	if err := value.Decode(&webhooks); err != nil {
+			// 		return err
+			// 	}
+			// 	r.Webhooks = webhooks
+			// case "packages":
+			// 	var packages []*PackageRef
+			// 	if err := value.Decode(&packages); err != nil {
+			// 		return err
+			// 	}
+			// 	r.Packages = packages
 		}
 		return nil
 	}, "Resources")

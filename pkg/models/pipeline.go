@@ -19,6 +19,11 @@ type Scans struct {
 	License      *bool `json:"license,omitempty"`
 }
 
+type Resources struct {
+	Repositories  []*ImportSource `json:"repositories,omitempty"`
+	FileReference *FileReference  `json:"file_reference,omitempty"`
+}
+
 type Defaults struct {
 	EnvironmentVariables *EnvironmentVariablesRef `json:"environment_variables,omitempty"`
 	Scans                *Scans                   `json:"scans,omitempty"`
@@ -30,4 +35,5 @@ type Defaults struct {
 	FileReference        *FileReference           `json:"file_reference,omitempty"`
 	PostSteps            []*Step                  `json:"post_steps,omitempty"`
 	PreSteps             []*Step                  `json:"pre_steps,omitempty"`
+	Resources            *Resources               `json:"resources,omitempty"`
 }

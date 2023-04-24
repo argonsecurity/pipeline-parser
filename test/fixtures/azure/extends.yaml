@@ -1,0 +1,23 @@
+trigger: none
+
+pool:
+  vmImage: "windows-2019"
+
+resources:
+  repositories:
+    - repository: CeTemplates
+      type: git
+      name: ORG/Templates
+
+extends:
+  template: blueprints/template.yml@CeTemplates
+  parameters:
+    runMode: ${{parameters.runMode}}
+
+    preBuildSteps:
+      - template: /pipelines/steps/pre-build-steps.yml@self
+
+    testSteps2:
+      - template: test-steps2.yml
+        parameters:
+          bar: foo

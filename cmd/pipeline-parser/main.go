@@ -37,6 +37,16 @@ var (
 	tokenDefaultValue = ""
 	tokenUsage        = "SCM token to use for fetching remote files if necessary"
 
+	organization             string
+	organizationFlagName     = "organization"
+	organizationDefaultValue = ""
+	organizationUsage        = "The target organization when fetching remote files (used for Azure Pipelines)"
+
+	baseProviderUrl     string
+	baseProviderUrlFlagName     = "baseProviderUrl"
+	baseProviderUrlDefaultValue = ""
+	baseProviderUrlUsage        = "base api url for the pipeline provider (used for pasring remote templates)"
+
 	version string
 )
 
@@ -63,7 +73,7 @@ pipeline-parser --platform azure azure-pipelines.yml`,
 					if err != nil {
 						return nil
 					}
-					pipeline, err := handler.Handle(buf, models.Platform(platform), &models.Credentials{Token: token})
+					pipeline, err := handler.Handle(buf, models.Platform(platform), &models.Credentials{Token: token}, &organization, &baseProviderUrl)
 					if err != nil {
 						return err
 					}
@@ -82,6 +92,8 @@ pipeline-parser --platform azure azure-pipelines.yml`,
 	command.PersistentFlags().StringVarP(&output, outputFlagName, outputShortFlagName, outputDefaultValue, outputUsage)
 	command.PersistentFlags().StringVar(&fileSuffix, fileSuffixFlagName, fileSuffixDefaultValue, fileSuffixUsage)
 	command.PersistentFlags().StringVar(&token, tokenFlagName, tokenDefaultValue, tokenUsage)
+	command.PersistentFlags().StringVar(&organization, organizationFlagName, organizationDefaultValue, organizationUsage)
+	command.PersistentFlags().StringVar(&baseProviderUrl, baseProviderUrlFlagName, baseProviderUrlDefaultValue, baseProviderUrlUsage)
 
 	return command
 }

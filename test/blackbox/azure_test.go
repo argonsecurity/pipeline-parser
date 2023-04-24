@@ -115,6 +115,18 @@ func TestAzure(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
+						ID: utils.GetPtr("${{ parameters.jobs }}"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path:            utils.GetPtr("${{ parameters.jobs }}"),
+								Type:            models.SourceTypeLocal,
+								RepositoryAlias: utils.GetPtr(""),
+							},
+							FileReference: testutils.CreateFileReference(51, 3, 51, 25),
+						},
+						FileReference: testutils.CreateFileReference(51, 3, 51, 25),
+					},
+					{
 						ID:              utils.GetPtr("DeployWeb"),
 						Name:            utils.GetPtr("deploy Web App"),
 						TimeoutMS:       utils.GetPtr(3600000),
@@ -153,6 +165,61 @@ func TestAzure(t *testing.T) {
 						},
 						FileReference: testutils.CreateFileReference(4, 3, 20, 19),
 					},
+					{
+						ID: utils.GetPtr("jobs/build.yml"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path:            utils.GetPtr("jobs/build.yml"),
+								Type:            models.SourceTypeLocal,
+								RepositoryAlias: utils.GetPtr(""),
+							},
+							Parameters: map[string]any{
+								"name": "macOS",
+								"pool": map[string]any{
+									"vmImage": "macOS-latest",
+								},
+							},
+							FileReference: testutils.CreateFileReference(34, 3, 38, 28),
+						},
+						FileReference: testutils.CreateFileReference(34, 3, 38, 28),
+					},
+					{
+						ID: utils.GetPtr("jobs/build.yml"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path:            utils.GetPtr("jobs/build.yml"),
+								Type:            models.SourceTypeLocal,
+								RepositoryAlias: utils.GetPtr(""),
+							},
+							Parameters: map[string]any{
+								"name": "Linux",
+								"pool": map[string]any{
+									"vmImage": "ubuntu-latest",
+								},
+							},
+							FileReference: testutils.CreateFileReference(40, 3, 44, 29),
+						},
+						FileReference: testutils.CreateFileReference(40, 3, 44, 29),
+					},
+					{
+						ID: utils.GetPtr("jobs/build.yml"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path:            utils.GetPtr("jobs/build.yml"),
+								Type:            models.SourceTypeLocal,
+								RepositoryAlias: utils.GetPtr(""),
+							},
+							Parameters: map[string]any{
+								"name": "Windows",
+								"pool": map[string]any{
+									"vmImage": "windows-latest",
+								},
+								"sign": true,
+							},
+							FileReference: testutils.CreateFileReference(45, 3, 50, 15),
+						},
+						FileReference: testutils.CreateFileReference(45, 3, 50, 15),
+					},
 				},
 			},
 		},
@@ -165,24 +232,24 @@ func TestAzure(t *testing.T) {
 					{
 						Name:          utils.GetPtr("myString"),
 						Default:       "a string",
-						FileReference: testutils.CreateFileReference(3, 3, 5, 20),
+						FileReference: testutils.CreateFileReference(3, 5, 5, 22),
 					},
 					{
 						Name:          utils.GetPtr("myMultiString"),
 						Default:       "default",
 						Options:       []string{"default", "ubuntu"},
-						FileReference: testutils.CreateFileReference(6, 3, 11, 11),
+						FileReference: testutils.CreateFileReference(6, 5, 11, 15),
 					},
 					{
 						Name:          utils.GetPtr("myNumber"),
 						Default:       2,
 						Options:       []string{"1", "2", "4", "8", "16"},
-						FileReference: testutils.CreateFileReference(12, 3, 20, 7),
+						FileReference: testutils.CreateFileReference(12, 5, 20, 11),
 					},
 					{
 						Name:          utils.GetPtr("myBoolean"),
 						Default:       true,
-						FileReference: testutils.CreateFileReference(21, 3, 23, 16),
+						FileReference: testutils.CreateFileReference(21, 5, 23, 18),
 					},
 					{
 						Name: utils.GetPtr("myObject"),
@@ -196,20 +263,33 @@ func TestAzure(t *testing.T) {
 								"count": 3,
 							},
 						},
-						FileReference: testutils.CreateFileReference(24, 3, 36, 15),
+						FileReference: testutils.CreateFileReference(24, 5, 36, 17),
 					},
 					{
 						Name: utils.GetPtr("myStep"),
 						Default: map[string]any{
 							"script": "echo my step",
 						},
-						FileReference: testutils.CreateFileReference(37, 3, 40, 25),
+						FileReference: testutils.CreateFileReference(37, 5, 40, 27),
 					},
 				},
 				Jobs: []*models.Job{
 					{
 						Name:   utils.GetPtr("default"),
 						Runner: &models.Runner{},
+					},
+				},
+				Imports: []*models.Import{
+					{
+						Source: &models.ImportSource{
+							Path:            utils.GetPtr("parameters.yml"),
+							RepositoryAlias: utils.GetPtr(""),
+							Type:            models.SourceTypeLocal,
+						},
+						Parameters: map[string]any{
+							"foo": "bar",
+						},
+						FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 					},
 				},
 			},
@@ -236,8 +316,21 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "resources.yaml",
 			Expected: &models.Pipeline{
-				Name:     utils.GetPtr("resources"),
-				Defaults: &models.Defaults{},
+				Name: utils.GetPtr("resources"),
+				Defaults: &models.Defaults{
+					Resources: &models.Resources{
+						Repositories: []*models.ImportSource{
+							{
+								RepositoryAlias: utils.GetPtr("common"),
+								Repository:      utils.GetPtr("Contoso/CommonTools"),
+								Type:            models.SourceTypeRemote,
+								SCM:             consts.GitHubPlatform,
+								Reference:       utils.GetPtr(""),
+							},
+						},
+						FileReference: testutils.CreateFileReference(3, 1, 57, 20),
+					},
+				},
 				Jobs: []*models.Job{
 					{
 						Name:   utils.GetPtr("default"),
@@ -253,8 +346,47 @@ func TestAzure(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
-						Name:   utils.GetPtr("default"),
-						Runner: &models.Runner{},
+						ID:            utils.GetPtr("${{ parameters.stages }}"),
+						FileReference: testutils.CreateFileReference(19, 3, 19, 27),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path:            utils.GetPtr("${{ parameters.stages }}"),
+								Type:            models.SourceTypeLocal,
+								RepositoryAlias: utils.GetPtr(""),
+							},
+							FileReference: testutils.CreateFileReference(19, 3, 19, 27),
+						},
+					},
+					{
+						ID: utils.GetPtr("stages/build.yml"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path:            utils.GetPtr("stages/build.yml"),
+								Type:            models.SourceTypeLocal,
+								RepositoryAlias: utils.GetPtr(""),
+							},
+							FileReference: testutils.CreateFileReference(10, 3, 12, 17),
+							Parameters: map[string]any{
+								"param": "value",
+							},
+						},
+						FileReference: testutils.CreateFileReference(10, 3, 12, 17),
+					},
+					{
+						ID: utils.GetPtr("stages/test.yml"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path:            utils.GetPtr("stages/test.yml"),
+								Type:            models.SourceTypeLocal,
+								RepositoryAlias: utils.GetPtr(""),
+							},
+							FileReference: testutils.CreateFileReference(14, 3, 17, 33),
+							Parameters: map[string]any{
+								"name":     "Full",
+								"testFile": "tests/fullSuite.js",
+							},
+						},
+						FileReference: testutils.CreateFileReference(14, 3, 17, 33),
 					},
 				},
 			},
@@ -376,11 +508,32 @@ func TestAzure(t *testing.T) {
 								Metadata: models.Metadata{
 									Build: true,
 								},
-								FileReference: testutils.CreateFileReference(42, 3, 46, 13), // End Column is supposed to be 23
+								FileReference: testutils.CreateFileReference(42, 3, 46, 23), // End Column is supposed to be 23
 							},
 							{
-								Name:          utils.GetPtr(""),
+								ID:   utils.GetPtr("steps/build.yml"),
+								Name: utils.GetPtr(""),
+								Imports: &models.Import{
+									Source: &models.ImportSource{
+										Path:            utils.GetPtr("steps/build.yml"),
+										Type:            models.SourceTypeLocal,
+										RepositoryAlias: utils.GetPtr(""),
+									},
+									Parameters: map[string]any{
+										"key": "value",
+									},
+									FileReference: testutils.CreateFileReference(47, 3, 49, 15),
+								},
 								FileReference: testutils.CreateFileReference(47, 3, 49, 15),
+							},
+							{
+								Name: utils.GetPtr(""),
+								Type: models.ShellStepType,
+								Shell: &models.Shell{
+									Type:   utils.GetPtr("bash"),
+									Script: utils.GetPtr("${{ parameters.trivyStep }}"),
+								},
+								FileReference: testutils.CreateFileReference(50, 3, 50, 30),
 							},
 						},
 						Metadata: models.Metadata{
@@ -399,6 +552,17 @@ func TestAzure(t *testing.T) {
 						EnvironmentVariables: models.EnvironmentVariables{
 							"var1": "value1",
 							"var2": "value2",
+						},
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Type:            models.SourceTypeLocal,
+								RepositoryAlias: utils.GetPtr(""),
+								Path:            utils.GetPtr("variables/var.yml"),
+							},
+							Parameters: map[string]any{
+								"param": "value",
+							},
+							FileReference: testutils.CreateFileReference(9, 3, 11, 17),
 						},
 						FileReference: testutils.CreateFileReference(3, 3, 11, 17),
 					},
@@ -432,7 +596,142 @@ func TestAzure(t *testing.T) {
 				},
 			},
 		},
+		{
+			Filename: "default-job.yaml",
+			Expected: &models.Pipeline{
+				Name:     utils.GetPtr("stages"),
+				Defaults: &models.Defaults{},
+				Jobs: []*models.Job{
+					{
+						Name:   utils.GetPtr("default"),
+						Runner: &models.Runner{},
+					},
+				},
+			},
+		},
+		{
+			Filename: "extends.yaml",
+			Expected: &models.Pipeline{
+				Name:     utils.GetPtr(""),
+				Triggers: nil,
+				Defaults: &models.Defaults{
+					Resources: &models.Resources{
+						Repositories: []*models.ImportSource{
+							{
+								RepositoryAlias: utils.GetPtr("CeTemplates"),
+								Repository:      utils.GetPtr("ORG/Templates"),
+								Type:            models.SourceTypeRemote,
+								SCM:             consts.AzurePlatform,
+								Reference:       utils.GetPtr(""),
+							},
+						},
+						FileReference: testutils.CreateFileReference(6, 1, 10, 26),
+					},
+				},
+				Jobs: []*models.Job{
+					{
+						Name: utils.GetPtr("default"),
+						Runner: &models.Runner{
+							OS: utils.GetPtr("windows"),
+						},
+					},
+				},
+				Imports: []*models.Import{
+					{
+						Source: &models.ImportSource{
+							Path:            utils.GetPtr("blueprints/template.yml"),
+							RepositoryAlias: utils.GetPtr("CeTemplates"),
+							Type:            models.SourceTypeRemote,
+						},
+						Parameters: map[string]any{
+							"runMode": "${{parameters.runMode}}",
+						},
+						FileReference: testutils.CreateFileReference(13, 3, 23, 19),
+					},
+					{
+						Source: &models.ImportSource{
+							Path:            utils.GetPtr("/pipelines/steps/pre-build-steps.yml"),
+							RepositoryAlias: utils.GetPtr("self"),
+							Type:            models.SourceTypeLocal,
+						},
+						FileReference: testutils.CreateFileReference(13, 3, 23, 19),
+					},
+					{
+						Source: &models.ImportSource{
+							Path:            utils.GetPtr("test-steps2.yml"),
+							RepositoryAlias: utils.GetPtr(""),
+							Type:            models.SourceTypeLocal,
+						},
+						Parameters: map[string]any{
+							"bar": "foo",
+						},
+						FileReference: testutils.CreateFileReference(13, 3, 23, 19),
+					},
+				},
+			},
+		},
+		{
+			Filename: "local-import.yaml",
+			Expected: &models.Pipeline{
+				Name:     utils.GetPtr(""),
+				Defaults: &models.Defaults{},
+				Jobs: []*models.Job{
+					{
+						ID:            utils.GetPtr("/../../test/fixtures/azure/testdata/imported-stage.yaml"),
+						FileReference: testutils.CreateFileReference(7, 5, 9, 17),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path:            utils.GetPtr("/../../test/fixtures/azure/testdata/imported-stage.yaml"),
+								RepositoryAlias: utils.GetPtr(""),
+								Type:            models.SourceTypeLocal,
+							},
+							Parameters: map[string]any{
+								"name": "test",
+							},
+							FileReference: testutils.CreateFileReference(7, 5, 9, 17),
+						},
+					},
+				},
+				Imports: []*models.Import{
+					{
+						Source: &models.ImportSource{
+							Path:            utils.GetPtr("../../test/fixtures/azure/testdata/imported.yaml"),
+							RepositoryAlias: utils.GetPtr("self"),
+							Type:            models.SourceTypeLocal,
+						},
+						Parameters: map[string]any{
+							"runMode": "local",
+						},
+						Pipeline: &models.Pipeline{
+							Name:     utils.GetPtr(""),
+							Defaults: &models.Defaults{},
+							Jobs: []*models.Job{
+								{
+									ID:              utils.GetPtr("PostBuild"),
+									Name:            utils.GetPtr(""),
+									ContinueOnError: utils.GetPtr("false"),
+									TimeoutMS:       utils.GetPtr(3600000),
+									Steps: []*models.Step{
+										{
+											Name: utils.GetPtr(""),
+											Type: "shell",
+											Shell: &models.Shell{
+												Type:   utils.GetPtr(""),
+												Script: utils.GetPtr("npm test"),
+											},
+											FileReference: testutils.CreateFileReference(4, 9, 4, 25),
+										},
+									},
+									FileReference: testutils.CreateFileReference(2, 5, 4, 25),
+								},
+							},
+						},
+						FileReference: testutils.CreateFileReference(12, 3, 14, 19),
+					},
+				},
+			},
+		},
 	}
 
-	executeTestCases(t, testCases, "azure", consts.AzurePlatform)
+	executeTestCases(t, testCases, "azure", consts.AzurePlatform, "azure-org", "https://dev.azure.com")
 }

@@ -27,7 +27,33 @@ func parseJobs(jobs *azureModels.Jobs) []*models.Job {
 		parsedJobs = append(parsedJobs, utils.Map(jobs.DeploymentJobs, parseDeploymentJob)...)
 	}
 
+	if jobs.TemplateJobs != nil {
+		parsedJobs = append(parsedJobs, utils.Map(jobs.TemplateJobs, parseTemplateJob)...)
+	}
+
 	return parsedJobs
+}
+
+func parseTemplateJob(job *azureModels.TemplateJob) *models.Job {
+	if job == nil {
+		return nil
+	}
+	path, alias := parseTemplateString(job.Template.Template)
+	parsedJob := &models.Job{
+		ID: &job.Template.Template,
+		Imports: &models.Import{
+			Source: &models.ImportSource{
+				Path:            &path,
+				Type:            calculateSourceType(alias),
+				RepositoryAlias: &alias,
+			},
+			FileReference: job.FileReference,
+			Parameters:    job.Parameters,
+		},
+		FileReference: job.FileReference,
+	}
+
+	return parsedJob
 }
 
 func parseCIJob(job *azureModels.CIJob) *models.Job {

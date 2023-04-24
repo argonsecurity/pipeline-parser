@@ -739,5 +739,5 @@ func TestGitLab(t *testing.T) {
 		},
 	}
 
-	executeTestCases(t, testCases, "gitlab", consts.GitLabPlatform)
+	executeTestCases(t, testCases, "gitlab", consts.GitLabPlatform, "", "")
 }

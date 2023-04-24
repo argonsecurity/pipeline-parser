@@ -48,3 +48,4 @@ jobs:
     pool:
       vmImage: windows-latest
     sign: true  # Extra step on Windows only
+- ${{ parameters.jobs }} # Parameter reference
