@@ -346,6 +346,18 @@ func TestAzure(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
+						ID:            utils.GetPtr("${{ parameters.stages }}"),
+						FileReference: testutils.CreateFileReference(19, 3, 19, 27),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path:            utils.GetPtr("${{ parameters.stages }}"),
+								Type:            models.SourceTypeLocal,
+								RepositoryAlias: utils.GetPtr(""),
+							},
+							FileReference: testutils.CreateFileReference(19, 3, 19, 27),
+						},
+					},
+					{
 						ID: utils.GetPtr("stages/build.yml"),
 						Imports: &models.Import{
 							Source: &models.ImportSource{

@@ -36,6 +36,16 @@ func (s *Stages) UnmarshalYAML(node *yaml.Node) error {
 	var templateStages []*TemplateStage
 
 	for _, stageNode := range node.Content {
+		if stageNode.Tag == consts.StringTag {
+			templateStages = append(templateStages, &TemplateStage{
+				Template: Template{
+					Template: stageNode.Value,
+				},
+				FileReference: loadersUtils.GetFileReference(stageNode),
+			})
+			continue
+		}
+
 		if isTemplateStage(stageNode) {
 			stage, err := parseTemplateStage(stageNode)
 			if err != nil {

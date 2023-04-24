@@ -326,8 +326,14 @@ func TestLoad(t *testing.T) {
 							},
 							FileReference: testutils.CreateFileReference(14, 3, 17, 33),
 						},
+						{
+							Template: models.Template{
+								Template: "${{ parameters.stages }}",
+							},
+							FileReference: testutils.CreateFileReference(19, 3, 19, 27),
+						},
 					},
-					FileReference: testutils.CreateFileReference(3, -1, 17, 33),
+					FileReference: testutils.CreateFileReference(3, -1, 19, 27),
 				},
 			},
 		},
