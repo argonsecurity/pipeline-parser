@@ -115,6 +115,18 @@ func TestAzure(t *testing.T) {
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
+						ID: utils.GetPtr("${{ parameters.jobs }}"),
+						Imports: &models.Import{
+							Source: &models.ImportSource{
+								Path:            utils.GetPtr("${{ parameters.jobs }}"),
+								Type:            models.SourceTypeLocal,
+								RepositoryAlias: utils.GetPtr(""),
+							},
+							FileReference: testutils.CreateFileReference(51, 3, 51, 25),
+						},
+						FileReference: testutils.CreateFileReference(51, 3, 51, 25),
+					},
+					{
 						ID:              utils.GetPtr("DeployWeb"),
 						Name:            utils.GetPtr("deploy Web App"),
 						TimeoutMS:       utils.GetPtr(3600000),

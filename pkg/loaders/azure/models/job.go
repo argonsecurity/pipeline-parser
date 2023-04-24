@@ -105,6 +105,16 @@ func (j *Jobs) UnmarshalYAML(node *yaml.Node) error {
 			consts.NewErrInvalidYaml("job is empty")
 		}
 
+		if jobNode.Tag == consts.StringTag {
+			var job TemplateJob
+			job.Template = Template{
+				Template: jobNode.Value,
+			}
+			job.FileReference = loadersUtils.GetFileReference(jobNode)
+			templateJobs = append(templateJobs, &job)
+			continue
+		}
+
 		switch JobType(jobNode.Content[0].Value) {
 		case CIJobType:
 			var job CIJob

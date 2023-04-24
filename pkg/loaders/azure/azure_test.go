@@ -437,6 +437,12 @@ func TestLoad(t *testing.T) {
 							},
 							FileReference: testutils.CreateFileReference(45, 3, 46, 15),
 						},
+						{
+							Template: models.Template{
+								Template: "${{ parameters.jobs }}",
+							},
+							FileReference: testutils.CreateFileReference(51, 3, 51, 15),
+						},
 					},
 					FileReference: testutils.CreateFileReference(3, -1, 50, 15),
 				},
@@ -560,7 +566,7 @@ func TestLoad(t *testing.T) {
 						FileReference: testutils.CreateFileReference(47, 3, 49, 15),
 					},
 					{
-						Bash: "${{ parameters.trivyStep }}",
+						Bash:          "${{ parameters.trivyStep }}",
 						FileReference: testutils.CreateFileReference(50, 3, 50, 30),
 					},
 				},
