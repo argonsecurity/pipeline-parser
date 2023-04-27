@@ -18,12 +18,12 @@ var (
 
 type GitLabEnhancer struct{}
 
-func (g *GitLabEnhancer) LoadImportedPipelines(data *models.Pipeline, credentials *models.Credentials, _, _ *string) ([]*enhancers.ImportedPipeline, error) {
+func (g *GitLabEnhancer) LoadImportedPipelines(data *models.Pipeline, credentials *models.Credentials, _, baseUrl *string) ([]*enhancers.ImportedPipeline, error) {
 	var errs error
 	importedPipelines := []*enhancers.ImportedPipeline{}
 	if data.Imports != nil {
 		for _, importData := range data.Imports {
-			importedPipeline, err := handleImport(importData, credentials)
+			importedPipeline, err := handleImport(importData, credentials, baseUrl)
 			if err != nil {
 				if errs == nil {
 					errs = errors.New("got error(s) importing pipeline(s):")
@@ -38,13 +38,13 @@ func (g *GitLabEnhancer) LoadImportedPipelines(data *models.Pipeline, credential
 	return importedPipelines, errs
 }
 
-func handleImport(importData *models.Import, credentials *models.Credentials) (*enhancers.ImportedPipeline, error) {
+func handleImport(importData *models.Import, credentials *models.Credentials, baseUrl *string) (*enhancers.ImportedPipeline, error) {
 	if importData == nil || importData.Source == nil {
 		return nil, nil
 	}
 
 	if importData.Source.Type == models.SourceTypeRemote {
-		return handleRemoteImport(importData, credentials)
+		return handleRemoteImport(importData, credentials, baseUrl)
 	}
 
 	if importData.Source.Type == models.SourceTypeLocal {
@@ -54,7 +54,7 @@ func handleImport(importData *models.Import, credentials *models.Credentials) (*
 	return nil, nil
 }
 
-func handleRemoteImport(importData *models.Import, credentials *models.Credentials) (*enhancers.ImportedPipeline, error) {
+func handleRemoteImport(importData *models.Import, credentials *models.Credentials, baseUrl *string) (*enhancers.ImportedPipeline, error) {
 	if importData.Source.Type != models.SourceTypeRemote {
 		return nil, errors.New("invalid source type for remote import")
 	}
@@ -66,8 +66,12 @@ func handleRemoteImport(importData *models.Import, credentials *models.Credentia
 		return nil, errors.New("missing required fields for remote import")
 	}
 
+	if baseUrl == nil || *baseUrl == "" {
+		baseUrl = &GITLAB_BASE_URL
+	}
+
 	url := fmt.Sprintf("%s/%s/%s/-/raw/%s/%s",
-		GITLAB_BASE_URL,
+		*baseUrl,
 		*importData.Source.Organization,
 		*importData.Source.Repository,
 		*importData.Version,

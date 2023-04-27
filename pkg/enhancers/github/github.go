@@ -7,8 +7,8 @@ import (
 
 type GitHubEnhancer struct{}
 
-func (g *GitHubEnhancer) LoadImportedPipelines(data *models.Pipeline, credentials *models.Credentials, _, _ *string) ([]*enhancers.ImportedPipeline, error) {
-	importedPipelines, err := getReusableWorkflows(data, credentials)
+func (g *GitHubEnhancer) LoadImportedPipelines(data *models.Pipeline, credentials *models.Credentials, _, baseUrl *string) ([]*enhancers.ImportedPipeline, error) {
+	importedPipelines, err := getReusableWorkflows(data, credentials, baseUrl)
 	if err != nil {
 		return importedPipelines, err
 	}

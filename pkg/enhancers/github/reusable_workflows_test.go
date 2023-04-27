@@ -152,7 +152,7 @@ func Test_getReusableWorkflows(t *testing.T) {
 			defer ts.Close()
 			GITHUB_BASE_URL = ts.URL
 
-			got, err := getReusableWorkflows(tt.args.pipeline, tt.args.credentials)
+			got, err := getReusableWorkflows(tt.args.pipeline, tt.args.credentials, nil)
 
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -303,7 +303,7 @@ func Test_handleImport(t *testing.T) {
 			defer ts.Close()
 			GITHUB_BASE_URL = ts.URL
 
-			got, err := handleImport(tt.args.imports, tt.args.credentials)
+			got, err := handleImport(tt.args.imports, tt.args.credentials, nil)
 
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -322,6 +322,7 @@ func Test_loadRemoteFile(t *testing.T) {
 		version     string
 		path        string
 		credentials *models.Credentials
+		baseUrl     *string
 	}
 	tests := []struct {
 		name    string
@@ -375,7 +376,7 @@ func Test_loadRemoteFile(t *testing.T) {
 			defer ts.Close()
 			GITHUB_BASE_URL = ts.URL
 
-			got, err := loadRemoteFile(tt.args.org, tt.args.repo, tt.args.version, tt.args.path, tt.args.credentials)
+			got, err := loadRemoteFile(tt.args.org, tt.args.repo, tt.args.version, tt.args.path, tt.args.credentials, tt.args.baseUrl)
 
 			if tt.wantErr {
 				assert.Error(t, err)

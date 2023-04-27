@@ -15,12 +15,12 @@ var (
 	GITHUB_BASE_URL = "https://raw.githubusercontent.com"
 )
 
-func getReusableWorkflows(pipeline *models.Pipeline, credentials *models.Credentials) ([]*enhancers.ImportedPipeline, error) {
+func getReusableWorkflows(pipeline *models.Pipeline, credentials *models.Credentials, baseUrl *string) ([]*enhancers.ImportedPipeline, error) {
 	var errs error
 	importedPipelines := []*enhancers.ImportedPipeline{}
 	for _, job := range pipeline.Jobs {
 		if job.Imports != nil {
-			importedPipelineBuf, err := handleImport(job.Imports, credentials)
+			importedPipelineBuf, err := handleImport(job.Imports, credentials, baseUrl)
 			if err != nil {
 				if errs == nil {
 					errs = errors.New("got error(s) importing pipeline(s):")
@@ -37,13 +37,13 @@ func getReusableWorkflows(pipeline *models.Pipeline, credentials *models.Credent
 	return importedPipelines, errs
 }
 
-func handleImport(jobImport *models.Import, credentials *models.Credentials) ([]byte, error) {
+func handleImport(jobImport *models.Import, credentials *models.Credentials, baseUrl *string) ([]byte, error) {
 	if jobImport == nil || jobImport.Source == nil {
 		return nil, nil
 	}
 
 	if jobImport.Source.Type == models.SourceTypeRemote && jobImport.Source.Organization != nil && jobImport.Source.Repository != nil && jobImport.Source.Path != nil && jobImport.Version != nil {
-		return loadRemoteFile(*jobImport.Source.Organization, *jobImport.Source.Repository, *jobImport.Version, *jobImport.Source.Path, credentials)
+		return loadRemoteFile(*jobImport.Source.Organization, *jobImport.Source.Repository, *jobImport.Version, *jobImport.Source.Path, credentials, baseUrl)
 	}
 
 	if jobImport.Source.Type == models.SourceTypeLocal && jobImport.Source.Path != nil {
@@ -53,7 +53,7 @@ func handleImport(jobImport *models.Import, credentials *models.Credentials) ([]
 	return nil, nil
 }
 
-func loadRemoteFile(org, repo, version, path string, credentials *models.Credentials) ([]byte, error) {
+func loadRemoteFile(org, repo, version, path string, credentials *models.Credentials, baseUrl *string) ([]byte, error) {
 	if org == "" || repo == "" || path == "" {
 		return nil, nil
 	}
@@ -63,6 +63,10 @@ func loadRemoteFile(org, repo, version, path string, credentials *models.Credent
 	}
 
 	url := fmt.Sprintf("%s/%s/%s/%s/%s", GITHUB_BASE_URL, org, repo, version, path)
+	if baseUrl != nil && *baseUrl != "" {
+		url = fmt.Sprintf("%s/raw/%s/%s/%s/%s", *baseUrl, org, repo, version, path)
+	}
+
 	client := utils.GetHttpClient(credentials)
 	resp, err := client.R().Get(url)
 	if err != nil {
