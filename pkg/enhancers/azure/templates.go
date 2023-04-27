@@ -90,7 +90,7 @@ func loadRemoteFile(jobImport *models.Import, resources *models.Resources, crede
 		return nil, nil
 	}
 	if baseUrl == nil || *baseUrl == "" {
-		*baseUrl = AZURE_SAAS_BASE_URL
+		baseUrl = &AZURE_SAAS_BASE_URL
 	}
 	url := generateRequestUrl(project, repo, path, version, *organization, *baseUrl)
 

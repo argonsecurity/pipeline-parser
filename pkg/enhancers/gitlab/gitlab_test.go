@@ -132,7 +132,7 @@ func Test_handleRemoteImport(t *testing.T) {
 		GITLAB_BASE_URL = ts.URL
 
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := handleRemoteImport(tt.args.importData, tt.args.credentials)
+			got, err := handleRemoteImport(tt.args.importData, tt.args.credentials, nil)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("handleRemoteImport() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -214,7 +214,7 @@ func Test_handleImport(t *testing.T) {
 		GITLAB_BASE_URL = ts.URL
 
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := handleImport(tt.args.importData, tt.args.credentials)
+			got, err := handleImport(tt.args.importData, tt.args.credentials, nil)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("handleImport() error = %v, wantErr %v", err, tt.wantErr)
 				return
