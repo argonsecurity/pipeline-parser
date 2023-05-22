@@ -3,7 +3,6 @@ package bitbucket
 import (
 	"testing"
 
-	bbModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/bitbucket/models"
 	bitbucketModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/bitbucket/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
@@ -13,7 +12,7 @@ import (
 func TestJobsParse(t *testing.T) {
 	testCases := []struct {
 		name              string
-		bitbucketPipeline *bbModels.Pipeline
+		bitbucketPipeline *bitbucketModels.Pipeline
 		expectedJobs      []*models.Job
 	}{
 		{
@@ -23,9 +22,9 @@ func TestJobsParse(t *testing.T) {
 		},
 		{
 			name: "Pipeline has no jobs",
-			bitbucketPipeline: &bbModels.Pipeline{
-				Image: &bbModels.Image{
-					ImageData: &bbModels.ImageData{
+			bitbucketPipeline: &bitbucketModels.Pipeline{
+				Image: &bitbucketModels.Image{
+					ImageData: &bitbucketModels.ImageData{
 						Name: utils.GetPtr("node:10.15.3"),
 					},
 				},
@@ -34,13 +33,13 @@ func TestJobsParse(t *testing.T) {
 		},
 		{
 			name: "Pipeline has default job",
-			bitbucketPipeline: &bbModels.Pipeline{
-				Pipelines: &bbModels.BuildPipelines{
-					Default: []*bbModels.Step{
+			bitbucketPipeline: &bitbucketModels.Pipeline{
+				Pipelines: &bitbucketModels.BuildPipelines{
+					Default: []*bitbucketModels.Step{
 						{
-							Step: &bbModels.ExecutionUnitRef{
-								ExecutionUnit: &bbModels.ExecutionUnit{
-									Script: []*bbModels.Script{
+							Step: &bitbucketModels.ExecutionUnitRef{
+								ExecutionUnit: &bitbucketModels.ExecutionUnit{
+									Script: []*bitbucketModels.Script{
 										{
 											String:        utils.GetPtr("echo 'hello world'"),
 											FileReference: testutils.CreateFileReference(1, 2, 3, 4),
@@ -74,14 +73,14 @@ func TestJobsParse(t *testing.T) {
 		},
 		{
 			name: "Pipeline has pull request job",
-			bitbucketPipeline: &bbModels.Pipeline{
-				Pipelines: &bbModels.BuildPipelines{
-					PullRequests: &bbModels.StepMap{
-						"*": []*bbModels.Step{
+			bitbucketPipeline: &bitbucketModels.Pipeline{
+				Pipelines: &bitbucketModels.BuildPipelines{
+					PullRequests: &bitbucketModels.StepMap{
+						"*": []*bitbucketModels.Step{
 							{
-								Step: &bbModels.ExecutionUnitRef{
-									ExecutionUnit: &bbModels.ExecutionUnit{
-										Script: []*bbModels.Script{
+								Step: &bitbucketModels.ExecutionUnitRef{
+									ExecutionUnit: &bitbucketModels.ExecutionUnit{
+										Script: []*bitbucketModels.Script{
 											{
 												String:        utils.GetPtr("echo 'hello world'"),
 												FileReference: testutils.CreateFileReference(1, 2, 3, 4),
@@ -120,21 +119,21 @@ func TestJobsParse(t *testing.T) {
 		},
 		{
 			name: "Pipeline has branch job",
-			bitbucketPipeline: &bbModels.Pipeline{
-				Pipelines: &bbModels.BuildPipelines{
-					Branches: &bbModels.StepMap{
-						"master": []*bbModels.Step{
+			bitbucketPipeline: &bitbucketModels.Pipeline{
+				Pipelines: &bitbucketModels.BuildPipelines{
+					Branches: &bitbucketModels.StepMap{
+						"master": []*bitbucketModels.Step{
 							{
-								Step: &bbModels.ExecutionUnitRef{
-									ExecutionUnit: &bbModels.ExecutionUnit{
-										Script: []*bbModels.Script{
+								Step: &bitbucketModels.ExecutionUnitRef{
+									ExecutionUnit: &bitbucketModels.ExecutionUnit{
+										Script: []*bitbucketModels.Script{
 											{
-												PipeToExecute: &bbModels.PipeToExecute{
-													Pipe: &bbModels.Pipe{
+												PipeToExecute: &bitbucketModels.PipeToExecute{
+													Pipe: &bitbucketModels.Pipe{
 														String:        utils.GetPtr("echo 'hello world'"),
 														FileReference: testutils.CreateFileReference(3, 4, 5, 6),
 													},
-													Variables: &bbModels.EnvironmentVariablesRef{
+													Variables: &bitbucketModels.EnvironmentVariablesRef{
 														EnvironmentVariables: map[string]any{
 															"key": "value",
 														},
@@ -178,13 +177,13 @@ func TestJobsParse(t *testing.T) {
 		},
 		{
 			name: "Pipeline has tag job",
-			bitbucketPipeline: &bbModels.Pipeline{
-				Pipelines: &bbModels.BuildPipelines{
-					Tags: &bbModels.StepMap{
-						"test:1.2.3": []*bbModels.Step{
+			bitbucketPipeline: &bitbucketModels.Pipeline{
+				Pipelines: &bitbucketModels.BuildPipelines{
+					Tags: &bitbucketModels.StepMap{
+						"test:1.2.3": []*bitbucketModels.Step{
 							{
-								Step: &bbModels.ExecutionUnitRef{
-									ExecutionUnit: &bbModels.ExecutionUnit{},
+								Step: &bitbucketModels.ExecutionUnitRef{
+									ExecutionUnit: &bitbucketModels.ExecutionUnit{},
 									FileReference: testutils.CreateFileReference(5, 6, 7, 8),
 								},
 							},
@@ -207,13 +206,13 @@ func TestJobsParse(t *testing.T) {
 		},
 		{
 			name: "Pipeline has Custom job",
-			bitbucketPipeline: &bbModels.Pipeline{
-				Pipelines: &bbModels.BuildPipelines{
-					Custom: &bbModels.StepMap{
-						"on-push": []*bbModels.Step{
+			bitbucketPipeline: &bitbucketModels.Pipeline{
+				Pipelines: &bitbucketModels.BuildPipelines{
+					Custom: &bitbucketModels.StepMap{
+						"on-push": []*bitbucketModels.Step{
 							{
-								Step: &bbModels.ExecutionUnitRef{
-									ExecutionUnit: &bbModels.ExecutionUnit{},
+								Step: &bitbucketModels.ExecutionUnitRef{
+									ExecutionUnit: &bitbucketModels.ExecutionUnit{},
 									FileReference: testutils.CreateFileReference(5, 6, 7, 8),
 								},
 							},
@@ -257,10 +256,10 @@ func TestStepParse(t *testing.T) {
 		},
 		{
 			name: "single step",
-			bitbucketStep: &bbModels.Step{
-				Step: &bbModels.ExecutionUnitRef{
-					ExecutionUnit: &bbModels.ExecutionUnit{
-						Script: []*bbModels.Script{
+			bitbucketStep: &bitbucketModels.Step{
+				Step: &bitbucketModels.ExecutionUnitRef{
+					ExecutionUnit: &bitbucketModels.ExecutionUnit{
+						Script: []*bitbucketModels.Script{
 							{
 								String:        utils.GetPtr("echo 'hello world'"),
 								FileReference: testutils.CreateFileReference(1, 2, 3, 4),
@@ -284,12 +283,12 @@ func TestStepParse(t *testing.T) {
 		},
 		{
 			name: "parallel steps in step",
-			bitbucketStep: &bbModels.Step{
-				Parallel: []*bbModels.ParallelSteps{
+			bitbucketStep: &bitbucketModels.Step{
+				Parallel: []*bitbucketModels.ParallelSteps{
 					{
-						Step: &bbModels.ExecutionUnitRef{
-							ExecutionUnit: &bbModels.ExecutionUnit{
-								Script: []*bbModels.Script{
+						Step: &bitbucketModels.ExecutionUnitRef{
+							ExecutionUnit: &bitbucketModels.ExecutionUnit{
+								Script: []*bitbucketModels.Script{
 									{
 										String:        utils.GetPtr("echo 'hello world'"),
 										FileReference: testutils.CreateFileReference(1, 2, 3, 4),
@@ -300,9 +299,9 @@ func TestStepParse(t *testing.T) {
 						},
 					},
 					{
-						Step: &bbModels.ExecutionUnitRef{
-							ExecutionUnit: &bbModels.ExecutionUnit{
-								Script: []*bbModels.Script{
+						Step: &bitbucketModels.ExecutionUnitRef{
+							ExecutionUnit: &bitbucketModels.ExecutionUnit{
+								Script: []*bitbucketModels.Script{
 									{
 										String:        utils.GetPtr("echo 'goodbye world'"),
 										FileReference: testutils.CreateFileReference(4, 3, 2, 1),
@@ -348,24 +347,24 @@ func TestStepParse(t *testing.T) {
 func TestStepRunnerParse(t *testing.T) {
 	testCases := []struct {
 		name             string
-		bitbucketExeUnit *bbModels.ExecutionUnit
+		bitbucketExeUnit *bitbucketModels.ExecutionUnit
 		expectedRunner   *models.Runner
 	}{
 		{
-			name:              "Execution Unit is nil",
+			name:             "Execution Unit is nil",
 			bitbucketExeUnit: nil,
-			expectedRunner:    nil,
+			expectedRunner:   nil,
 		},
 		{
-			name:              "image name is not defined",
-			bitbucketExeUnit: &bbModels.ExecutionUnit{},
-			expectedRunner:    nil,
+			name:             "image name is not defined",
+			bitbucketExeUnit: &bitbucketModels.ExecutionUnit{},
+			expectedRunner:   nil,
 		},
 		{
 			name: "image name is defined",
-			bitbucketExeUnit: &bbModels.ExecutionUnit{
-				Image: &bbModels.Image{
-					ImageData: &bbModels.ImageData{
+			bitbucketExeUnit: &bitbucketModels.ExecutionUnit{
+				Image: &bitbucketModels.Image{
+					ImageData: &bitbucketModels.ImageData{
 						Name: utils.GetPtr("node:10.15.3"),
 					},
 				},
@@ -401,7 +400,7 @@ func TestScriptParse(t *testing.T) {
 		},
 		{
 			name: "single script",
-			bitbucketScripts: []*bbModels.Script{
+			bitbucketScripts: []*bitbucketModels.Script{
 				{
 					String:        utils.GetPtr("echo 'hello world'"),
 					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
@@ -415,7 +414,7 @@ func TestScriptParse(t *testing.T) {
 		},
 		{
 			name: "multiple scripts",
-			bitbucketScripts: []*bbModels.Script{
+			bitbucketScripts: []*bitbucketModels.Script{
 				{
 					String:        utils.GetPtr("echo 'hello world'"),
 					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
@@ -433,10 +432,10 @@ func TestScriptParse(t *testing.T) {
 		},
 		{
 			name: "pipe script",
-			bitbucketScripts: []*bbModels.Script{
+			bitbucketScripts: []*bitbucketModels.Script{
 				{
-					PipeToExecute: &bbModels.PipeToExecute{
-						Pipe: &bbModels.Pipe{
+					PipeToExecute: &bitbucketModels.PipeToExecute{
+						Pipe: &bitbucketModels.Pipe{
 							String:        utils.GetPtr("echo 'hello world'"),
 							FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 						},
@@ -474,10 +473,10 @@ func TestExecutionUnitParse(t *testing.T) {
 		},
 		{
 			name: "execution unit has script",
-			bitbucketExeUnit: &bbModels.ExecutionUnitRef{
-				ExecutionUnit: &bbModels.ExecutionUnit{
+			bitbucketExeUnit: &bitbucketModels.ExecutionUnitRef{
+				ExecutionUnit: &bitbucketModels.ExecutionUnit{
 					Name: utils.GetPtr("test"),
-					Script: []*bbModels.Script{
+					Script: []*bitbucketModels.Script{
 						{
 							String:        utils.GetPtr("echo 'hello world'"),
 							FileReference: testutils.CreateFileReference(1, 2, 3, 4),
@@ -499,11 +498,11 @@ func TestExecutionUnitParse(t *testing.T) {
 		},
 		{
 			name: "execution unit has image",
-			bitbucketExeUnit: &bbModels.ExecutionUnitRef{
-				ExecutionUnit: &bbModels.ExecutionUnit{
+			bitbucketExeUnit: &bitbucketModels.ExecutionUnitRef{
+				ExecutionUnit: &bitbucketModels.ExecutionUnit{
 					Name: utils.GetPtr("test"),
-					Image: &bbModels.Image{
-						ImageData: &bbModels.ImageData{
+					Image: &bitbucketModels.Image{
+						ImageData: &bitbucketModels.ImageData{
 							Name: utils.GetPtr("test"),
 						},
 					},
@@ -522,17 +521,17 @@ func TestExecutionUnitParse(t *testing.T) {
 		},
 		{
 			name: "execution unit has pipe",
-			bitbucketExeUnit: &bbModels.ExecutionUnitRef{
-				ExecutionUnit: &bbModels.ExecutionUnit{
+			bitbucketExeUnit: &bitbucketModels.ExecutionUnitRef{
+				ExecutionUnit: &bitbucketModels.ExecutionUnit{
 					Name: utils.GetPtr("test"),
-					Script: []*bbModels.Script{
+					Script: []*bitbucketModels.Script{
 						{
-							PipeToExecute: &bbModels.PipeToExecute{
-								Pipe: &bbModels.Pipe{
+							PipeToExecute: &bitbucketModels.PipeToExecute{
+								Pipe: &bitbucketModels.Pipe{
 									String:        utils.GetPtr("echo 'hello world'"),
 									FileReference: testutils.CreateFileReference(1, 2, 3, 4),
 								},
-								Variables: &bbModels.EnvironmentVariablesRef{
+								Variables: &bitbucketModels.EnvironmentVariablesRef{
 									EnvironmentVariables: models.EnvironmentVariables{
 										"key":  "value",
 										"key2": "value2",

@@ -8,6 +8,7 @@ type Pipeline struct {
 	Imports    []*Import    `json:"imports,omitempty"`
 	Parameters []*Parameter `json:"parameters,omitempty"`
 	Defaults   *Defaults    `json:"defaults,omitempty"`
+	Platform   Platform     `json:"platform,omitempty"`
 }
 
 type Scans struct {
