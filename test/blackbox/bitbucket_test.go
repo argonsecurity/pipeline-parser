@@ -14,6 +14,7 @@ func TestBitbucket(t *testing.T) {
 		{
 			Filename: "simple-pipeline.yml",
 			Expected: &models.Pipeline{
+				Platform: consts.BitbucketPlatform,
 				Defaults: &models.Defaults{
 					Runner: &models.Runner{
 						DockerMetadata: &models.DockerMetadata{
@@ -103,6 +104,7 @@ func TestBitbucket(t *testing.T) {
 		{
 			Filename: "alias-pipeline.yml",
 			Expected: &models.Pipeline{
+				Platform: consts.BitbucketPlatform,
 				Defaults: &models.Defaults{
 					Runner: &models.Runner{
 						DockerMetadata: &models.DockerMetadata{
@@ -221,6 +223,7 @@ func TestBitbucket(t *testing.T) {
 		{
 			Filename: "merge-step-pipeline.yml",
 			Expected: &models.Pipeline{
+				Platform: consts.BitbucketPlatform,
 				Defaults: &models.Defaults{
 					Runner: &models.Runner{
 						DockerMetadata: &models.DockerMetadata{
@@ -268,6 +271,7 @@ func TestBitbucket(t *testing.T) {
 		{
 			Filename: "variables-pipeline.yml",
 			Expected: &models.Pipeline{
+				Platform: consts.BitbucketPlatform,
 				Defaults: &models.Defaults{
 					Runner: &models.Runner{
 						DockerMetadata: &models.DockerMetadata{
@@ -313,6 +317,7 @@ func TestBitbucket(t *testing.T) {
 		{
 			Filename: "image-step.yml",
 			Expected: &models.Pipeline{
+				Platform: consts.BitbucketPlatform,
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{

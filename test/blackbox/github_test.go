@@ -35,7 +35,8 @@ func TestGitHub(t *testing.T) {
 		{
 			Filename: "steps.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("steps"),
+				Name:     utils.GetPtr("steps"),
+				Platform: consts.GitHubPlatform,
 				Jobs: SortJobs([]*models.Job{
 					{
 						ID:   utils.GetPtr("job1"),
@@ -157,7 +158,8 @@ func TestGitHub(t *testing.T) {
 		{
 			Filename: "dependant-jobs.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("dependable jobs"),
+				Name:     utils.GetPtr("dependable jobs"),
+				Platform: consts.GitHubPlatform,
 				Jobs: SortJobs([]*models.Job{
 					{
 						ID:            utils.GetPtr("dependable-job"),
@@ -182,7 +184,8 @@ func TestGitHub(t *testing.T) {
 		{
 			Filename: "all-triggers.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("all-triggers"),
+				Name:     utils.GetPtr("all-triggers"),
+				Platform: consts.GitHubPlatform,
 				Triggers: &models.Triggers{
 					FileReference: testutils.CreateFileReference(2, 3, 30, 20),
 					Triggers: SortTriggers([]*models.Trigger{
@@ -255,7 +258,8 @@ func TestGitHub(t *testing.T) {
 		{
 			Filename: "token-permissions.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("permissions"),
+				Name:     utils.GetPtr("permissions"),
+				Platform: consts.GitHubPlatform,
 				Jobs: SortJobs([]*models.Job{
 					{
 						FileReference:    testutils.CreateFileReference(8, 3, 10, 26),
@@ -286,7 +290,8 @@ func TestGitHub(t *testing.T) {
 		{
 			Filename: "runners.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("runners"),
+				Name:     utils.GetPtr("runners"),
+				Platform: consts.GitHubPlatform,
 				Jobs: SortJobs([]*models.Job{
 					{
 						ID:        utils.GetPtr("job1"),
@@ -331,7 +336,8 @@ func TestGitHub(t *testing.T) {
 		{
 			Filename: "environment-variables.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("environment-variables"),
+				Name:     utils.GetPtr("environment-variables"),
+				Platform: consts.GitHubPlatform,
 				Jobs: SortJobs([]*models.Job{
 					{
 						ID:   utils.GetPtr("job1"),
@@ -379,7 +385,8 @@ func TestGitHub(t *testing.T) {
 		{
 			Filename: "concurrent-jobs.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("concurrent-jobs"),
+				Name:     utils.GetPtr("concurrent-jobs"),
+				Platform: consts.GitHubPlatform,
 				Jobs: SortJobs([]*models.Job{
 					{
 						ID:               utils.GetPtr("job1"),
@@ -401,7 +408,8 @@ func TestGitHub(t *testing.T) {
 		{
 			Filename: "continue-on-error-jobs.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("continue-on-error-jobs"),
+				Name:     utils.GetPtr("continue-on-error-jobs"),
+				Platform: consts.GitHubPlatform,
 				Jobs: SortJobs([]*models.Job{
 					{
 						ID:              utils.GetPtr("job1"),
@@ -430,7 +438,8 @@ func TestGitHub(t *testing.T) {
 		{
 			Filename: "matrix.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("matrix"),
+				Name:     utils.GetPtr("matrix"),
+				Platform: consts.GitHubPlatform,
 				Jobs: SortJobs([]*models.Job{
 					{
 						ID:        utils.GetPtr("matrix-job"),
@@ -493,7 +502,8 @@ func TestGitHub(t *testing.T) {
 			Filename:    "workflow-call.yaml",
 			TestdataDir: "../fixtures/github/testdata",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("workflow-call"),
+				Name:     utils.GetPtr("workflow-call"),
+				Platform: consts.GitHubPlatform,
 				Jobs: SortJobs([]*models.Job{
 					{
 						ID:   utils.GetPtr("call-local-workflow"),
