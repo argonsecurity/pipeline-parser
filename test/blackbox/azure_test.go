@@ -15,6 +15,7 @@ func TestAzure(t *testing.T) {
 			Filename: "all-triggers.yaml",
 			Expected: &models.Pipeline{
 				Name:     utils.GetPtr("all-triggers"),
+				Platform: consts.AzurePlatform,
 				Defaults: &models.Defaults{},
 				Triggers: &models.Triggers{
 					Triggers: []*models.Trigger{
@@ -66,6 +67,7 @@ func TestAzure(t *testing.T) {
 			Filename: "branch-list-trigger.yaml",
 			Expected: &models.Pipeline{
 				Name:     utils.GetPtr("branch-list-trigger"),
+				Platform: consts.AzurePlatform,
 				Defaults: &models.Defaults{},
 				Triggers: &models.Triggers{
 					Triggers: []*models.Trigger{
@@ -98,6 +100,7 @@ func TestAzure(t *testing.T) {
 			Filename: "no-trigger.yaml",
 			Expected: &models.Pipeline{
 				Name:     utils.GetPtr("no-trigger"),
+				Platform: consts.AzurePlatform,
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
@@ -112,6 +115,7 @@ func TestAzure(t *testing.T) {
 			Filename: "jobs.yaml",
 			Expected: &models.Pipeline{
 				Name:     utils.GetPtr("Jobs"),
+				Platform: consts.AzurePlatform,
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
@@ -227,6 +231,7 @@ func TestAzure(t *testing.T) {
 			Filename: "parameters.yaml",
 			Expected: &models.Pipeline{
 				Name:     utils.GetPtr("parameters"),
+				Platform: consts.AzurePlatform,
 				Defaults: &models.Defaults{},
 				Parameters: []*models.Parameter{
 					{
@@ -298,6 +303,7 @@ func TestAzure(t *testing.T) {
 			Filename: "pool.yaml",
 			Expected: &models.Pipeline{
 				Name:     utils.GetPtr("pool"),
+				Platform: consts.AzurePlatform,
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
@@ -316,7 +322,8 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "resources.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("resources"),
+				Name:     utils.GetPtr("resources"),
+				Platform: consts.AzurePlatform,
 				Defaults: &models.Defaults{
 					Resources: &models.Resources{
 						Repositories: []*models.ImportSource{
@@ -343,6 +350,7 @@ func TestAzure(t *testing.T) {
 			Filename: "stages.yaml",
 			Expected: &models.Pipeline{
 				Name:     utils.GetPtr("stages"),
+				Platform: consts.AzurePlatform,
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
@@ -395,6 +403,7 @@ func TestAzure(t *testing.T) {
 			Filename: "steps.yaml",
 			Expected: &models.Pipeline{
 				Name:     utils.GetPtr("steps"),
+				Platform: consts.AzurePlatform,
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
@@ -546,7 +555,8 @@ func TestAzure(t *testing.T) {
 		{
 			Filename: "variables.yaml",
 			Expected: &models.Pipeline{
-				Name: utils.GetPtr("variables"),
+				Name:     utils.GetPtr("variables"),
+				Platform: consts.AzurePlatform,
 				Defaults: &models.Defaults{
 					EnvironmentVariables: &models.EnvironmentVariablesRef{
 						EnvironmentVariables: models.EnvironmentVariables{
@@ -600,6 +610,7 @@ func TestAzure(t *testing.T) {
 			Filename: "default-job.yaml",
 			Expected: &models.Pipeline{
 				Name:     utils.GetPtr("stages"),
+				Platform: consts.AzurePlatform,
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{
@@ -613,6 +624,7 @@ func TestAzure(t *testing.T) {
 			Filename: "extends.yaml",
 			Expected: &models.Pipeline{
 				Name:     utils.GetPtr(""),
+				Platform: consts.AzurePlatform,
 				Triggers: nil,
 				Defaults: &models.Defaults{
 					Resources: &models.Resources{
@@ -674,6 +686,7 @@ func TestAzure(t *testing.T) {
 			Filename: "local-import.yaml",
 			Expected: &models.Pipeline{
 				Name:     utils.GetPtr(""),
+				Platform: consts.AzurePlatform,
 				Defaults: &models.Defaults{},
 				Jobs: []*models.Job{
 					{

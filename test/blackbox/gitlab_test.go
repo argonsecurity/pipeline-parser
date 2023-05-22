@@ -14,6 +14,7 @@ func TestGitLab(t *testing.T) {
 		{
 			Filename: "gradle.yaml",
 			Expected: SortPipeline(&models.Pipeline{
+				Platform: consts.GitLabPlatform,
 				Jobs: []*models.Job{
 					{
 						ID:               utils.GetPtr("test"),
@@ -88,6 +89,7 @@ func TestGitLab(t *testing.T) {
 		{
 			Filename: "terraform.yaml",
 			Expected: SortPipeline(&models.Pipeline{
+				Platform: consts.GitLabPlatform,
 				Jobs: []*models.Job{
 					{
 						ID:            utils.GetPtr("fmt"),
@@ -124,6 +126,7 @@ func TestGitLab(t *testing.T) {
 		{
 			Filename: "build-job.yaml",
 			Expected: SortPipeline(&models.Pipeline{
+				Platform: consts.GitLabPlatform,
 				Triggers: &models.Triggers{
 					FileReference: testutils.CreateFileReference(22, 3, 25, 18),
 					Triggers: []*models.Trigger{
@@ -200,6 +203,7 @@ func TestGitLab(t *testing.T) {
 		{
 			Filename: "include-local.yaml",
 			Expected: &models.Pipeline{
+				Platform: consts.GitLabPlatform,
 				Jobs:     []*models.Job{},
 				Defaults: &models.Defaults{},
 				Imports: []*models.Import{
@@ -289,6 +293,7 @@ func TestGitLab(t *testing.T) {
 			Filename:    "include-remote.yaml",
 			TestdataDir: "../fixtures/gitlab/testdata",
 			Expected: &models.Pipeline{
+				Platform: consts.GitLabPlatform,
 				Imports: []*models.Import{
 					{
 						Source: &models.ImportSource{
@@ -382,6 +387,7 @@ func TestGitLab(t *testing.T) {
 			Filename:    "include-multiple.yaml",
 			TestdataDir: "../fixtures/gitlab/testdata",
 			Expected: SortPipeline(&models.Pipeline{
+				Platform: consts.GitLabPlatform,
 				Jobs:     []*models.Job{},
 				Defaults: &models.Defaults{},
 				Imports: []*models.Import{
@@ -719,6 +725,7 @@ func TestGitLab(t *testing.T) {
 		{
 			Filename: "invalid-import.yaml",
 			Expected: &models.Pipeline{
+				Platform: consts.GitLabPlatform,
 				Imports: []*models.Import{
 					{
 						Source: &models.ImportSource{
