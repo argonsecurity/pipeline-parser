@@ -43,7 +43,9 @@ func Handle(data []byte, platform models.Platform, credentials *models.Credentia
 		return nil, consts.NewErrInvalidPlatform(platform)
 	}
 
-	pipeline.Platform = platform
+	if pipeline != nil {
+		pipeline.Platform = platform
+	}
 
 	if err != nil {
 		return nil, err
