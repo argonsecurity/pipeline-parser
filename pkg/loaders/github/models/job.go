@@ -42,12 +42,12 @@ type Strategy struct {
 type Matrix struct {
 	Include       []map[string]any `yaml:"include"`
 	Exclude       []map[string]any `yaml:"exclude"`
-	Values        map[string][]any `yaml:"values"`
+	Values        map[string]any   `yaml:"values"`
 	FileReference *models.FileReference
 }
 
 func (m *Matrix) UnmarshalYAML(node *yaml.Node) error {
-	values := make(map[string][]any)
+	values := make(map[string]any)
 	if err := loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		if key == "include" {
 			return value.Decode(&m.Include)
@@ -57,7 +57,7 @@ func (m *Matrix) UnmarshalYAML(node *yaml.Node) error {
 			return value.Decode(&m.Exclude)
 		}
 
-		var valuesArray []any
+		var valuesArray any
 		if err := value.Decode(&valuesArray); err != nil {
 			return err
 		}

@@ -381,9 +381,9 @@ func TestLoad(t *testing.T) {
 							ID: utils.GetPtr("matrix-job"),
 							Strategy: &githubModels.Strategy{
 								Matrix: &githubModels.Matrix{
-									Values: map[string][]any{
-										"artifact": {"docker/image", "docker/tar", "go", "java", "node", "php", "python/tar", "python/wheel", "ruby/gemspec"},
-										"os":       {"ubuntu-latest", "macos-latest", "windows-latest"},
+									Values: map[string]any{
+										"artifact": []any{"docker/image", "docker/tar", "go", "java", "node", "php", "python/tar", "python/wheel", "ruby/gemspec"},
+										"os":       []any{"ubuntu-latest", "macos-latest", "windows-latest"},
 									},
 									Include: []map[string]any{
 										{
