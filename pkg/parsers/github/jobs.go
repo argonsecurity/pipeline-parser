@@ -150,19 +150,11 @@ func parseMatrix(matrix *githubModels.Matrix) *models.Matrix {
 	}
 
 	return &models.Matrix{
-		Matrix:        convertMatrixMap(matrix.Values),
+		Matrix:        matrix.Values,
 		Include:       matrix.Include,
 		Exclude:       matrix.Exclude,
 		FileReference: matrix.FileReference,
 	}
-}
-
-func convertMatrixMap(matrix map[string][]any) map[string]any {
-	convertedMatrix := map[string]any{}
-	for key, value := range matrix {
-		convertedMatrix[key] = value
-	}
-	return convertedMatrix
 }
 
 func parseDependencies(needs *githubModels.Needs) []*models.JobDependency {
