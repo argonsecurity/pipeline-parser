@@ -2,6 +2,7 @@ package github
 
 import (
 	"regexp"
+	"strings"
 
 	loadersCommonModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/common/models"
 	githubModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/github/models"
@@ -61,11 +62,12 @@ func parseJobStep(step githubModels.Step) *models.Step {
 		}
 		parsedStep.Type = models.ShellStepType
 	} else if step.Uses != "" {
-		actionName, version, versionType := parseActionHeader(step.Uses)
+		actionName, version, versionType, taskType := parseActionHeader(step.Uses)
 		parsedStep.Task = &models.Task{
 			Name:        &actionName,
 			Version:     &version,
 			VersionType: versionType,
+			Type:        taskType,
 		}
 
 		if step.With != nil {
@@ -78,7 +80,16 @@ func parseJobStep(step githubModels.Step) *models.Step {
 	return parsedStep
 }
 
-func parseActionHeader(header string) (string, string, models.VersionType) {
+func parseActionHeader(header string) (string, string, models.VersionType, models.TaskType) {
+	if strings.HasPrefix(header, "docker://") {
+		dockerImage := strings.TrimPrefix(header, "docker://")
+		parts := strings.Split(dockerImage, ":")
+		if len(parts) == 1 {
+			return dockerImage, "", models.None, models.DockerTaskType
+		}
+		return parts[0], parts[1], parserUtils.DetectVersionType(parts[1]), models.DockerTaskType
+	}
+
 	result := githubActionNameRegex.FindStringSubmatch(header)
 	actionName := result[1]
 	version := ""
@@ -88,5 +99,5 @@ func parseActionHeader(header string) (string, string, models.VersionType) {
 
 	versionType := parserUtils.DetectVersionType(version)
 
-	return actionName, version, versionType
+	return actionName, version, versionType, models.CITaskType
 }

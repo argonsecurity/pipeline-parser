@@ -19,6 +19,8 @@ func DetectVersionType(version string) models.VersionType {
 			versionType = models.CommitSHA
 		} else if semverRegex.MatchString(version) {
 			versionType = models.TagVersion
+		} else if version == "latest" {
+			versionType = models.Latest
 		} else {
 			versionType = models.BranchVersion
 		}
