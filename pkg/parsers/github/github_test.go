@@ -184,6 +184,7 @@ func TestParse(t *testing.T) {
 											FileReference: testutils.CreateFileReference(112, 212, 112, 234),
 										},
 									},
+									Type: models.CITaskType,
 								},
 								Type: models.TaskStepType,
 							},

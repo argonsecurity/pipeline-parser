@@ -44,6 +44,13 @@ func TestDetectVersionType(t *testing.T) {
 			},
 			want: models.BranchVersion,
 		},
+		{
+			name: "Latest version",
+			args: args{
+				version: "latest",
+			},
+			want: models.Latest,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

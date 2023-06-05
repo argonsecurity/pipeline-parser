@@ -49,6 +49,7 @@ func TestGitHub(t *testing.T) {
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1"),
 									VersionType: "tag",
+									Type:        models.CITaskType,
 								},
 								FileReference: testutils.CreateFileReference(7, 9, 8, 34),
 							},
@@ -66,6 +67,7 @@ func TestGitHub(t *testing.T) {
 											FileReference: testutils.CreateFileReference(13, 11, 13, 21), // End column is supposed to be 27
 										},
 									},
+									Type: models.CITaskType,
 								},
 								FileReference: testutils.CreateFileReference(10, 9, 13, 21), // End column is supposed to be 27
 							},
@@ -88,6 +90,7 @@ func TestGitHub(t *testing.T) {
 											FileReference: testutils.CreateFileReference(21, 11, 21, 16), // End column is supposed to be 23
 										},
 									},
+									Type: models.CITaskType,
 								},
 								FileReference: testutils.CreateFileReference(15, 9, 21, 16), // End column is supposed to be 23
 							},
@@ -98,6 +101,7 @@ func TestGitHub(t *testing.T) {
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("c44948622e1b6bb0eb0cec5b813c1ac561158e1e"),
 									VersionType: "commit",
+									Type:        models.CITaskType,
 								},
 								FileReference: testutils.CreateFileReference(23, 9, 24, 72),
 							},
@@ -108,6 +112,7 @@ func TestGitHub(t *testing.T) {
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("master"),
 									VersionType: "branch",
+									Type:        models.CITaskType,
 								},
 								FileReference: testutils.CreateFileReference(26, 9, 27, 38),
 							},
@@ -118,6 +123,7 @@ func TestGitHub(t *testing.T) {
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1.1.1"),
 									VersionType: "tag",
+									Type:        models.CITaskType,
 								},
 								FileReference: testutils.CreateFileReference(29, 9, 30, 38),
 							},
@@ -472,6 +478,7 @@ func TestGitHub(t *testing.T) {
 									Name:        utils.GetPtr("actions/checkout"),
 									Version:     utils.GetPtr("v1"),
 									VersionType: "tag",
+									Type:        models.CITaskType,
 								},
 								FileReference: testutils.CreateFileReference(28, 9, 29, 34),
 							},
@@ -489,6 +496,7 @@ func TestGitHub(t *testing.T) {
 											FileReference: testutils.CreateFileReference(34, 11, 34, 33), // End column is supposed to be 27
 										},
 									},
+									Type: models.CITaskType,
 								},
 								FileReference: testutils.CreateFileReference(31, 9, 34, 33), // End column is supposed to be 27
 							},

@@ -9,10 +9,14 @@ const (
 
 	ShellStepType StepType = "shell"
 	TaskStepType  StepType = "task"
+
+	DockerTaskType TaskType = "docker"
+	CITaskType     TaskType = "ci"
 )
 
 type VersionType string
 type StepType string
+type TaskType string
 
 type Shell struct {
 	Type          *string        `json:"type,omitempty"`
@@ -45,4 +49,5 @@ type Task struct {
 	Inputs      []*Parameter `json:"inputs,omitempty"`
 	Version     *string      `json:"version,omitempty"`
 	VersionType VersionType  `json:"version_type,omitempty"`
+	Type        TaskType     `json:"type,omitempty"`
 }

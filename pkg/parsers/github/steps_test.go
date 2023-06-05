@@ -167,6 +167,7 @@ func TestParseJobSteps(t *testing.T) {
 								FileReference: testutils.CreateFileReference(112, 224, 112, 234),
 							},
 						},
+						Type: models.CITaskType,
 					},
 					Type: models.TaskStepType,
 				},
@@ -292,6 +293,65 @@ func TestParseJobStep(t *testing.T) {
 							FileReference: testutils.CreateFileReference(112, 224, 112, 234),
 						},
 					},
+					Type: models.CITaskType,
+				},
+				Type: models.TaskStepType,
+			},
+		},
+		{
+			name: "Docker Tsk step",
+			step: githubModels.Step{
+				Id:   "1",
+				Name: "step-name",
+				Env: &githubModels.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"key": "value",
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+				FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
+				ContinueOnError:  utils.GetPtr("true"),
+				If:               "condition",
+				TimeoutMinutes:   1,
+				WorkingDirectory: "dir",
+				Uses:             "docker://ubuntu:1.2.3",
+				With: &githubModels.With{
+					Values: []*loadersCommonModels.MapEntry{
+						{
+							Key:           "args",
+							Value:         "value",
+							FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+						},
+					},
+					FileReference: testutils.CreateFileReference(111, 222, 333, 444),
+				},
+			},
+			expectedStep: &models.Step{
+				ID:   utils.GetPtr("1"),
+				Name: utils.GetPtr("step-name"),
+				EnvironmentVariables: &models.EnvironmentVariablesRef{
+					EnvironmentVariables: models.EnvironmentVariables{
+						"key": "value",
+					},
+					FileReference: testutils.CreateFileReference(1, 2, 3, 4),
+				},
+				FileReference:    testutils.CreateFileReference(11, 21, 31, 41),
+				FailsPipeline:    utils.GetPtr(false),
+				Conditions:       &[]models.Condition{{Statement: "condition"}},
+				Timeout:          utils.GetPtr(60000),
+				WorkingDirectory: utils.GetPtr("dir"),
+				Task: &models.Task{
+					Name:        utils.GetPtr("ubuntu"),
+					Version:     utils.GetPtr("1.2.3"),
+					VersionType: models.TagVersion,
+					Inputs: []*models.Parameter{
+						{
+							Name:          utils.GetPtr("args"),
+							Value:         "value",
+							FileReference: testutils.CreateFileReference(112, 224, 112, 234),
+						},
+					},
+					Type: models.DockerTaskType,
 				},
 				Type: models.TaskStepType,
 			},
@@ -314,6 +374,7 @@ func TestParseActionHeader(t *testing.T) {
 		expectedActionName  string
 		expectedVersion     string
 		expectedVersionType models.VersionType
+		expectedTaskType    models.TaskType
 	}{
 		{
 			name:                "Header doesn't fit regex",
@@ -321,6 +382,7 @@ func TestParseActionHeader(t *testing.T) {
 			expectedActionName:  "action",
 			expectedVersion:     "",
 			expectedVersionType: models.None,
+			expectedTaskType:    models.CITaskType,
 		},
 		{
 			name:                "Header with no version",
@@ -328,6 +390,7 @@ func TestParseActionHeader(t *testing.T) {
 			expectedActionName:  "actions/checkout",
 			expectedVersion:     "",
 			expectedVersionType: models.None,
+			expectedTaskType:    models.CITaskType,
 		},
 		{
 			name:                "Header semver version",
@@ -335,6 +398,7 @@ func TestParseActionHeader(t *testing.T) {
 			expectedActionName:  "actions/checkout",
 			expectedVersion:     "1.2.3",
 			expectedVersionType: models.TagVersion,
+			expectedTaskType:    models.CITaskType,
 		},
 		{
 			name:                "Header semver version",
@@ -342,6 +406,7 @@ func TestParseActionHeader(t *testing.T) {
 			expectedActionName:  "actions/checkout",
 			expectedVersion:     "1e204e9a9253d643386038d443f96446fa156a97",
 			expectedVersionType: models.CommitSHA,
+			expectedTaskType:    models.CITaskType,
 		},
 		{
 			name:                "Header semver version",
@@ -349,15 +414,41 @@ func TestParseActionHeader(t *testing.T) {
 			expectedActionName:  "actions/checkout",
 			expectedVersion:     "branch-name",
 			expectedVersionType: models.BranchVersion,
+			expectedTaskType:    models.CITaskType,
+		},
+		{
+			name:                "Docker action without version",
+			header:              "docker://ubuntu",
+			expectedActionName:  "ubuntu",
+			expectedVersion:     "",
+			expectedVersionType: models.None,
+			expectedTaskType:    models.DockerTaskType,
+		},
+		{
+			name:                "Docker action with latest version",
+			header:              "docker://ubuntu:latest",
+			expectedActionName:  "ubuntu",
+			expectedVersion:     "latest",
+			expectedVersionType: models.Latest,
+			expectedTaskType:    models.DockerTaskType,
+		},
+		{
+			name:                "Docker action with tag version",
+			header:              "docker://ubuntu:1.2.3",
+			expectedActionName:  "ubuntu",
+			expectedVersion:     "1.2.3",
+			expectedVersionType: models.TagVersion,
+			expectedTaskType:    models.DockerTaskType,
 		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			actionName, version, versionType := parseActionHeader(testCase.header)
+			actionName, version, versionType, taskType := parseActionHeader(testCase.header)
 			assert.Equal(t, testCase.expectedActionName, actionName, testCase.name)
 			assert.Equal(t, testCase.expectedVersion, version, testCase.name)
 			assert.Equal(t, testCase.expectedVersionType, versionType, testCase.name)
+			assert.Equal(t, testCase.expectedTaskType, taskType, testCase.name)
 		})
 	}
 }
