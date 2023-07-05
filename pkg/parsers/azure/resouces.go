@@ -7,7 +7,7 @@ import (
 )
 
 func parseResources(resources *azureModels.Resources) *models.Resources {
-	if resources == nil || len(resources.Repositories) == 0 {
+	if resources == nil || len(resources.Resources) == 0 {
 		return nil
 	}
 
@@ -15,17 +15,22 @@ func parseResources(resources *azureModels.Resources) *models.Resources {
 		Repositories: make([]*models.ImportSource, 0),
 	}
 
-	for _, repo := range resources.Repositories {
-		parsedResources.Repositories = append(parsedResources.Repositories, &models.ImportSource{
-			RepositoryAlias: &repo.Repository.Repository,
-			Reference:       &repo.Repository.Ref,
-			Type:            parseRepoType(repo.Repository.Type),
-			SCM:             parseRepoSCM(repo.Repository.Type),
-			Repository:      &repo.Repository.Name,
-		})
+	for _, resource := range resources.Resources {
+		if resource.Repositories == nil || len(resource.Repositories) == 0 {
+			return nil
+		}
+		for _, repo := range resource.Repositories {
+			parsedResources.Repositories = append(parsedResources.Repositories, &models.ImportSource{
+				RepositoryAlias: &repo.Repository.Repository,
+				Reference:       &repo.Repository.Ref,
+				Type:            parseRepoType(repo.Repository.Type),
+				SCM:             parseRepoSCM(repo.Repository.Type),
+				Repository:      &repo.Repository.Name,
+			})
+			parsedResources.FileReference = resource.FileReference
+		}
 	}
 
-	parsedResources.FileReference = resources.FileReference
 	return parsedResources
 }
 

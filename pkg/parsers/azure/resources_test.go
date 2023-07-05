@@ -22,24 +22,40 @@ func TestParseResource(t *testing.T) {
 			expectedResources: nil,
 		},
 		{
+			name: "Resources is nil",
+			resources: &azureModels.Resources{
+				Resources: nil,
+			},
+			expectedResources: nil,
+		},
+		{
 			name: "Resources repositories is nil",
 			resources: &azureModels.Resources{
-				Repositories: nil,
+				Resources: []*azureModels.Resource{
+					{
+						Repositories: nil,
+					},
+				},
 			},
 			expectedResources: nil,
 		},
 		{
 			name: "Resources repositories is the local repository",
 			resources: &azureModels.Resources{
-				Repositories: []*azureModels.RepositoryRef{
+				Resources: []*azureModels.Resource{
 					{
-						Repository: &azureModels.Repository{
-							Repository: "test",
-							Name:       "org/repo",
+						Repositories: []*azureModels.RepositoryRef{
+							{
+								Repository: &azureModels.Repository{
+									Repository: "test",
+									Name:       "org/repo",
+								},
+								FileReference: testutils.CreateFileReference(43, 3, 45, 13),
+							},
 						},
+						FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 					},
 				},
-				FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 			},
 			expectedResources: &models.Resources{
 				Repositories: []*models.ImportSource{
@@ -57,14 +73,19 @@ func TestParseResource(t *testing.T) {
 		{
 			name: "Resources repositories is github repository",
 			resources: &azureModels.Resources{
-				Repositories: []*azureModels.RepositoryRef{
+				Resources: []*azureModels.Resource{
 					{
-						Repository: &azureModels.Repository{
-							Repository: "test",
-							Ref:        "ref",
-							Type:       "github",
-							Name:       "org/repo",
+						Repositories: []*azureModels.RepositoryRef{
+							{
+								Repository: &azureModels.Repository{
+									Repository: "test",
+									Ref:        "ref",
+									Type:       "github",
+									Name:       "org/repo",
+								},
+							},
 						},
+						FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 					},
 				},
 				FileReference: testutils.CreateFileReference(43, 3, 45, 13),
@@ -85,17 +106,21 @@ func TestParseResource(t *testing.T) {
 		{
 			name: "Resources repositories is another azure repository",
 			resources: &azureModels.Resources{
-				Repositories: []*azureModels.RepositoryRef{
+				Resources: []*azureModels.Resource{
 					{
-						Repository: &azureModels.Repository{
-							Repository: "test",
-							Ref:        "ref",
-							Type:       "git",
-							Name:       "org/repo",
+						Repositories: []*azureModels.RepositoryRef{
+							{
+								Repository: &azureModels.Repository{
+									Repository: "test",
+									Ref:        "ref",
+									Type:       "git",
+									Name:       "org/repo",
+								},
+							},
 						},
+						FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 					},
 				},
-				FileReference: testutils.CreateFileReference(43, 3, 45, 13),
 			},
 			expectedResources: &models.Resources{
 				Repositories: []*models.ImportSource{

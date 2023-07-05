@@ -1,57 +1,14 @@
-name: resources
-
+pool:
+  vmImage: ubuntu-latest
+  name: Default
 resources:
-  builds:
-  - build: Spaceworkz
-    type: Jenkins
-    connection: MyJenkinsServer 
-    source: SpaceworkzProj   # name of the jenkins source project
-    trigger: true
-  containers:
-  - container: linux
-    image: ubuntu:16.04
-  - container: windows
-    image: myprivate.azurecr.io/windowsservercore:1803
-    endpoint: my_acr_connection
-  - container: my_service
-    image: my_service:tag
-    ports:
-    - 8080:80 # bind container port 80 to 8080 on the host machine
-    - 6379 # bind container port 6379 to a random available port on the host machine
-    volumes:
-    - /src/dir:/dst/dir # mount /src/dir on the host into /dst/dir in the container
-  pipelines:
-  - pipeline: SmartHotel
-    project: DevOpsProject
-    source: SmartHotel-CI
-    trigger:
-      branches:
-        include:
-        - releases/*
-        - main
-        exclude:
-        - topic/*
-      tags: 
-      - Verified
-      - Signed
-      stages:
-      - Production
-      - PreProduction
   repositories:
-  - repository: common
-    type: github
-    name: Contoso/CommonTools
-    endpoint: MyContosoServiceConnection
-  webhooks:
-  - webhook: MyWebhookTriggerAlias           ### Webhook alias
-    connection: IncomingWebhookConnection    ### Incoming webhook service connection
-    filters:                                 ### List of JSON parameters to filter; Parameters are AND'ed
-      - path: JSONParameterPath              ### JSON path in the payload
-        value: JSONParameterExpectedValue    ### Expected value in the path provided
-  packages:
-    - package: myPackageAlias # alias for the package resource
-      type: Npm # type of the package NuGet/npm
-      connection: GitHubConnectionName # GitHub service connection with the PAT type
-      name: nugetTest/nodeapp # <Repository>/<Name of the package>
-      version: 1.0.1 # Version of the package to consume; Optional; Defaults to latest
-      trigger: true # To enable automated triggers (true/false); Optional; Defaults to no triggers
+    - repository: templates
+      type: git
+      name: danielciuraru/dc-templates
+
+extends:
+  template: ./../testdata/pipelines/azure/templates/azure-partial-template.yaml
+  parameters:
+    trivyStep:
+      - template: ./../testdata/pipelines/azure/templates/azure-trivy-template.yaml

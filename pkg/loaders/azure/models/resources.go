@@ -120,13 +120,18 @@ type PackageRef struct {
 }
 
 // Currently can't fully load it due to mismatch in the azure pipelines documentation
-type Resources struct {
+type Resource struct {
 	// Builds        []*BuildRef             `yaml:"builds,omitempty"`
 	// Containers    []*ResourceContainerRef `yaml:"containers,omitempty"`
 	// Pipelines     []*ResourcePipelineRef  `yaml:"pipelines,omitempty"`
 	Repositories []*RepositoryRef `yaml:"repositories,omitempty"`
 	// Webhooks      []*WebhookRef           `yaml:"webhooks,omitempty"`
 	// Packages      []*PackageRef           `yaml:"packages,omitempty"`
+	FileReference *models.FileReference
+}
+
+type Resources struct {
+	Resources     []*Resource
 	FileReference *models.FileReference
 }
 
@@ -202,8 +207,36 @@ func (pr *PackageRef) UnmarshalYAML(node *yaml.Node) error {
 
 func (r *Resources) UnmarshalYAML(node *yaml.Node) error {
 	r.FileReference = loadersUtils.GetFileReference(node)
-	r.FileReference.StartRef.Line--      // The "resources" node is not accessible, this is a patch
-	r.FileReference.StartRef.Column -= 2 // The "resources" node is not accessible, this is a patch
+
+	// r.FileReference.StartRef.Line--      // The "resources" node is not accessible, this is a patch
+	r.FileReference.StartRef.Column += 2 // The "resources" node is not accessible, this is a patch
+
+	if node.Tag == consts.MapTag {
+		var resource Resource
+		if err := node.Decode(&resource); err != nil {
+			return err
+		}
+
+		r.Resources = []*Resource{&resource}
+	}
+
+	if node.Tag == consts.SequenceTag {
+		var resources []*Resource
+
+		if err := node.Decode(&resources); err != nil {
+			return err
+		}
+
+		r.Resources = resources
+	}
+
+	return nil
+}
+
+func (r *Resource) UnmarshalYAML(node *yaml.Node) error {
+	r.FileReference = loadersUtils.GetFileReference(node)
+	// r.FileReference.StartRef.Line--      // The "resources" node is not accessible, this is a patch
+	// r.FileReference.StartRef.Column -= 2 // The "resources" node is not accessible, this is a patch
 	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		switch key {
 		// case "builds":
@@ -244,5 +277,5 @@ func (r *Resources) UnmarshalYAML(node *yaml.Node) error {
 			// 	r.Packages = packages
 		}
 		return nil
-	}, "Resources")
+	}, "Resource")
 }
