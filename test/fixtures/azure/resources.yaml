@@ -1,6 +1,7 @@
 name: resources
 
 resources:
+- repo: self
   builds:
   - build: Spaceworkz
     type: Jenkins
