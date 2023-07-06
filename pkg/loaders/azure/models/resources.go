@@ -208,7 +208,7 @@ func (pr *PackageRef) UnmarshalYAML(node *yaml.Node) error {
 func (r *Resources) UnmarshalYAML(node *yaml.Node) error {
 	r.FileReference = loadersUtils.GetFileReference(node)
 
-	// r.FileReference.StartRef.Line--      // The "resources" node is not accessible, this is a patch
+	r.FileReference.StartRef.Line--      // The "resources" node is not accessible, this is a patch
 	r.FileReference.StartRef.Column += 2 // The "resources" node is not accessible, this is a patch
 
 	if node.Tag == consts.MapTag {
@@ -235,7 +235,7 @@ func (r *Resources) UnmarshalYAML(node *yaml.Node) error {
 
 func (r *Resource) UnmarshalYAML(node *yaml.Node) error {
 	r.FileReference = loadersUtils.GetFileReference(node)
-	// r.FileReference.StartRef.Line--      // The "resources" node is not accessible, this is a patch
+	r.FileReference.StartRef.Line-- // The "resources" node is not accessible, this is a patch
 	// r.FileReference.StartRef.Column -= 2 // The "resources" node is not accessible, this is a patch
 	return loadersUtils.IterateOnMap(node, func(key string, value *yaml.Node) error {
 		switch key {

@@ -585,7 +585,7 @@ func TestLoad(t *testing.T) {
 			expectedPipeline: &models.Pipeline{
 				Name: "resources",
 				Resources: &models.Resources{
-					FileReference: testutils.CreateFileReference(3, 1, 58, 20),
+					FileReference: testutils.CreateFileReference(2, 1, 58, 20),
 					Resources: []*models.Resource{
 						{
 							// Builds: []*models.BuildRef{
@@ -668,7 +668,7 @@ func TestLoad(t *testing.T) {
 									FileReference: testutils.CreateFileReference(42, 5, 45, 41),
 								},
 							},
-							FileReference: testutils.CreateFileReference(4, 3, 58, 20),
+							FileReference: testutils.CreateFileReference(3, 3, 58, 20),
 
 							// Webhooks: []*models.WebhookRef{
 							// 	{
