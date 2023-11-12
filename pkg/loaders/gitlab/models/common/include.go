@@ -1,4 +1,4 @@
-package models
+package common
 
 import (
 	"strings"
@@ -13,7 +13,7 @@ type Include []IncludeItem
 
 func (i *Include) UnmarshalYAML(node *yaml.Node) error {
 	if node.Tag == consts.StringTag {
-		*i = Include{parseIncludeString(node)}
+		*i = Include{ParseIncludeString(node)}
 		return nil
 	}
 
@@ -40,7 +40,7 @@ type IncludeItem struct {
 func (it *IncludeItem) UnmarshalYAML(node *yaml.Node) error {
 	it.FileReference = utils.GetFileReference(node)
 	if node.Tag == consts.StringTag {
-		*it = parseIncludeString(node)
+		*it = ParseIncludeString(node)
 		return nil
 	}
 
@@ -63,7 +63,7 @@ func (it *IncludeItem) UnmarshalYAML(node *yaml.Node) error {
 	}, "IncludeItem")
 }
 
-func parseIncludeString(node *yaml.Node) IncludeItem {
+func ParseIncludeString(node *yaml.Node) IncludeItem {
 	it := IncludeItem{}
 	it.FileReference = utils.GetFileReference(node)
 
