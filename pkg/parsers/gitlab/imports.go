@@ -20,7 +20,7 @@ var (
 	gitlabRemotePipelineRegex = regexp.MustCompile(`https://gitlab\.com/(?P<group>[\w-_]+)/(?P<project>.*?)/(?:-/)?raw/(?P<ref>.*?)/(?P<filePath>.*\.ya?ml)`)
 )
 
-func parseImports(include *gitlabModels.Include) []*models.Import {
+func ParseImports(include *gitlabModels.Include) []*models.Import {
 	if include == nil {
 		return nil
 	}

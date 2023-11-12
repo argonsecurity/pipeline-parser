@@ -744,6 +744,64 @@ func TestGitLab(t *testing.T) {
 				Defaults: &models.Defaults{},
 			},
 		},
+		{
+			Filename: "trigger-include.yaml",
+			Expected: &models.Pipeline{
+				Platform: consts.GitLabPlatform,
+				Jobs: []*models.Job{
+					{
+						ID:               utils.GetPtr("trivy-parent"),
+						Name:             utils.GetPtr("trivy-parent"),
+						ConcurrencyGroup: utils.GetPtr(models.ConcurrencyGroup("aqua")),
+						FileReference:    testutils.CreateFileReference(1, 1, 4, 52),
+					},
+				},
+				Defaults: &models.Defaults{},
+				Imports: []*models.Import{
+					{
+						Source: &models.ImportSource{
+							SCM:  consts.GitLabPlatform,
+							Type: models.SourceTypeLocal,
+							Path: utils.GetPtr("/../../test/fixtures/gitlab/trivy.yaml"),
+						},
+						FileReference: testutils.CreateFileReference(4, 5, 4, 43),
+						Pipeline: SortPipeline(&models.Pipeline{
+							Defaults: &models.Defaults{},
+							Jobs: []*models.Job{
+								{
+									ID:   utils.GetPtr("trivy"),
+									Name: utils.GetPtr("trivy"),
+									Runner: &models.Runner{
+										DockerMetadata: &models.DockerMetadata{
+											Image: utils.GetPtr("docker.com/dev-sec-ops/aqua/aqua-scanner"),
+											Label: utils.GetPtr("latest"),
+										},
+										FileReference: testutils.CreateFileReference(2, 3, 2, 57),
+									},
+									Steps: []*models.Step{
+										{
+											Type: models.ShellStepType,
+											Shell: &models.Shell{
+												Script: utils.GetPtr("export TRIVY_RUN_AS_PLUGIN=aqua"),
+											},
+											FileReference: testutils.CreateFileReference(3, 5, 3, 117),
+										},
+										{
+											Type: models.ShellStepType,
+											Shell: &models.Shell{
+												Script: utils.GetPtr("trivy fs --skip-db-update --sast --reachability --scanners config,vuln,secret ."),
+											},
+											FileReference: testutils.CreateFileReference(4, 5, 4, 165),
+										},
+									},
+									FileReference: testutils.CreateFileReference(1, 1, 5, 86),
+								},
+							},
+						}),
+					},
+				},
+			},
+		},
 	}
 
 	executeTestCases(t, testCases, "gitlab", consts.GitLabPlatform, "", "")

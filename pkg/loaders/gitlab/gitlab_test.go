@@ -315,12 +315,12 @@ func TestLoad(t *testing.T) {
 						Trigger: &job.Trigger{
 							Include: &common.Include{
 								{
-									Local:         "trivy.yaml",
-									FileReference: testutils.CreateFileReference(4, 5, 4, 15),
+									Local:         "/../../test/fixtures/gitlab/trivy.yaml",
+									FileReference: testutils.CreateFileReference(4, 5, 4, 43),
 								},
 							},
 						},
-						FileReference: testutils.CreateFileReference(1, 1, 4, 24),
+						FileReference: testutils.CreateFileReference(1, 1, 4, 52),
 					},
 				},
 			},
