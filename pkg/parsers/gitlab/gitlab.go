@@ -14,7 +14,7 @@ type GitLabParser struct{}
 func (g *GitLabParser) Parse(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) (*models.Pipeline, error) {
 	var err error
 	pipeline := &models.Pipeline{
-		Imports: parseImports(gitlabCIConfiguration.Include),
+		Imports: ParseImports(gitlabCIConfiguration.Include),
 	}
 
 	pipeline.Defaults = parseDefaults(gitlabCIConfiguration)
@@ -27,6 +27,14 @@ func (g *GitLabParser) Parse(gitlabCIConfiguration *gitlabModels.GitlabCIConfigu
 		return nil, err
 	}
 
+	if len(gitlabCIConfiguration.Jobs) > 0 {
+		_, err := utils.MapToSliceErr(gitlabCIConfiguration.Jobs, func(jobID string, job *gitlabModels.Job) ([]*models.Import, error) {
+			return appendJobTriggerIncludes(job, &pipeline.Imports)
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
 	return pipeline, nil
 }
 
@@ -54,4 +62,16 @@ func parseDefaults(gitlabCIConfiguration *gitlabModels.GitlabCIConfiguration) *m
 		Scans:                parseScans(gitlabCIConfiguration),
 	}
 	return defaults
+}
+
+func appendJobTriggerIncludes(job *gitlabModels.Job, imports *[]*models.Import) ([]*models.Import, error) {
+	if job.Trigger != nil && job.Trigger.Include != nil {
+		if jobImport := ParseImports(job.Trigger.Include); jobImport != nil {
+			if imports == nil {
+				*imports = []*models.Import{}
+			}
+			*imports = append(*imports, jobImport...)
+		}
+	}
+	return *imports, nil
 }

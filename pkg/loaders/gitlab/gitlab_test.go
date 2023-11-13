@@ -259,7 +259,7 @@ func TestLoad(t *testing.T) {
 			Name:     "Include Local",
 			Filename: "../../../test/fixtures/gitlab/include-local.yaml",
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
-				Include: &models.Include{
+				Include: &common.Include{
 					{
 						Local:         "/../../test/fixtures/gitlab/gradle.yaml",
 						FileReference: testutils.CreateFileReference(1, 10, 1, 49),
@@ -271,7 +271,7 @@ func TestLoad(t *testing.T) {
 			Name:     "Include Remote",
 			Filename: "../../../test/fixtures/gitlab/include-remote.yaml",
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
-				Include: &models.Include{
+				Include: &common.Include{
 					{
 						Remote:        "https://gitlab.com/gitlab-org/gitlab/-/raw/master/imported.yaml",
 						FileReference: testutils.CreateFileReference(1, 10, 1, 73),
@@ -283,7 +283,7 @@ func TestLoad(t *testing.T) {
 			Name:     "Include Multiple",
 			Filename: "../../../test/fixtures/gitlab/include-multiple.yaml",
 			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
-				Include: &models.Include{
+				Include: &common.Include{
 					{
 						File:          "/imported.yaml",
 						Ref:           "master",
@@ -301,6 +301,26 @@ func TestLoad(t *testing.T) {
 					{
 						Template:      "Android.gitlab-ci.yml",
 						FileReference: testutils.CreateFileReference(7, 5, 7, 36),
+					},
+				},
+			},
+		},
+		{
+			Name:     "Trigger include",
+			Filename: "../../../test/fixtures/gitlab/trigger-include.yaml",
+			ExpectedGitlabCIConfig: &models.GitlabCIConfiguration{
+				Jobs: map[string]*models.Job{
+					"trivy-parent": {
+						Stage: "aqua",
+						Trigger: &job.Trigger{
+							Include: &common.Include{
+								{
+									Local:         "/../../test/fixtures/gitlab/trivy.yaml",
+									FileReference: testutils.CreateFileReference(4, 5, 4, 43),
+								},
+							},
+						},
+						FileReference: testutils.CreateFileReference(1, 1, 4, 52),
 					},
 				},
 			},

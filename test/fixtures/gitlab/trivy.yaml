@@ -1,0 +1,5 @@
+trivy:
+  image: docker.com/dev-sec-ops/aqua/aqua-scanner:latest
+  script:
+    - export TRIVY_RUN_AS_PLUGIN=aqua
+    - trivy fs --skip-db-update --sast --reachability --scanners config,vuln,secret .

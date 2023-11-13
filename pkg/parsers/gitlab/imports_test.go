@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
-	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
+	gitlabCommon "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models/common"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/testutils"
 	"github.com/argonsecurity/pipeline-parser/pkg/utils"
@@ -13,7 +13,7 @@ import (
 
 func Test_parseLocalImport(t *testing.T) {
 	type args struct {
-		item *gitlabModels.IncludeItem
+		item *gitlabCommon.IncludeItem
 	}
 	tests := []struct {
 		name string
@@ -23,7 +23,7 @@ func Test_parseLocalImport(t *testing.T) {
 		{
 			name: "Local is empty",
 			args: args{
-				item: &gitlabModels.IncludeItem{
+				item: &gitlabCommon.IncludeItem{
 					Local:         "",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -33,7 +33,7 @@ func Test_parseLocalImport(t *testing.T) {
 		{
 			name: "Local is not empty",
 			args: args{
-				item: &gitlabModels.IncludeItem{
+				item: &gitlabCommon.IncludeItem{
 					Local:         "local",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -58,7 +58,7 @@ func Test_parseLocalImport(t *testing.T) {
 
 func Test_parseRemoteImport(t *testing.T) {
 	type args struct {
-		item *gitlabModels.IncludeItem
+		item *gitlabCommon.IncludeItem
 	}
 	tests := []struct {
 		name string
@@ -68,7 +68,7 @@ func Test_parseRemoteImport(t *testing.T) {
 		{
 			name: "Remote is empty",
 			args: args{
-				item: &gitlabModels.IncludeItem{
+				item: &gitlabCommon.IncludeItem{
 					Remote:        "",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -78,7 +78,7 @@ func Test_parseRemoteImport(t *testing.T) {
 		{
 			name: "Remote is not empty",
 			args: args{
-				item: &gitlabModels.IncludeItem{
+				item: &gitlabCommon.IncludeItem{
 					Remote:        "https://gitlab.com/group/subgroup/project/-/raw/master/.gitlab-ci.yml",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -99,7 +99,7 @@ func Test_parseRemoteImport(t *testing.T) {
 		{
 			name: "Remote is an invalid url",
 			args: args{
-				item: &gitlabModels.IncludeItem{
+				item: &gitlabCommon.IncludeItem{
 					Remote:        "https://gitlab.com/group/subgroup/project/-/raw/master",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -180,7 +180,7 @@ func Test_extractRemotePipelineInfo(t *testing.T) {
 
 func Test_parseFileImport(t *testing.T) {
 	type args struct {
-		item *gitlabModels.IncludeItem
+		item *gitlabCommon.IncludeItem
 	}
 	tests := []struct {
 		name string
@@ -190,7 +190,7 @@ func Test_parseFileImport(t *testing.T) {
 		{
 			name: "File is empty",
 			args: args{
-				item: &gitlabModels.IncludeItem{
+				item: &gitlabCommon.IncludeItem{
 					File:          "",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -200,7 +200,7 @@ func Test_parseFileImport(t *testing.T) {
 		{
 			name: "File is not empty",
 			args: args{
-				item: &gitlabModels.IncludeItem{
+				item: &gitlabCommon.IncludeItem{
 					File:          ".gitlab-ci.yml",
 					Project:       "group/subgroup/project",
 					Ref:           "master",
@@ -223,7 +223,7 @@ func Test_parseFileImport(t *testing.T) {
 		{
 			name: "ref is empty",
 			args: args{
-				item: &gitlabModels.IncludeItem{
+				item: &gitlabCommon.IncludeItem{
 					File:          ".gitlab-ci.yml",
 					Project:       "group/subgroup/project",
 					Ref:           "",
@@ -244,7 +244,7 @@ func Test_parseFileImport(t *testing.T) {
 		{
 			name: "File is not empty and project is invalid",
 			args: args{
-				item: &gitlabModels.IncludeItem{
+				item: &gitlabCommon.IncludeItem{
 					File:          ".gitlab-ci.yml",
 					Project:       "invalid",
 					Ref:           "master",
@@ -264,7 +264,7 @@ func Test_parseFileImport(t *testing.T) {
 
 func Test_parseTemplateImport(t *testing.T) {
 	type args struct {
-		item *gitlabModels.IncludeItem
+		item *gitlabCommon.IncludeItem
 	}
 	tests := []struct {
 		name string
@@ -274,7 +274,7 @@ func Test_parseTemplateImport(t *testing.T) {
 		{
 			name: "Template is empty",
 			args: args{
-				item: &gitlabModels.IncludeItem{
+				item: &gitlabCommon.IncludeItem{
 					Template:      "",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -284,7 +284,7 @@ func Test_parseTemplateImport(t *testing.T) {
 		{
 			name: "Regular template",
 			args: args{
-				item: &gitlabModels.IncludeItem{
+				item: &gitlabCommon.IncludeItem{
 					Template:      "Android.gitlab-ci.yml",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -313,7 +313,7 @@ func Test_parseTemplateImport(t *testing.T) {
 
 func Test_parseIncludeItem(t *testing.T) {
 	type args struct {
-		item gitlabModels.IncludeItem
+		item gitlabCommon.IncludeItem
 	}
 	tests := []struct {
 		name string
@@ -323,7 +323,7 @@ func Test_parseIncludeItem(t *testing.T) {
 		{
 			name: "Local is empty",
 			args: args{
-				item: gitlabModels.IncludeItem{
+				item: gitlabCommon.IncludeItem{
 					Local:         "",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -333,7 +333,7 @@ func Test_parseIncludeItem(t *testing.T) {
 		{
 			name: "Local is not empty",
 			args: args{
-				item: gitlabModels.IncludeItem{
+				item: gitlabCommon.IncludeItem{
 					Local:         "local",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -350,7 +350,7 @@ func Test_parseIncludeItem(t *testing.T) {
 		{
 			name: "Remote is empty",
 			args: args{
-				item: gitlabModels.IncludeItem{
+				item: gitlabCommon.IncludeItem{
 					Remote:        "",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -360,7 +360,7 @@ func Test_parseIncludeItem(t *testing.T) {
 		{
 			name: "Remote is not empty",
 			args: args{
-				item: gitlabModels.IncludeItem{
+				item: gitlabCommon.IncludeItem{
 					Remote:        "https://gitlab.com/group/subgroup/project/-/raw/master/.gitlab-ci.yml",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -381,7 +381,7 @@ func Test_parseIncludeItem(t *testing.T) {
 		{
 			name: "Remote is an invalid url",
 			args: args{
-				item: gitlabModels.IncludeItem{
+				item: gitlabCommon.IncludeItem{
 					Remote:        "https://gitlab.com/group/subgroup/project/-/raw/master",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -402,7 +402,7 @@ func Test_parseIncludeItem(t *testing.T) {
 		{
 			name: "File is empty",
 			args: args{
-				item: gitlabModels.IncludeItem{
+				item: gitlabCommon.IncludeItem{
 					File:          "",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -412,7 +412,7 @@ func Test_parseIncludeItem(t *testing.T) {
 		{
 			name: "File is not empty",
 			args: args{
-				item: gitlabModels.IncludeItem{
+				item: gitlabCommon.IncludeItem{
 					File:          ".gitlab-ci.yml",
 					Project:       "group/subgroup/project",
 					Ref:           "master",
@@ -435,7 +435,7 @@ func Test_parseIncludeItem(t *testing.T) {
 		{
 			name: "ref is empty",
 			args: args{
-				item: gitlabModels.IncludeItem{
+				item: gitlabCommon.IncludeItem{
 					File:          ".gitlab-ci.yml",
 					Project:       "group/subgroup/project",
 					Ref:           "",
@@ -456,7 +456,7 @@ func Test_parseIncludeItem(t *testing.T) {
 		{
 			name: "File is not empty and project is invalid",
 			args: args{
-				item: gitlabModels.IncludeItem{
+				item: gitlabCommon.IncludeItem{
 					File:          ".gitlab-ci.yml",
 					Project:       "invalid",
 					Ref:           "master",
@@ -468,7 +468,7 @@ func Test_parseIncludeItem(t *testing.T) {
 		{
 			name: "Template is empty",
 			args: args{
-				item: gitlabModels.IncludeItem{
+				item: gitlabCommon.IncludeItem{
 					Template:      "",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -478,7 +478,7 @@ func Test_parseIncludeItem(t *testing.T) {
 		{
 			name: "Regular template",
 			args: args{
-				item: gitlabModels.IncludeItem{
+				item: gitlabCommon.IncludeItem{
 					Template:      "Android.gitlab-ci.yml",
 					FileReference: testutils.CreateFileReference(1, 1, 1, 1),
 				},
@@ -507,7 +507,7 @@ func Test_parseIncludeItem(t *testing.T) {
 
 func Test_parseImports(t *testing.T) {
 	type args struct {
-		include *gitlabModels.Include
+		include *gitlabCommon.Include
 	}
 	tests := []struct {
 		name string
@@ -524,14 +524,14 @@ func Test_parseImports(t *testing.T) {
 		{
 			name: "Include is empty",
 			args: args{
-				include: &gitlabModels.Include{},
+				include: &gitlabCommon.Include{},
 			},
 			want: []*models.Import{},
 		},
 		{
 			name: "Include all type of imports",
 			args: args{
-				include: &gitlabModels.Include{
+				include: &gitlabCommon.Include{
 					{
 						Local:         ".gitlab-ci.yml",
 						FileReference: testutils.CreateFileReference(1, 1, 1, 1),
@@ -602,7 +602,7 @@ func Test_parseImports(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := parseImports(tt.args.include)
+			got := ParseImports(tt.args.include)
 			assert.EqualValues(t, tt.want, got)
 		})
 	}

@@ -10,7 +10,7 @@ type GitlabCIConfiguration struct {
 	Cache        *common.Cache  `yaml:"cache"`
 	Default      *Default       `yaml:"default"`
 	Image        *common.Image  `yaml:"image"`
-	Include      *Include       `yaml:"include"`
+	Include      *common.Include       `yaml:"include"`
 
 	Pages    any   `yaml:"pages"`
 	Services []any `yaml:"services"`

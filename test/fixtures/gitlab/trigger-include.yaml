@@ -1,0 +1,4 @@
+trivy-parent:
+  stage: aqua
+  trigger:
+    include: "/../../test/fixtures/gitlab/trivy.yaml"
