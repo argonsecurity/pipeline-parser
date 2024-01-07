@@ -1,6 +1,6 @@
 module github.com/argonsecurity/pipeline-parser
 
-go 1.21
+go 1.18
 
 require (
 	github.com/go-test/deep v1.0.8
