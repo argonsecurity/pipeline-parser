@@ -1,6 +1,8 @@
 module github.com/argonsecurity/pipeline-parser
 
-go 1.18
+go 1.21
+
+toolchain go1.21.9
 
 require (
 	github.com/go-test/deep v1.0.8
@@ -25,7 +27,6 @@ require (
 	github.com/onsi/ginkgo/v2 v2.13.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
-	github.com/quic-go/qtls-go1-20 v0.4.1 // indirect
 	github.com/quic-go/quic-go v0.40.1 // indirect
 	github.com/refraction-networking/utls v1.6.0 // indirect
 	go.uber.org/mock v0.4.0 // indirect
@@ -48,3 +49,6 @@ require (
 	golang.org/x/net v0.19.0 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 )
+
+// fix CVE-2024-22189
+replace github.com/quic-go/quic-go v0.40.1 => github.com/quic-go/quic-go v0.42.0
