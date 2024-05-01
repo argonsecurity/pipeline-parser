@@ -48,5 +48,5 @@ require (
 	google.golang.org/appengine v1.6.6 // indirect
 )
 
-// fix CVE-2024-22189 
+// fix CVE-2024-22189
 replace github.com/quic-go/quic-go v0.40.1 => github.com/quic-go/quic-go v0.42.0
