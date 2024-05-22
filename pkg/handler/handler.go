@@ -1,8 +1,7 @@
 package handler
 
 import (
-	"fmt"
-
+	"github.com/argonsecurity/go-utils/logger"
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
 	generalEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/general"
@@ -22,7 +21,7 @@ type Handler[T any] interface {
 	GetEnhancer() enhancers.Enhancer
 }
 
-func Handle(data []byte, platform models.Platform, credentials *models.Credentials, organization, baseUrl *string) (*models.Pipeline, error) {
+func Handle(data []byte, platform models.Platform, credentials *models.Credentials, organization, baseUrl *string, logger logger.Logger) (*models.Pipeline, error) {
 	var pipeline *models.Pipeline
 	var err error
 
@@ -32,13 +31,13 @@ func Handle(data []byte, platform models.Platform, credentials *models.Credentia
 
 	switch platform {
 	case consts.GitHubPlatform:
-		pipeline, err = handle[githubModels.Workflow](data, &GitHubHandler{}, credentials, organization, baseUrl, nil)
+		pipeline, err = handle[githubModels.Workflow](data, &GitHubHandler{}, credentials, organization, baseUrl, nil, logger)
 	case consts.GitLabPlatform:
-		pipeline, err = handle[gitlabModels.GitlabCIConfiguration](data, &GitLabHandler{}, credentials, organization, baseUrl, nil)
+		pipeline, err = handle[gitlabModels.GitlabCIConfiguration](data, &GitLabHandler{}, credentials, organization, baseUrl, nil, logger)
 	case consts.AzurePlatform:
-		pipeline, err = handle[azureModels.Pipeline](data, &AzureHandler{}, credentials, organization, baseUrl, nil)
+		pipeline, err = handle[azureModels.Pipeline](data, &AzureHandler{}, credentials, organization, baseUrl, nil, logger)
 	case consts.BitbucketPlatform:
-		pipeline, err = handle[bitbucketModels.Pipeline](data, &BitbucketHandler{}, credentials, organization, baseUrl, nil)
+		pipeline, err = handle[bitbucketModels.Pipeline](data, &BitbucketHandler{}, credentials, organization, baseUrl, nil, logger)
 	default:
 		return nil, consts.NewErrInvalidPlatform(platform)
 	}
@@ -54,7 +53,7 @@ func Handle(data []byte, platform models.Platform, credentials *models.Credentia
 	return pipeline, nil
 }
 
-func handle[T any](data []byte, handler Handler[T], credentials *models.Credentials, organization, baseUrl *string, parentPipeline *models.Pipeline) (*models.Pipeline, error) {
+func handle[T any](data []byte, handler Handler[T], credentials *models.Credentials, organization, baseUrl *string, parentPipeline *models.Pipeline, logger logger.Logger) (*models.Pipeline, error) {
 	pipeline, err := handler.GetLoader().Load(data)
 	if err != nil {
 		return nil, err
@@ -71,23 +70,23 @@ func handle[T any](data []byte, handler Handler[T], credentials *models.Credenti
 
 	importedPipelines, err := enhancer.LoadImportedPipelines(parsedPipeline, credentials, organization, baseUrl)
 	if err != nil {
-		fmt.Printf("Failed getting imported pipelines:\n%v", err)
+		logger.Debugf("Failed getting imported pipelines:\n%v", err)
 	}
 
 	for _, importedPipeline := range importedPipelines {
 		if importedPipeline == nil {
 			continue
 		}
-		parsedImportedPipeline, err := handle(importedPipeline.Data, handler, credentials, organization, baseUrl, parsedPipeline)
+		parsedImportedPipeline, err := handle(importedPipeline.Data, handler, credentials, organization, baseUrl, parsedPipeline, logger)
 		if err != nil {
-			fmt.Printf("Failed parsing imported pipeline for job %s - %v", importedPipeline.JobName, err)
+			logger.Debugf("Failed parsing imported pipeline for job %s - %v", importedPipeline.JobName, err)
 		}
 		importedPipeline.Pipeline = parsedImportedPipeline
 	}
 
 	enhancedPipeline, err := handler.GetEnhancer().Enhance(parsedPipeline, importedPipelines)
 	if err != nil {
-		fmt.Printf("Error while enhancing pipeline:\n%v", err)
+		logger.Debugf("Error while enhancing pipeline:\n%v", err)
 	}
 
 	return generalEnhancer.Enhance(enhancedPipeline, handler.GetPlatform())

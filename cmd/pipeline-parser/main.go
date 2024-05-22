@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/argonsecurity/go-utils/logger"
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/handler"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
@@ -42,7 +43,7 @@ var (
 	organizationDefaultValue = ""
 	organizationUsage        = "The target organization when fetching remote files (used for Azure Pipelines)"
 
-	baseProviderUrl     string
+	baseProviderUrl             string
 	baseProviderUrlFlagName     = "baseProviderUrl"
 	baseProviderUrlDefaultValue = ""
 	baseProviderUrlUsage        = "base api url for the pipeline provider (used for pasring remote templates)"
@@ -73,7 +74,7 @@ pipeline-parser --platform azure azure-pipelines.yml`,
 					if err != nil {
 						return nil
 					}
-					pipeline, err := handler.Handle(buf, models.Platform(platform), &models.Credentials{Token: token}, &organization, &baseProviderUrl)
+					pipeline, err := handler.Handle(buf, models.Platform(platform), &models.Credentials{Token: token}, &organization, &baseProviderUrl, logger.NewLogger("pipeline-parser"))
 					if err != nil {
 						return err
 					}
