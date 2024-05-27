@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/argonsecurity/go-utils/logger"
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/handler"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
@@ -74,7 +73,7 @@ pipeline-parser --platform azure azure-pipelines.yml`,
 					if err != nil {
 						return nil
 					}
-					pipeline, err := handler.Handle(buf, models.Platform(platform), &models.Credentials{Token: token}, &organization, &baseProviderUrl, logger.NewLogger("pipeline-parser"))
+					pipeline, err := handler.Handle(buf, models.Platform(platform), &models.Credentials{Token: token}, &organization, &baseProviderUrl, nil)
 					if err != nil {
 						return err
 					}

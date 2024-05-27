@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/argonsecurity/go-utils/logger"
+	internalLogger "github.com/argonsecurity/go-utils/logger"
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
 	generalEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/general"
@@ -12,6 +12,7 @@ import (
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/parsers"
+	"github.com/gobuffalo/logger"
 )
 
 type Handler[T any] interface {
@@ -21,12 +22,22 @@ type Handler[T any] interface {
 	GetEnhancer() enhancers.Enhancer
 }
 
+var (
+	NormalFormat = "normal"
+	debugLevel   = "debug"
+)
+
 func Handle(data []byte, platform models.Platform, credentials *models.Credentials, organization, baseUrl *string, logger logger.Logger) (*models.Pipeline, error) {
 	var pipeline *models.Pipeline
 	var err error
 
 	if len(data) == 0 {
 		return nil, consts.NewErrEmptyData()
+	}
+
+	if logger == nil {
+		logger.InitLogger(debugLevel, NormalFormat, "", true, false)
+		logger = internalLogger.NewLogger("pipeline-parser")
 	}
 
 	switch platform {

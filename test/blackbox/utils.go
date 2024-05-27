@@ -8,6 +8,7 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/argonsecurity/go-utils/logger"
 	azureEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/azure"
 	githubEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/github"
 	gitlabEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/gitlab"
@@ -33,7 +34,7 @@ func executeTestCases(t *testing.T, testCases []TestCase, folder string, platfor
 		}
 
 		buf := readFile(filepath.Join("../fixtures", folder, testCase.Filename))
-		pipeline, err := handler.Handle(buf, platform, &models.Credentials{}, &organization, &baseUrl)
+		pipeline, err := handler.Handle(buf, platform, &models.Credentials{}, &organization, &baseUrl, logger.NewLogger("test"))
 		if err != nil {
 			if !testCase.ShouldFail {
 				t.Errorf("%s: %s", testCase.Filename, err)

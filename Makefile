@@ -1,5 +1,5 @@
 VERSION := $(shell git describe --tags --always)
-LDFLAGS=-ldflags "-s -w -X=main.version=$(VERSION)"
+LDFLAGS=-ldflags "-s -w -X=main.version=v1.3.8-beta"
 
 # If the first argument is "run"...
 ifeq (run,$(firstword $(MAKECMDGOALS)))
