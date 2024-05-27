@@ -69,7 +69,7 @@ func handle[T any](data []byte, handler Handler[T], credentials *models.Credenti
 	parsedPipeline = enhancer.InheritParentPipelineData(parentPipeline, parsedPipeline)
 
 	importedPipelines, err := enhancer.LoadImportedPipelines(parsedPipeline, credentials, organization, baseUrl)
-	if err != nil {
+	if err == nil {
 		logger.Debugf("Failed getting imported pipelines:\n%v", err)
 	}
 
