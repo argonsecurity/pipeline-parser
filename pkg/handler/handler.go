@@ -12,7 +12,6 @@ import (
 	gitlabModels "github.com/argonsecurity/pipeline-parser/pkg/loaders/gitlab/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/models"
 	"github.com/argonsecurity/pipeline-parser/pkg/parsers"
-	"github.com/gobuffalo/logger"
 )
 
 type Handler[T any] interface {
@@ -27,7 +26,7 @@ var (
 	debugLevel   = "debug"
 )
 
-func Handle(data []byte, platform models.Platform, credentials *models.Credentials, organization, baseUrl *string, logger logger.Logger) (*models.Pipeline, error) {
+func Handle(data []byte, platform models.Platform, credentials *models.Credentials, organization, baseUrl *string, logger internalLogger.Logger) (*models.Pipeline, error) {
 	var pipeline *models.Pipeline
 	var err error
 
@@ -36,7 +35,7 @@ func Handle(data []byte, platform models.Platform, credentials *models.Credentia
 	}
 
 	if logger == nil {
-		logger.InitLogger(debugLevel, NormalFormat, "", true, false)
+		internalLogger.InitLogger(debugLevel, NormalFormat, "", true, false)
 		logger = internalLogger.NewLogger("pipeline-parser")
 	}
 
@@ -64,7 +63,7 @@ func Handle(data []byte, platform models.Platform, credentials *models.Credentia
 	return pipeline, nil
 }
 
-func handle[T any](data []byte, handler Handler[T], credentials *models.Credentials, organization, baseUrl *string, parentPipeline *models.Pipeline, logger logger.Logger) (*models.Pipeline, error) {
+func handle[T any](data []byte, handler Handler[T], credentials *models.Credentials, organization, baseUrl *string, parentPipeline *models.Pipeline, logger internalLogger.Logger) (*models.Pipeline, error) {
 	pipeline, err := handler.GetLoader().Load(data)
 	if err != nil {
 		return nil, err
