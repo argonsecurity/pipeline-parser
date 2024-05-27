@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
 	generalEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/general"
@@ -69,26 +67,17 @@ func handle[T any](data []byte, handler Handler[T], credentials *models.Credenti
 
 	parsedPipeline = enhancer.InheritParentPipelineData(parentPipeline, parsedPipeline)
 
-	importedPipelines, err := enhancer.LoadImportedPipelines(parsedPipeline, credentials, organization, baseUrl)
-	if err != nil {
-		fmt.Printf("Failed getting imported pipelines:\n%v", err)
-	}
+	importedPipelines, _ := enhancer.LoadImportedPipelines(parsedPipeline, credentials, organization, baseUrl)
 
 	for _, importedPipeline := range importedPipelines {
 		if importedPipeline == nil {
 			continue
 		}
-		parsedImportedPipeline, err := handle(importedPipeline.Data, handler, credentials, organization, baseUrl, parsedPipeline)
-		if err != nil {
-			fmt.Printf("Failed parsing imported pipeline for job %s - %v", importedPipeline.JobName, err)
-		}
+		parsedImportedPipeline, _ := handle(importedPipeline.Data, handler, credentials, organization, baseUrl, parsedPipeline)
 		importedPipeline.Pipeline = parsedImportedPipeline
 	}
 
-	enhancedPipeline, err := handler.GetEnhancer().Enhance(parsedPipeline, importedPipelines)
-	if err != nil {
-		fmt.Printf("Error while enhancing pipeline:\n%v", err)
-	}
+	enhancedPipeline, _ := handler.GetEnhancer().Enhance(parsedPipeline, importedPipelines)
 
 	return generalEnhancer.Enhance(enhancedPipeline, handler.GetPlatform())
 }
