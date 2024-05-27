@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/argonsecurity/pipeline-parser/pkg/consts"
 	"github.com/argonsecurity/pipeline-parser/pkg/enhancers"
 	generalEnhancer "github.com/argonsecurity/pipeline-parser/pkg/enhancers/general"
@@ -70,9 +68,6 @@ func handle[T any](data []byte, handler Handler[T], credentials *models.Credenti
 	parsedPipeline = enhancer.InheritParentPipelineData(parentPipeline, parsedPipeline)
 
 	importedPipelines, _ := enhancer.LoadImportedPipelines(parsedPipeline, credentials, organization, baseUrl)
-	if err != nil {
-		fmt.Printf("Failed getting imported pipelines:\n%v", err)
-	}
 
 	for _, importedPipeline := range importedPipelines {
 		if importedPipeline == nil {
