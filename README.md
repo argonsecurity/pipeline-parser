@@ -39,7 +39,7 @@ if err != nil {
 }
 
 // Parse the pipeline from the specific platform to the common pipeline object
-pipeline, err := handler.Handle(buf, consts.GitHubPlatform, scmCredentials, organization, baseProviderUrl)
+pipeline, err := handler.Handle(buf, consts.GitHubPlatform, scmCredentials, organization, baseProviderUrl,nil)
 ```
 
 ### CLI Usage
