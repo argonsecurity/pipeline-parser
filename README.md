@@ -1,3 +1,6 @@
+# Archived
+This repository has been archived, development will continue on https://github.com/aquasec-com/pipeline-parser
+
 # Pipeline Parser
 
 [![Test Pipeline Parser](https://github.com/argonsecurity/pipeline-parser/actions/workflows/test.yml/badge.svg)](https://github.com/argonsecurity/pipeline-parser/actions/workflows/test.yml)
