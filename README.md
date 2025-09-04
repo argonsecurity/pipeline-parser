@@ -1,5 +1,5 @@
 # Archived
-**This repository has been archived, development will continue on https://github.com/aquasec-com/pipeline-parser**
+**This repository has been archived, development will continue on https://github.com/aquasecurity/pipeline-parser**
 
 # Pipeline Parser
 
